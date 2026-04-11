@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M01 — qSOFA Sepsis Screen</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;--fog:#E8F5F7;--muted:#5A7A82;--amber:#E67E22;--red:#C0392B;--green:#1E8449;--white:#fff;--card:#071E26;}
+body{font-family:Arial,sans-serif;background:var(--ink);color:var(--white);min-height:100vh;display:flex;flex-direction:column;}
+
+.header{padding:14px 20px 12px;border-bottom:3px solid var(--mint);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.hbadge{background:var(--mint);color:var(--ink);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:1px;}
+.htitle{font-size:15px;font-weight:700;}
+.hsub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.score-bar{background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.score-num{font-size:52px;font-weight:700;font-family:Georgia,serif;line-height:1;transition:color 0.3s;color:var(--green);}
+.score-num.mod{color:var(--amber);}
+.score-num.high{color:var(--red);}
+.score-of{font-size:14px;color:var(--muted);margin-top:8px;}
+.score-info{flex:1;}
+.score-risk{font-size:16px;font-weight:700;color:var(--green);transition:color 0.3s;margin-bottom:4px;}
+.score-risk.mod{color:var(--amber);}
+.score-risk.high{color:#E88;}
+
+.action-box{border-left:4px solid var(--green);padding:10px 14px;margin-top:8px;background:rgba(30,132,73,0.07);transition:all 0.3s;}
+.action-box.mod{border-color:var(--amber);background:rgba(230,126,34,0.07);}
+.action-box.high{border-color:var(--red);background:rgba(192,57,43,0.08);}
+.action-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:6px;text-transform:uppercase;}
+.action-lbl.mod{color:var(--amber);}
+.action-lbl.high{color:#E88;}
+.action-steps{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.action-steps li{font-size:12px;line-height:1.5;padding-left:18px;position:relative;color:rgba(255,255,255,0.85);}
+.action-steps li::before{content:"→";position:absolute;left:0;color:var(--teal);}
+
+.body{flex:1;overflow-y:auto;padding:16px 20px;}
+
+.criterion{background:var(--card);border-top:3px solid var(--teal);padding:14px 16px;margin-bottom:10px;transition:border-color 0.2s;cursor:pointer;}
+.criterion.checked{border-top-color:var(--mint);}
+.criterion label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.criterion input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin-top:2px;accent-color:var(--mint);cursor:pointer;}
+.crit-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.crit-desc{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.crit-pts{font-size:12px;font-weight:700;color:var(--mint);margin-left:auto;flex-shrink:0;padding-top:2px;}
+
+.pearl{background:rgba(2,128,144,0.08);border-left:3px solid var(--teal);padding:14px 16px;margin-top:8px;}
+.pearl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:6px;}
+.pearl p{font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;}
+
+.reset-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);padding:7px 18px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:12px;font-family:Arial,sans-serif;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--teal);color:var(--fog);}
+
+.footer{background:var(--card);border-top:1px solid rgba(255,255,255,0.05);padding:6px 20px;font-size:9px;color:#1a3a4a;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+      <span class="hbadge">qSOFA</span>
+      <span class="htitle">Sepsis Screening Tool</span>
+    </div>
+    <div class="hsub">PIVOT Module 01 — Sepsis Recognition &amp; Early Intervention</div>
+  </div>
+</div>
+
+<div class="score-bar">
+  <div>
+    <div class="score-num" id="score-num">0</div>
+    <div class="score-of">/ 3 points</div>
+  </div>
+  <div class="score-info">
+    <div class="score-risk" id="score-risk">Low Risk — Continue assessment</div>
+    <div class="action-box" id="action-box">
+      <div class="action-lbl" id="action-lbl">CLINICAL GUIDANCE</div>
+      <ul class="action-steps" id="action-steps">
+        <li>Check each criterion below as you assess your resident</li>
+        <li>Score and action guidance update automatically</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="criterion" id="c0">
+    <label>
+      <input type="checkbox" id="q0" onchange="calc()">
+      <div style="flex:1">
+        <div class="crit-name">Altered Mental Status</div>
+        <div class="crit-desc">Any new change from baseline cognition — new confusion, drowsiness, or disorientation. In dementia patients: more confused than their usual baseline today?</div>
+      </div>
+      <div class="crit-pts">+1</div>
+    </label>
+  </div>
+
+  <div class="criterion" id="c1">
+    <label>
+      <input type="checkbox" id="q1" onchange="calc()">
+      <div style="flex:1">
+        <div class="crit-name">Respiratory Rate ≥ 22 breaths/min</div>
+        <div class="crit-desc">Count for a full 60 seconds. Watch chest rise — do not estimate. Normal is 12–20. Any count of 22 or above scores 1 point.</div>
+      </div>
+      <div class="crit-pts">+1</div>
+    </label>
+  </div>
+
+  <div class="criterion" id="c2">
+    <label>
+      <input type="checkbox" id="q2" onchange="calc()">
+      <div style="flex:1">
+        <div class="crit-name">Systolic Blood Pressure ≤ 100 mmHg</div>
+        <div class="crit-desc">Or a significant drop from their personal baseline — BP of 102 in a resident whose baseline is 145 is clinically significant even if technically above 100.</div>
+      </div>
+      <div class="crit-pts">+1</div>
+    </label>
+  </div>
+
+  <div class="pearl">
+    <div class="pearl-lbl">Clinical Pearl</div>
+    <p>qSOFA was designed for bedside use <strong style="color:var(--fog);">without labs</strong>. In SNF where labs take 24–48 hours, qSOFA gives you an actionable score in 30 seconds. A score of 2 means: call the provider now and say <em style="color:var(--fog);">"Her qSOFA is 2 — I am concerned for sepsis."</em> Those exact words change how fast the provider responds.</p>
+  </div>
+
+  <button class="reset-btn" onclick="reset()">↺ Reset</button>
+
+</div>
+
+<div class="footer">PIVOT Clinical Series · Module 01 Sepsis · qSOFA Bedside Screen · For educational use</div>
+
+<script>
+function calc() {
+  var s = [0,1,2].filter(function(i){ return document.getElementById('q'+i).checked; }).length;
+  [0,1,2].forEach(function(i){
+    document.getElementById('c'+i).classList.toggle('checked', document.getElementById('q'+i).checked);
+  });
+  var num = document.getElementById('score-num');
+  var risk = document.getElementById('score-risk');
+  var box = document.getElementById('action-box');
+  var lbl = document.getElementById('action-lbl');
+  var steps = document.getElementById('action-steps');
+
+  num.textContent = s;
+  num.className = 'score-num' + (s===0?' ':s===1?' mod':' high');
+  risk.className = 'score-risk' + (s===0?' ':s===1?' mod':' high');
+  box.className = 'action-box' + (s===0?' ':s===1?' mod':' high');
+  lbl.className = 'action-lbl' + (s===0?' ':s===1?' mod':' high');
+
+  if (s === 0) {
+    risk.textContent = 'Low Risk — Continue assessment';
+    steps.innerHTML = '<li>qSOFA of 0 does not rule out infection — continue full clinical assessment</li><li>If the resident appears ill, proceed with full vitals regardless of score</li><li>Recheck if any condition changes</li>';
+  } else if (s === 1) {
+    risk.textContent = 'Moderate — Heightened monitoring warranted';
+    steps.innerHTML = '<li>qSOFA of 1 warrants closer attention — complete ALL vitals if not done</li><li>Check blood sugar, skin color, temperature, and moisture</li><li>Review recent medication changes and infection history</li><li>Document and recheck in 30–60 minutes</li><li>Notify provider if resident appears clinically unwell</li>';
+  } else {
+    risk.textContent = 'HIGH RISK — Sepsis evaluation required NOW';
+    steps.innerHTML = '<li><strong>Call the provider NOW</strong> — do not wait for rounds</li><li>State in your SBAR: "Her qSOFA score is 2 — I am concerned for sepsis"</li><li>Complete all vitals: temp, BP, HR, RR, O2 sat, blood sugar</li><li>Check last documented urine output</li><li>Recommend transfer for IV antibiotics and sepsis workup</li><li>If provider unavailable — escalate to DON or medical director</li>';
+  }
+  try { parent.postMessage({ action: 'pivotComplete', module: 'M01_qSOFA', score: s }, '*'); } catch(e) {}
+}
+
+function reset() {
+  [0,1,2].forEach(function(i){
+    document.getElementById('q'+i).checked = false;
+    document.getElementById('c'+i).classList.remove('checked');
+  });
+  calc();
+}
+</script>
+</body>
+</html>
