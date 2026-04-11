@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M03 — CAM Assessment: Mrs. Torres</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--amber:#E67E22;
+  --red:#C0392B;--green:#1E8449;--green-l:#D5F5E3;
+  --purple:#6C3483;--white:#fff;--card:#071E26;--card2:#0a1a24;
+}
+body{font-family:Arial,sans-serif;background:var(--ink);color:var(--white);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+.header{background:var(--ink);border-bottom:2px solid var(--purple);padding:8px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.hbadge{background:var(--purple);color:var(--white);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:1px;}
+.htitle{font-size:13px;font-weight:700;}
+.hsub{font-size:10px;color:var(--muted);}
+.hprogress{margin-left:auto;display:flex;gap:5px;align-items:center;}
+.prog-dot{width:24px;height:5px;border-radius:3px;background:rgba(255,255,255,0.1);transition:background 0.3s;}
+.prog-dot.done{background:var(--purple);}
+.prog-dot.active{background:var(--amber);}
+
+/* PATIENT BANNER — compact */
+.patient-banner{background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);padding:6px 16px;flex-shrink:0;display:flex;align-items:center;gap:12px;}
+.pat-name{font-size:11.5px;font-weight:700;color:var(--fog);}
+.pat-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.chip{font-size:9px;font-weight:700;padding:1px 7px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);color:var(--muted);}
+.chip.amber{border-color:var(--amber);color:var(--amber);}
+.chip.red{border-color:var(--red);color:var(--red);}
+
+/* MAIN — side by side 2x2 grid */
+.main{flex:1;display:flex;overflow:hidden;gap:0;}
+
+/* Feature grid — 2 columns */
+.feature-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;padding:8px;overflow:hidden;}
+
+.feature-card{background:var(--card);border-radius:5px;border:1px solid rgba(108,52,131,0.2);display:flex;flex-direction:column;overflow:hidden;transition:border-color 0.2s;}
+.feature-card.answered.correct-answer{border-color:var(--green);}
+.feature-card.answered.incorrect-answer{border-color:var(--red);}
+
+.feature-header{padding:6px 10px;display:flex;align-items:center;gap:7px;background:var(--card2);flex-shrink:0;}
+.feature-num{width:22px;height:22px;border-radius:4px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:Georgia,serif;color:var(--white);flex-shrink:0;}
+.feature-num.correct-num{background:var(--green);}
+.feature-num.incorrect-num{background:var(--red);}
+.fh-title{font-size:11px;font-weight:700;color:var(--white);flex:1;line-height:1.3;}
+.fh-status{font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;flex-shrink:0;}
+.fh-status.pending{color:var(--muted);background:rgba(255,255,255,0.05);}
+.fh-status.correct{color:var(--green);background:rgba(30,132,73,0.12);}
+.fh-status.wrong{color:var(--red);background:rgba(192,57,43,0.1);}
+
+.feature-body{flex:1;padding:6px 10px;display:flex;flex-direction:column;gap:5px;overflow:hidden;}
+
+.clinical-obs{background:rgba(108,52,131,0.08);border-left:2px solid var(--purple);padding:5px 8px;border-radius:0 3px 3px 0;flex-shrink:0;}
+.obs-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--purple);text-transform:uppercase;margin-bottom:2px;}
+.obs-text{font-size:10px;color:var(--fog);line-height:1.4;}
+
+.options-row{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.opt-btn{flex:1;min-width:90px;padding:5px 8px;border-radius:3px;border:1px solid rgba(108,52,131,0.3);background:rgba(108,52,131,0.05);color:var(--fog);font-size:10px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;text-align:center;line-height:1.3;}
+.opt-btn:hover:not(:disabled){border-color:var(--purple);background:rgba(108,52,131,0.15);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.selected-correct{background:rgba(30,132,73,0.15);border-color:var(--green);color:#5DD39E;}
+.opt-btn.selected-incorrect{background:rgba(192,57,43,0.12);border-color:var(--red);color:#E88;}
+.opt-btn.reveal-correct{background:rgba(30,132,73,0.1);border-color:var(--green);color:#5DD39E;}
+
+.feedback-box{font-size:10px;line-height:1.4;padding:5px 7px;border-radius:3px;display:none;flex-shrink:0;}
+.feedback-box.show{display:block;}
+.feedback-box.correct{background:rgba(30,132,73,0.1);border-left:2px solid var(--green);color:rgba(255,255,255,0.85);}
+.feedback-box.incorrect{background:rgba(192,57,43,0.08);border-left:2px solid var(--red);color:rgba(255,255,255,0.85);}
+
+/* RIGHT PANEL — CAM tracker */
+.right-panel{width:210px;flex-shrink:0;border-left:1px solid rgba(255,255,255,0.06);padding:10px;background:var(--card2);display:flex;flex-direction:column;gap:8px;overflow:hidden;}
+.rp-title{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+
+.cam-tracker{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.cam-feature{padding:6px 8px;border-radius:3px;border-left:3px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);transition:all 0.3s;}
+.cam-feature.cam-positive{border-left-color:var(--purple);background:rgba(108,52,131,0.1);}
+.cf-label{font-size:10px;font-weight:700;color:var(--muted);transition:color 0.3s;}
+.cam-feature.cam-positive .cf-label{color:var(--purple);}
+.cf-result{font-size:9px;margin-top:1px;color:rgba(255,255,255,0.25);}
+.cam-feature.cam-positive .cf-result{color:rgba(200,160,220,0.8);}
+
+.cam-algorithm{background:rgba(108,52,131,0.08);border:1px solid rgba(108,52,131,0.2);border-radius:4px;padding:8px;flex-shrink:0;}
+.alg-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--purple);text-transform:uppercase;margin-bottom:4px;}
+.alg-text{font-size:10px;color:var(--muted);line-height:1.5;}
+.alg-result{font-size:10.5px;font-weight:700;margin-top:6px;padding:5px 7px;border-radius:3px;text-align:center;display:none;}
+.alg-result.show-amber{display:block;background:rgba(230,126,34,0.1);color:var(--amber);border:1px solid rgba(230,126,34,0.25);}
+.alg-result.show-positive{display:block;background:rgba(192,57,43,0.12);color:var(--red);border:1px solid rgba(192,57,43,0.25);}
+
+.pearl{background:rgba(2,128,144,0.07);border-left:2px solid var(--teal);padding:8px;border-radius:0 3px 3px 0;flex-shrink:0;}
+.pearl-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:3px;}
+.pearl-text{font-size:10px;color:rgba(255,255,255,0.6);line-height:1.5;}
+
+/* BOTTOM BAR */
+.bottom-bar{background:var(--card);border-top:1px solid rgba(255,255,255,0.06);padding:7px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.score-display{font-size:12px;color:var(--muted);}
+.score-display span{color:var(--white);font-weight:700;}
+.continue-btn{margin-left:auto;background:var(--purple);color:var(--white);border:none;padding:7px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;border-radius:4px;display:none;}
+.continue-btn:hover{background:#5a2970;}
+.continue-btn.show{display:block;}
+
+/* RESULT OVERLAY */
+.result-overlay{display:none;position:fixed;inset:0;background:rgba(5,32,42,0.93);z-index:50;align-items:center;justify-content:center;}
+.result-overlay.show{display:flex;}
+.result-card{background:var(--card);border-radius:8px;padding:24px 28px;max-width:480px;width:90%;text-align:center;}
+.result-icon{font-size:34px;margin-bottom:8px;}
+.result-title{font-size:20px;font-weight:700;margin-bottom:6px;color:var(--red);}
+.result-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.cam-verdict{padding:10px 14px;border-radius:4px;margin-bottom:12px;font-size:13px;font-weight:700;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);color:var(--red);}
+.teaching-note{background:rgba(108,52,131,0.1);border-left:3px solid var(--purple);padding:10px 12px;text-align:left;margin-bottom:14px;border-radius:0 4px 4px 0;}
+.tn-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--purple);text-transform:uppercase;margin-bottom:3px;}
+.tn-text{font-size:11px;color:rgba(255,255,255,0.75);line-height:1.6;}
+.result-btn{background:var(--purple);color:var(--white);border:none;padding:9px 24px;font-size:13px;font-weight:700;cursor:pointer;border-radius:4px;font-family:Arial,sans-serif;margin:0 5px;}
+.result-btn.secondary{background:none;border:1px solid rgba(255,255,255,0.18);color:var(--muted);}
+.result-btn:hover{background:#5a2970;}
+.result-btn.secondary:hover{border-color:var(--purple);color:var(--fog);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:1px;">
+      <span class="hbadge">CAM</span>
+      <span class="htitle">Confusion Assessment Method — Mrs. Rosa Torres</span>
+    </div>
+    <div class="hsub">PIVOT Module 03 · Post-op day 3 right THP · Assess all 4 features</div>
+  </div>
+  <div class="hprogress">
+    <div class="prog-dot active" id="pd1"></div>
+    <div class="prog-dot" id="pd2"></div>
+    <div class="prog-dot" id="pd3"></div>
+    <div class="prog-dot" id="pd4"></div>
+  </div>
+</div>
+
+<div class="patient-banner">
+  <div class="pat-name">79F · Mild cognitive impairment at baseline · Oriented to person &amp; place this AM</div>
+  <div class="pat-chips">
+    <div class="chip amber">Post-op day 3</div>
+    <div class="chip amber">Oxycodone 2 hrs ago</div>
+    <div class="chip red">Family: "Not herself"</div>
+    <div class="chip">Baseline MCI</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- 2x2 FEATURE GRID -->
+  <div class="feature-grid">
+
+    <!-- F1 -->
+    <div class="feature-card" id="fc1">
+      <div class="feature-header">
+        <div class="feature-num" id="fn1">1</div>
+        <div class="fh-title">Acute Onset &amp; Fluctuating Course</div>
+        <div class="fh-status pending" id="fs1">Pending</div>
+      </div>
+      <div class="feature-body">
+        <div class="clinical-obs">
+          <div class="obs-lbl">Observation</div>
+          <div class="obs-text">Oriented at 0800. Daughter arrives 1730: "She keeps asking where she is, then seems fine for a few minutes, then gets confused again." Nursing note at 1400 documents her as resting comfortably, oriented.</div>
+        </div>
+        <div class="options-row">
+          <button class="opt-btn" id="f1-positive" onclick="answer(1,'positive')">Positive — acute onset with fluctuation</button>
+          <button class="opt-btn" id="f1-negative" onclick="answer(1,'negative')">Negative — gradual, consistent</button>
+        </div>
+        <div class="feedback-box" id="fb1"></div>
+      </div>
+    </div>
+
+    <!-- F2 -->
+    <div class="feature-card" id="fc2">
+      <div class="feature-header">
+        <div class="feature-num" id="fn2">2</div>
+        <div class="fh-title">Inattention</div>
+        <div class="fh-status pending" id="fs2">Pending</div>
+      </div>
+      <div class="feature-body">
+        <div class="clinical-obs">
+          <div class="obs-lbl">Observation</div>
+          <div class="obs-text">Letter A test: she squeezes on first A, misses the next three, squeezes on a B. Loses track mid-sequence. Counting backward from 10: stops at 7 and asks you what day it is.</div>
+        </div>
+        <div class="options-row">
+          <button class="opt-btn" id="f2-positive" onclick="answer(2,'positive')">Positive — inattention present</button>
+          <button class="opt-btn" id="f2-negative" onclick="answer(2,'negative')">Negative — able to attend</button>
+        </div>
+        <div class="feedback-box" id="fb2"></div>
+      </div>
+    </div>
+
+    <!-- F3 -->
+    <div class="feature-card" id="fc3">
+      <div class="feature-header">
+        <div class="feature-num" id="fn3">3</div>
+        <div class="fh-title">Disorganized Thinking</div>
+        <div class="fh-status pending" id="fs3">Pending</div>
+      </div>
+      <div class="feature-body">
+        <div class="clinical-obs">
+          <div class="obs-lbl">Observation</div>
+          <div class="obs-text">"Will a stone float on water?" — "Yes, if it's warm enough." Asks if windows need locking before the storm. No storm. Cannot explain why she's in the facility: "I think I fell somewhere."</div>
+        </div>
+        <div class="options-row">
+          <button class="opt-btn" id="f3-positive" onclick="answer(3,'positive')">Positive — illogical, disorganized</button>
+          <button class="opt-btn" id="f3-negative" onclick="answer(3,'negative')">Negative — coherent thinking</button>
+        </div>
+        <div class="feedback-box" id="fb3"></div>
+      </div>
+    </div>
+
+    <!-- F4 -->
+    <div class="feature-card" id="fc4">
+      <div class="feature-header">
+        <div class="feature-num" id="fn4">4</div>
+        <div class="fh-title">Altered Level of Consciousness</div>
+        <div class="fh-status pending" id="fs4">Pending</div>
+      </div>
+      <div class="feature-body">
+        <div class="clinical-obs">
+          <div class="obs-lbl">Observation</div>
+          <div class="obs-text">Eyes closed on entry. Required two calls by name before responding. Eyelids heavy throughout — working to stay awake. Closed eyes twice mid-conversation.</div>
+        </div>
+        <div class="options-row" style="flex-wrap:wrap;">
+          <button class="opt-btn" id="f4-alert" onclick="answer(4,'alert')">Alert — normal</button>
+          <button class="opt-btn" id="f4-vigilant" onclick="answer(4,'vigilant')">Hypervigilant</button>
+          <button class="opt-btn" id="f4-lethargic" onclick="answer(4,'lethargic')">Lethargic — drowsy</button>
+          <button class="opt-btn" id="f4-stupor" onclick="answer(4,'stupor')">Stuporous</button>
+        </div>
+        <div class="feedback-box" id="fb4"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: CAM Tracker -->
+  <div class="right-panel">
+    <div class="rp-title">CAM Tracker</div>
+
+    <div class="cam-tracker">
+      <div class="cam-feature" id="ct1">
+        <div class="cf-label">F1 — Acute onset &amp; fluctuation</div>
+        <div class="cf-result" id="cr1">Not assessed</div>
+      </div>
+      <div class="cam-feature" id="ct2">
+        <div class="cf-label">F2 — Inattention</div>
+        <div class="cf-result" id="cr2">Not assessed</div>
+      </div>
+      <div class="cam-feature" id="ct3">
+        <div class="cf-label">F3 — Disorganized thinking</div>
+        <div class="cf-result" id="cr3">Not assessed</div>
+      </div>
+      <div class="cam-feature" id="ct4">
+        <div class="cf-label">F4 — Altered consciousness</div>
+        <div class="cf-result" id="cr4">Not assessed</div>
+      </div>
+    </div>
+
+    <div class="cam-algorithm">
+      <div class="alg-lbl">Algorithm</div>
+      <div class="alg-text">Delirium = <strong style="color:var(--white);">F1 + F2 + (F3 or F4)</strong><br>F1 and F2 are required. F3 or F4 completes the diagnosis.</div>
+      <div class="alg-result" id="alg-result"></div>
+    </div>
+
+    <div class="pearl">
+      <div class="pearl-lbl">72-Hour Window</div>
+      <div class="pearl-text">Delirium is reversible if the cause is found and treated within 72 hours. The nurse who identifies it starts the clock.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-bar">
+  <div class="score-display">Assessed: <span id="assessed-count">0</span> / 4</div>
+  <button class="continue-btn" id="continue-btn" onclick="showResult()">See CAM Result →</button>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-icon">🔴</div>
+    <div class="result-title">CAM Positive — Delirium Present</div>
+    <div class="result-sub">All four CAM features are positive for Mrs. Torres. This meets the full criteria: acute onset + fluctuation (F1) + inattention (F2) + disorganized thinking (F3) + altered consciousness (F4).</div>
+    <div class="cam-verdict">CAM Result: POSITIVE · Delirium present · Act within the 72-hour reversal window</div>
+    <div class="teaching-note">
+      <div class="tn-lbl">Key Teaching Points</div>
+      <div class="tn-text">
+        <strong style="color:var(--white);">F1 and F2 are always required.</strong> Disorganized thinking alone does not meet CAM criteria — acute onset AND inattention must both be present.<br><br>
+        <strong style="color:var(--white);">This is not her dementia worsening.</strong> The change is acute and fluctuating — not gradual. Delirium superimposed on dementia is the most dangerous presentation to miss.<br><br>
+        <strong style="color:var(--white);">Next steps:</strong> SBAR to provider · Bladder scan · Review oxycodone · Hydration · HELP Protocol · Hourly reassessment · Document with timestamps.
+      </div>
+    </div>
+    <div>
+      <button class="result-btn secondary" onclick="closeResult()">Review assessment</button>
+      <button class="result-btn" onclick="completeModule()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var answers = {};
+var correct = { 1:'positive', 2:'positive', 3:'positive', 4:'lethargic' };
+var feedback = {
+  1:{
+    positive:'Correct. Clear at 0800, confused and fluctuating by 1730 — that is acute onset with fluctuating course. Feature 1 is positive.',
+    negative:'Not quite. Oriented this morning, confused and fluctuating this evening — that is acute and fluctuating, not gradual. Feature 1 is positive.'
+  },
+  2:{
+    positive:'Correct. Missing 3 of 4 target letters, losing the sequence, stopping mid-count — inattention is clearly present. Feature 2 is positive.',
+    negative:'Not quite. She cannot complete a simple attention test without losing the thread. That is inattention. Feature 2 is positive.'
+  },
+  3:{
+    positive:'Correct. Believing a stone floats if warm, asking about a nonexistent storm, unable to explain her admission — disorganized and illogical. Feature 3 is positive.',
+    negative:'Not quite. The stone answer, the storm concern, and the vague explanation of why she is here are all signs of disorganized thinking. Feature 3 is positive.'
+  },
+  4:{
+    lethargic:'Correct. Required two calls to open her eyes, working to stay awake, eyes closing mid-conversation — this is lethargic. Any level other than alert makes Feature 4 positive.',
+    alert:'Not quite. A patient who needs two prompts to respond and closes her eyes mid-conversation is not at a normal alert baseline. This is lethargic — Feature 4 is positive.',
+    vigilant:'Not quite. Hypervigilant means overly startled or reactive. Mrs. Torres is the opposite — drowsy and slow to respond. This is lethargic — Feature 4 is positive.',
+    stupor:'Close but not quite. Stupor requires very significant stimulation to arouse. She responds to verbal prompts, which is lethargic. Feature 4 is still positive.'
+  }
+};
+
+function answer(feature, choice) {
+  if (answers[feature]) return;
+  answers[feature] = choice;
+  var isCorrect = choice === correct[feature];
+
+  // Disable all buttons for this feature
+  var fc = document.getElementById('fc' + feature);
+  fc.querySelectorAll('.opt-btn').forEach(function(b){ b.disabled = true; });
+
+  // Style buttons
+  if (!isCorrect) {
+    var cb = document.getElementById('f' + feature + '-' + correct[feature]);
+    if (cb) cb.classList.add('reveal-correct');
+  }
+  var sb = document.getElementById('f' + feature + '-' + choice);
+  if (sb) sb.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+
+  // Feedback
+  var fb = document.getElementById('fb' + feature);
+  fb.textContent = feedback[feature][choice] || feedback[feature][correct[feature]];
+  fb.className = 'feedback-box show ' + (isCorrect ? 'correct' : 'incorrect');
+
+  // Status badge
+  var fs = document.getElementById('fs' + feature);
+  fs.textContent = 'Positive';
+  fs.className = 'fh-status ' + (isCorrect ? 'correct' : 'wrong');
+
+  // Feature num
+  var fn = document.getElementById('fn' + feature);
+  fn.className = 'feature-num ' + (isCorrect ? 'correct-num' : 'incorrect-num');
+
+  // Card border
+  fc.className = 'feature-card answered ' + (isCorrect ? 'correct-answer' : 'incorrect-answer');
+
+  // CAM tracker — all features are positive for Mrs. Torres
+  document.getElementById('ct' + feature).classList.add('cam-positive');
+  document.getElementById('cr' + feature).textContent = 'POSITIVE';
+
+  // Progress dots
+  var pd = document.getElementById('pd' + feature);
+  pd.classList.remove('active');
+  pd.classList.add('done');
+  if (feature < 4) document.getElementById('pd' + (feature + 1)).classList.add('active');
+
+  // Count
+  var count = Object.keys(answers).length;
+  document.getElementById('assessed-count').textContent = count;
+
+  // Algorithm display
+  var alg = document.getElementById('alg-result');
+  if (count >= 2) {
+    alg.textContent = count < 4 ? 'F1+F2 met — continue →' : '⚠ CAM POSITIVE';
+    alg.className = count < 4 ? 'alg-result show-amber' : 'alg-result show-positive';
+  }
+
+  if (count === 4) {
+    document.getElementById('continue-btn').classList.add('show');
+  }
+}
+
+function showResult() { document.getElementById('result-overlay').classList.add('show'); }
+function closeResult() { document.getElementById('result-overlay').classList.remove('show'); }
+function completeModule() {
+  closeResult();
+  try { parent.postMessage({ action:'pivotComplete', module:'M03_CAM', passed:true }, '*'); } catch(e){}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M02 — SBAR Builder: Post-Op DVT</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--amber:#E67E22;
+  --red:#C0392B;--red-l:#FADBD8;--green:#1E8449;--green-l:#D5F5E3;
+  --white:#fff;--card:#071E26;--card2:#0a1e28;
+}
+body{font-family:Arial,sans-serif;background:var(--ink);color:var(--white);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+.header{background:var(--ink);border-bottom:2px solid var(--teal);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.hbadge{background:var(--teal);color:var(--white);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:1px;}
+.htitle{font-size:14px;font-weight:700;}
+.hsub{font-size:11px;color:var(--muted);margin-top:1px;}
+.hright{margin-left:auto;text-align:right;}
+.hprogress{font-size:11px;color:var(--muted);}
+.hprogress span{color:var(--teal);font-weight:700;font-size:14px;}
+
+/* PATIENT BANNER */
+.patient-banner{background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 18px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.pat-name{font-size:12px;font-weight:700;color:var(--fog);}
+.pat-detail{font-size:11px;color:var(--muted);}
+.pat-instruction{margin-left:auto;font-size:11px;color:var(--amber);font-weight:700;}
+
+/* MAIN LAYOUT */
+.main{flex:1;display:flex;overflow:hidden;gap:0;}
+
+/* LEFT — item bank */
+.item-bank{width:280px;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto;padding:12px;background:var(--card2);display:flex;flex-direction:column;gap:6px;}
+.bank-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:2px 0 6px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:2px;}
+
+.sbar-item{background:var(--card);border:1px solid rgba(2,128,144,0.3);border-radius:4px;padding:10px 12px;cursor:pointer;transition:all 0.15s;position:relative;}
+.sbar-item:hover{border-color:var(--teal);background:rgba(2,128,144,0.08);}
+.sbar-item.selected{opacity:0.4;border-color:rgba(255,255,255,0.1);cursor:default;}
+.sbar-item.selected::after{content:"✓ Placed";position:absolute;top:50%;right:8px;transform:translateY(-50%);font-size:9px;color:var(--mint);font-weight:700;}
+.item-text{font-size:12px;color:var(--fog);line-height:1.4;}
+.item-hint{font-size:10px;color:var(--muted);margin-top:3px;font-style:italic;}
+
+/* RIGHT — SBAR buckets */
+.buckets{flex:1;overflow-y:auto;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:10px;}
+
+.bucket{background:var(--card);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;min-height:160px;}
+.bucket-header{padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.bucket-letter{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;font-family:Georgia,serif;color:var(--white);flex-shrink:0;}
+.bucket-name{font-size:12px;font-weight:700;color:var(--white);}
+.bucket-desc{font-size:10px;color:var(--muted);margin-top:1px;}
+.bucket-body{flex:1;padding:8px 12px 12px;display:flex;flex-direction:column;gap:6px;min-height:80px;}
+.bucket-empty{font-size:11px;color:rgba(255,255,255,0.18);font-style:italic;padding:8px 0;}
+.bucket-slots{display:flex;flex-direction:column;gap:6px;}
+
+/* Placed items in bucket */
+.placed-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:7px 10px;font-size:11.5px;color:var(--fog);line-height:1.4;display:flex;align-items:flex-start;gap:6px;cursor:pointer;transition:all 0.15s;position:relative;}
+.placed-item:hover{border-color:rgba(192,57,43,0.5);background:rgba(192,57,43,0.06);}
+.placed-item:hover::after{content:"✕ Remove";position:absolute;top:50%;right:8px;transform:translateY(-50%);font-size:9px;color:var(--red);font-weight:700;}
+.placed-item.correct{border-color:var(--green);background:rgba(30,132,73,0.08);}
+.placed-item.incorrect{border-color:var(--red);background:rgba(192,57,43,0.08);}
+.placed-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+
+/* ACTIVE ITEM (being placed) */
+.sbar-item.active-select{border-color:var(--amber);background:rgba(230,126,34,0.1);box-shadow:0 0 0 2px rgba(230,126,34,0.3);}
+.bucket.target-active{box-shadow:0 0 0 2px var(--amber);cursor:pointer;}
+
+/* BOTTOM BAR */
+.bottom-bar{background:var(--card);border-top:1px solid rgba(255,255,255,0.06);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.check-btn{background:var(--teal);color:var(--white);border:none;padding:9px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;transition:background 0.15s;border-radius:4px;}
+.check-btn:hover{background:var(--deep);}
+.check-btn:disabled{background:rgba(255,255,255,0.1);color:var(--muted);cursor:default;}
+.reset-btn{background:none;border:1px solid rgba(255,255,255,0.12);color:var(--muted);padding:8px 18px;font-size:12px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;border-radius:4px;}
+.reset-btn:hover{border-color:var(--teal);color:var(--fog);}
+.result-msg{font-size:13px;font-weight:700;flex:1;text-align:right;}
+.result-msg.pass{color:var(--mint);}
+.result-msg.fail{color:var(--amber);}
+
+/* RESULT OVERLAY */
+.result-overlay{display:none;position:fixed;inset:0;background:rgba(5,32,42,0.92);z-index:50;align-items:center;justify-content:center;}
+.result-overlay.show{display:flex;}
+.result-card{background:var(--card);border-radius:10px;padding:28px 32px;max-width:480px;width:90%;text-align:center;}
+.result-icon{font-size:36px;margin-bottom:10px;}
+.result-title{font-size:20px;font-weight:700;margin-bottom:8px;}
+.result-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+.result-breakdown{text-align:left;margin-bottom:20px;display:flex;flex-direction:column;gap:6px;}
+.rb-item{display:flex;gap:8px;font-size:12px;padding:6px 10px;border-radius:4px;}
+.rb-item.correct{background:rgba(30,132,73,0.1);color:#5DD39E;}
+.rb-item.incorrect{background:rgba(192,57,43,0.1);color:#E88;}
+.rb-icon{flex-shrink:0;font-weight:700;}
+.result-btn{background:var(--teal);color:var(--white);border:none;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;border-radius:4px;font-family:Arial,sans-serif;margin:0 6px;}
+.result-btn.secondary{background:none;border:1px solid rgba(255,255,255,0.2);color:var(--muted);}
+.result-btn:hover{background:var(--deep);}
+.result-btn.secondary:hover{border-color:var(--teal);color:var(--fog);}
+
+/* Teaching note in result */
+.teaching-note{background:rgba(2,128,144,0.08);border-left:3px solid var(--teal);padding:12px 14px;text-align:left;margin-bottom:16px;border-radius:0 4px 4px 0;}
+.tn-lbl{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:4px;}
+.tn-text{font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+      <span class="hbadge">SBAR BUILDER</span>
+      <span class="htitle">Post-Op DVT Scenario</span>
+    </div>
+    <div class="hsub">PIVOT Module 02 — Post-Op Complications · Mr. Thompson</div>
+  </div>
+  <div class="hright">
+    <div class="hprogress">Placed: <span id="placed-count">0</span> / 8</div>
+  </div>
+</div>
+
+<div class="patient-banner">
+  <div>
+    <div class="pat-name">Mr. Thompson — 78M, Post-Op TKR Day 3</div>
+    <div class="pat-detail">Left calf pain, warmth, and swelling noted on assessment · Wells Score 3 · HR 96, BP 138/82, RR 16, SpO2 97%</div>
+  </div>
+  <div class="pat-instruction">Tap an item, then tap the correct SBAR bucket →</div>
+</div>
+
+<div class="main">
+
+  <!-- ITEM BANK -->
+  <div class="item-bank">
+    <div class="bank-label">Clinical Information — assign each to S, B, A, or R</div>
+    <div id="items-container"></div>
+  </div>
+
+  <!-- BUCKETS -->
+  <div class="buckets">
+    <div class="bucket" id="bucket-S" onclick="placeInBucket('S')">
+      <div class="bucket-header" style="background:rgba(2,128,144,0.15);">
+        <div class="bucket-letter" style="background:var(--teal);">S</div>
+        <div>
+          <div class="bucket-name">Situation</div>
+          <div class="bucket-desc">Why are you calling? What is happening right now?</div>
+        </div>
+      </div>
+      <div class="bucket-body" id="body-S"><div class="bucket-empty">No items placed yet</div></div>
+    </div>
+
+    <div class="bucket" id="bucket-B" onclick="placeInBucket('B')">
+      <div class="bucket-header" style="background:rgba(2,128,144,0.10);">
+        <div class="bucket-letter" style="background:#014F5C;">B</div>
+        <div>
+          <div class="bucket-name">Background</div>
+          <div class="bucket-desc">Relevant history and context for this patient</div>
+        </div>
+      </div>
+      <div class="bucket-body" id="body-B"><div class="bucket-empty">No items placed yet</div></div>
+    </div>
+
+    <div class="bucket" id="bucket-A" onclick="placeInBucket('A')">
+      <div class="bucket-header" style="background:rgba(108,52,131,0.15);">
+        <div class="bucket-letter" style="background:#6C3483;">A</div>
+        <div>
+          <div class="bucket-name">Assessment</div>
+          <div class="bucket-desc">Your clinical conclusion — what do you think is happening?</div>
+        </div>
+      </div>
+      <div class="bucket-body" id="body-A"><div class="bucket-empty">No items placed yet</div></div>
+    </div>
+
+    <div class="bucket" id="bucket-R" onclick="placeInBucket('R')">
+      <div class="bucket-header" style="background:rgba(30,132,73,0.12);">
+        <div class="bucket-letter" style="background:var(--green);">R</div>
+        <div>
+          <div class="bucket-name">Recommendation</div>
+          <div class="bucket-desc">What do you need? What action are you requesting?</div>
+        </div>
+      </div>
+      <div class="bucket-body" id="body-R"><div class="bucket-empty">No items placed yet</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="check-btn" id="check-btn" onclick="checkAnswers()" disabled>Check My SBAR →</button>
+  <button class="reset-btn" onclick="resetAll()">↺ Start Over</button>
+  <div class="result-msg" id="result-msg"></div>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-icon" id="r-icon">✓</div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-sub" id="r-sub"></div>
+    <div class="teaching-note">
+      <div class="tn-lbl">Key Teaching Point</div>
+      <div class="tn-text" id="r-teaching"></div>
+    </div>
+    <div class="result-breakdown" id="r-breakdown"></div>
+    <div>
+      <button class="result-btn secondary" onclick="closeOverlay()">Review my answers</button>
+      <button class="result-btn" id="r-next-btn" onclick="closeOverlay()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+var items = [
+  { id: 'i1', text: '"I\'m calling about Mr. Thompson in room 12B. He has new left calf pain, warmth, and swelling that I noticed on my afternoon assessment."', hint: 'What is happening right now?', correct: 'S' },
+  { id: 'i2', text: '78-year-old male, post-operative day 3 following left total knee replacement. Admitted from Memorial Hospital yesterday.', hint: 'Who is the patient and why are they here?', correct: 'B' },
+  { id: 'i3', text: 'His Wells Score for DVT is 3 — high probability. Left calf is 3.5 cm larger than the right on measurement, warm to touch, and tender on palpation along the popliteal space.', hint: 'Your clinical conclusion with objective data', correct: 'A' },
+  { id: 'i4', text: 'PMHx: HTN, T2DM. He was on DVT prophylaxis — enoxaparin — but the last dose was 18 hours ago. No prior history of DVT or PE.', hint: 'Relevant past history and medication context', correct: 'B' },
+  { id: 'i5', text: '"I\'m concerned this is a deep vein thrombosis. Current vitals are stable — HR 96, BP 138/82, RR 16, SpO2 97%. No chest pain or shortness of breath at this time."', hint: 'What do you think is happening clinically?', correct: 'A' },
+  { id: 'i6', text: '"I need a duplex ultrasound order today, guidance on whether to hold or continue his enoxaparin, and orders for pain management of the affected leg."', hint: 'What are you asking the provider to do?', correct: 'R' },
+  { id: 'i7', text: 'He ambulated with PT this morning without complaint. Calf findings were not present on the 0800 assessment — this is a new finding from 1430.', hint: 'Timing context — when did this start?', correct: 'B' },
+  { id: 'i8', text: '"I will continue monitoring his respiratory status closely and call you immediately if he develops any chest pain, dyspnea, or drop in oxygen saturation."', hint: 'What will you do while awaiting orders?', correct: 'R' },
+];
+
+var placements = {}; // itemId -> bucketLetter
+var selectedItem = null;
+var attempt = 0;
+
+// ── RENDER ITEMS ──────────────────────────────────────────────────────────────
+function renderItems() {
+  var container = document.getElementById('items-container');
+  container.innerHTML = '';
+  items.forEach(function(item) {
+    var placed = placements[item.id];
+    var div = document.createElement('div');
+    div.className = 'sbar-item' + (placed ? ' selected' : '') + (selectedItem === item.id ? ' active-select' : '');
+    div.id = 'item-' + item.id;
+    div.innerHTML = '<div class="item-text">' + item.text + '</div>' +
+                    '<div class="item-hint">' + item.hint + '</div>';
+    if (!placed) {
+      div.onclick = function() { selectItem(item.id); };
+    }
+    container.appendChild(div);
+  });
+}
+
+function renderBuckets() {
+  ['S','B','A','R'].forEach(function(bucket) {
+    var body = document.getElementById('body-' + bucket);
+    var placed = items.filter(function(item){ return placements[item.id] === bucket; });
+    if (placed.length === 0) {
+      body.innerHTML = '<div class="bucket-empty">No items placed yet</div>';
+    } else {
+      body.innerHTML = '';
+      placed.forEach(function(item) {
+        var div = document.createElement('div');
+        div.className = 'placed-item';
+        div.innerHTML = '<div class="placed-dot" style="background:var(--teal)"></div><span>' + item.text + '</span>';
+        div.onclick = function(e) { e.stopPropagation(); removeItem(item.id); };
+        body.appendChild(div);
+      });
+    }
+  });
+  // Update count
+  var count = Object.keys(placements).length;
+  document.getElementById('placed-count').textContent = count;
+  document.getElementById('check-btn').disabled = count < 8;
+}
+
+function selectItem(id) {
+  if (placements[id]) return;
+  selectedItem = (selectedItem === id) ? null : id;
+  // Highlight buckets when item selected
+  ['S','B','A','R'].forEach(function(b){
+    document.getElementById('bucket-' + b).classList.toggle('target-active', !!selectedItem);
+  });
+  renderItems();
+}
+
+function placeInBucket(bucket) {
+  if (!selectedItem) return;
+  placements[selectedItem] = bucket;
+  selectedItem = null;
+  ['S','B','A','R'].forEach(function(b){
+    document.getElementById('bucket-' + b).classList.remove('target-active');
+  });
+  renderItems();
+  renderBuckets();
+}
+
+function removeItem(id) {
+  delete placements[id];
+  renderItems();
+  renderBuckets();
+}
+
+// ── CHECK ANSWERS ─────────────────────────────────────────────────────────────
+function checkAnswers() {
+  attempt++;
+  var correct = 0;
+  var breakdown = [];
+
+  items.forEach(function(item) {
+    var placed = placements[item.id];
+    var isCorrect = placed === item.correct;
+    if (isCorrect) correct++;
+    breakdown.push({ text: item.text, placed: placed, correct: item.correct, isCorrect: isCorrect });
+
+    // Color the placed items in buckets
+    var body = document.getElementById('body-' + placed);
+    if (body) {
+      var placedDivs = body.querySelectorAll('.placed-item');
+      placedDivs.forEach(function(div) {
+        if (div.querySelector('span') && div.querySelector('span').textContent === item.text) {
+          div.classList.add(isCorrect ? 'correct' : 'incorrect');
+          div.querySelector('.placed-dot').style.background = isCorrect ? 'var(--green)' : 'var(--red)';
+        }
+      });
+    }
+  });
+
+  var passed = correct >= 6;
+  showResult(correct, breakdown, passed);
+}
+
+function showResult(correct, breakdown, passed) {
+  document.getElementById('r-icon').textContent = passed ? '✓' : '○';
+  document.getElementById('r-title').textContent = passed
+    ? 'SBAR Complete — ' + correct + '/8 Correct'
+    : 'Not quite — ' + correct + '/8 Correct';
+  document.getElementById('r-title').style.color = passed ? 'var(--mint)' : 'var(--amber)';
+
+  document.getElementById('r-sub').textContent = passed
+    ? 'Well done. Your SBAR communicates the critical clinical information clearly and in the right sequence.'
+    : 'Review the items below and check where the misplacements occurred. ' + (attempt < 2 ? 'You have one more attempt.' : 'Review the answer key below.');
+
+  document.getElementById('r-teaching').textContent = 'In a DVT SBAR, the Assessment bucket should contain your clinical conclusion WITH the Wells Score — not just symptoms. "I believe this is a DVT — Wells Score 3" gives the provider an objective, structured risk level before you make your recommendation. That framing changes how quickly they act.';
+
+  var bhtml = '';
+  breakdown.forEach(function(b) {
+    bhtml += '<div class="rb-item ' + (b.isCorrect ? 'correct' : 'incorrect') + '">' +
+      '<span class="rb-icon">' + (b.isCorrect ? '✓' : '✕') + '</span>' +
+      '<span>' + (b.isCorrect ? 'Correct — ' + b.placed : 'Placed in ' + b.placed + ', belongs in ' + b.correct) + ': ' +
+      b.text.substring(0, 60) + '…</span></div>';
+  });
+  document.getElementById('r-breakdown').innerHTML = bhtml;
+
+  var nextBtn = document.getElementById('r-next-btn');
+  if (passed) {
+    nextBtn.textContent = 'Continue to Next Section →';
+    nextBtn.onclick = function() {
+      closeOverlay();
+      try { parent.postMessage({ action: 'pivotComplete', module: 'M02_SBAR', score: correct, passed: true }, '*'); } catch(e) {}
+    };
+  } else if (attempt < 2) {
+    nextBtn.textContent = 'Try Again';
+    nextBtn.onclick = function() { closeOverlay(); };
+  } else {
+    nextBtn.textContent = 'Continue Anyway →';
+    nextBtn.onclick = function() {
+      closeOverlay();
+      try { parent.postMessage({ action: 'pivotComplete', module: 'M02_SBAR', score: correct, passed: false }, '*'); } catch(e) {}
+    };
+  }
+
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+function closeOverlay() {
+  document.getElementById('result-overlay').classList.remove('show');
+}
+
+function resetAll() {
+  placements = {};
+  selectedItem = null;
+  attempt = 0;
+  document.getElementById('result-msg').textContent = '';
+  ['S','B','A','R'].forEach(function(b){
+    document.getElementById('bucket-' + b).classList.remove('target-active');
+  });
+  renderItems();
+  renderBuckets();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderItems();
+renderBuckets();
+</script>
+</body>
+</html>

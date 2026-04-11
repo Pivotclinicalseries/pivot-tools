@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M04 — Morse Fall Scale</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;--fog:#E8F5F7;--muted:#5A7A82;--amber:#E67E22;--amber-d:#CA6F1E;--red:#C0392B;--green:#1E8449;--white:#fff;--card:#071E26;}
+body{font-family:Arial,sans-serif;background:var(--ink);color:var(--white);min-height:100vh;display:flex;flex-direction:column;}
+
+.header{padding:14px 20px 12px;border-bottom:3px solid var(--amber);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.hbadge{background:var(--amber);color:var(--white);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:1px;}
+.htitle{font-size:15px;font-weight:700;}
+.hsub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.score-bar{background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.score-num{font-size:52px;font-weight:700;font-family:Georgia,serif;line-height:1;transition:color 0.3s;color:var(--green);}
+.score-num.mod{color:var(--amber);}
+.score-num.high{color:var(--red);}
+.score-of{font-size:13px;color:var(--muted);margin-top:6px;}
+.score-info{flex:1;}
+.score-risk{font-size:15px;font-weight:700;color:var(--green);transition:color 0.3s;margin-bottom:4px;}
+.score-risk.mod{color:var(--amber);}
+.score-risk.high{color:#E88;}
+
+.action-box{border-left:4px solid var(--green);padding:10px 14px;margin-top:6px;background:rgba(30,132,73,0.07);transition:all 0.3s;}
+.action-box.mod{border-color:var(--amber);background:rgba(230,126,34,0.07);}
+.action-box.high{border-color:var(--red);background:rgba(192,57,43,0.08);}
+.action-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:5px;text-transform:uppercase;}
+.action-lbl.mod{color:var(--amber);}
+.action-lbl.high{color:#E88;}
+.action-steps{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.action-steps li{font-size:11.5px;line-height:1.5;padding-left:18px;position:relative;color:rgba(255,255,255,0.85);}
+.action-steps li::before{content:"→";position:absolute;left:0;color:var(--amber);}
+
+.body{flex:1;overflow-y:auto;padding:14px 20px;}
+
+.criterion{background:var(--card);border-top:3px solid var(--amber);padding:13px 16px;margin-bottom:9px;transition:border-color 0.2s;}
+.criterion.answered{border-top-color:var(--mint);}
+.crit-num{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--amber);text-transform:uppercase;margin-bottom:4px;}
+.crit-name{font-size:13.5px;font-weight:700;margin-bottom:3px;}
+.crit-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+.crit-select{background:var(--deep);border:1.5px solid rgba(230,126,34,0.3);color:var(--white);padding:8px 12px;font-family:Arial,sans-serif;font-size:12px;width:100%;cursor:pointer;transition:border-color 0.2s;}
+.crit-select:focus{outline:none;border-color:var(--amber);}
+.crit-pts{font-size:10px;color:var(--amber);font-weight:700;text-align:right;margin-top:5px;}
+
+.pearl{background:rgba(230,126,34,0.07);border-left:3px solid var(--amber);padding:13px 16px;margin-top:6px;}
+.pearl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:5px;}
+.pearl p{font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;}
+
+.reset-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);padding:7px 18px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:12px;font-family:Arial,sans-serif;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--amber);color:var(--fog);}
+
+.footer{background:var(--card);border-top:1px solid rgba(255,255,255,0.05);padding:6px 20px;font-size:9px;color:#1a3a4a;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+      <span class="hbadge">MORSE FALL SCALE</span>
+      <span class="htitle">Fall Risk Assessment</span>
+    </div>
+    <div class="hsub">PIVOT Module 04 — Falls &amp; Fall Prevention</div>
+  </div>
+</div>
+
+<div class="score-bar">
+  <div>
+    <div class="score-num" id="score-num">0</div>
+    <div class="score-of">total score</div>
+  </div>
+  <div class="score-info">
+    <div class="score-risk" id="score-risk">Low Risk (0–24) — Standard precautions</div>
+    <div class="action-box" id="action-box">
+      <div class="action-lbl" id="action-lbl">CLINICAL GUIDANCE</div>
+      <ul class="action-steps" id="action-steps">
+        <li>Complete all six items below</li>
+        <li>Score and care plan guidance update automatically</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="criterion" id="c0">
+    <div class="crit-num">Criterion 1 of 6</div>
+    <div class="crit-name">History of Falling</div>
+    <div class="crit-desc">Any fall in the past 3 months — in this facility or before admission.</div>
+    <select id="m0" class="crit-select" onchange="calc()">
+      <option value="0">No — no fall history in past 3 months (0 pts)</option>
+      <option value="25">Yes — fallen within past 3 months (25 pts)</option>
+    </select>
+    <div class="crit-pts" id="p0">0 pts</div>
+  </div>
+
+  <div class="criterion" id="c1">
+    <div class="crit-num">Criterion 2 of 6</div>
+    <div class="crit-name">Secondary Diagnosis</div>
+    <div class="crit-desc">Does the resident have more than one medical diagnosis documented in the chart?</div>
+    <select id="m1" class="crit-select" onchange="calc()">
+      <option value="0">No — single diagnosis (0 pts)</option>
+      <option value="15">Yes — two or more diagnoses (15 pts)</option>
+    </select>
+    <div class="crit-pts" id="p1">0 pts</div>
+  </div>
+
+  <div class="criterion" id="c2">
+    <div class="crit-num">Criterion 3 of 6</div>
+    <div class="crit-name">Ambulatory Aid</div>
+    <div class="crit-desc">What does the resident use for walking or transfers?</div>
+    <select id="m2" class="crit-select" onchange="calc()">
+      <option value="0">None / bed rest / nurse assist (0 pts)</option>
+      <option value="15">Crutches / cane / walker (15 pts)</option>
+      <option value="30">Holds furniture or walls when walking (30 pts)</option>
+    </select>
+    <div class="crit-pts" id="p2">0 pts</div>
+  </div>
+
+  <div class="criterion" id="c3">
+    <div class="crit-num">Criterion 4 of 6</div>
+    <div class="crit-name">IV / Heparin Lock</div>
+    <div class="crit-desc">Does the resident currently have an IV, PICC line, or heparin/saline lock in place?</div>
+    <select id="m3" class="crit-select" onchange="calc()">
+      <option value="0">No IV access (0 pts)</option>
+      <option value="20">Yes — IV or heparin lock in place (20 pts)</option>
+    </select>
+    <div class="crit-pts" id="p3">0 pts</div>
+  </div>
+
+  <div class="criterion" id="c4">
+    <div class="crit-num">Criterion 5 of 6</div>
+    <div class="crit-name">Gait</div>
+    <div class="crit-desc">Observe the resident walking or transferring. Note balance, step length, and effort required.</div>
+    <select id="m4" class="crit-select" onchange="calc()">
+      <option value="0">Normal / bed rest / immobile (0 pts)</option>
+      <option value="10">Weak — stooped, shuffles, short steps but no support needed (10 pts)</option>
+      <option value="20">Impaired — difficulty rising, lurches, unsteady, grabs for support (20 pts)</option>
+    </select>
+    <div class="crit-pts" id="p4">0 pts</div>
+  </div>
+
+  <div class="criterion" id="c5">
+    <div class="crit-num">Criterion 6 of 6</div>
+    <div class="crit-name">Mental Status</div>
+    <div class="crit-desc">Ask: "Are you able to go to the bathroom alone?" Does their answer match their actual ability?</div>
+    <select id="m5" class="crit-select" onchange="calc()">
+      <option value="0">Oriented — answer accurately matches their ability (0 pts)</option>
+      <option value="15">Overestimates ability or forgets limitations (15 pts)</option>
+    </select>
+    <div class="crit-pts" id="p5">0 pts</div>
+  </div>
+
+  <div class="pearl">
+    <div class="pearl-lbl">Clinical Pearl</div>
+    <p>The highest-value question is <strong style="color:var(--fog);">mental status</strong> — specifically whether the resident overestimates their own ability. The resident who says "I can get up fine" but cannot is your highest-risk patient. They will not call for help because they genuinely believe they don't need it. Your care plan must address this neurological reality directly — not with education, but with environmental and routine modifications.</p>
+  </div>
+
+  <button class="reset-btn" onclick="reset()">↺ Reset all criteria</button>
+
+</div>
+
+<div class="footer">PIVOT Clinical Series · Module 04 Falls · Morse Fall Scale · For educational use</div>
+
+<script>
+function calc() {
+  var total = 0;
+  [0,1,2,3,4,5].forEach(function(i) {
+    var v = parseInt(document.getElementById('m'+i).value);
+    total += v;
+    document.getElementById('p'+i).textContent = v + ' pts';
+    document.getElementById('c'+i).classList.toggle('answered', v > 0);
+  });
+
+  var num   = document.getElementById('score-num');
+  var risk  = document.getElementById('score-risk');
+  var box   = document.getElementById('action-box');
+  var lbl   = document.getElementById('action-lbl');
+  var steps = document.getElementById('action-steps');
+
+  num.textContent = total;
+
+  if (total < 25) {
+    num.className = 'score-num';
+    risk.className = 'score-risk';
+    box.className = 'action-box';
+    lbl.className = 'action-lbl';
+    risk.textContent = 'Low Risk (Score: ' + total + ') — Standard precautions';
+    steps.innerHTML = '<li>Standard fall precautions apply</li><li>Call light within reach at all times</li><li>Non-slip footwear when ambulatory</li><li>Bed in lowest position, brakes locked</li><li>Reassess at any clinical change or quarterly</li>';
+  } else if (total < 45) {
+    num.className = 'score-num mod';
+    risk.className = 'score-risk mod';
+    box.className = 'action-box mod';
+    lbl.className = 'action-lbl mod';
+    risk.textContent = 'Moderate Risk (Score: ' + total + ') — Targeted interventions required';
+    steps.innerHTML = '<li>Implement fall prevention care plan — document specific interventions</li><li>Hourly rounding with toilet offering</li><li>Keep frequently used items within reach</li><li>Review medications for fall risk contributors (diuretics, sedatives, antihypertensives)</li><li>Educate resident and family on fall risk and precautions</li>';
+  } else {
+    num.className = 'score-num high';
+    risk.className = 'score-risk high';
+    box.className = 'action-box high';
+    lbl.className = 'action-lbl high';
+    risk.textContent = 'HIGH RISK (Score: ' + total + ') — Intensive fall prevention required';
+    steps.innerHTML = '<li><strong>Activate high-fall-risk care plan immediately</strong></li><li>Bed alarm connected and tested — document in care plan</li><li>Fall risk armband applied</li><li>Minimum q1h rounding — q30 min during peak risk periods</li><li>Notify provider for medication review</li><li>PT/OT referral for gait and strength assessment</li><li>Family notification and education</li><li>Document score, risk tier, and all interventions</li>';
+  }
+  try { parent.postMessage({ action: 'pivotComplete', module: 'M04_Morse', score: total }, '*'); } catch(e) {}
+}
+
+function reset() {
+  [0,1,2,3,4,5].forEach(function(i) {
+    document.getElementById('m'+i).value = 0;
+    document.getElementById('p'+i).textContent = '0 pts';
+    document.getElementById('c'+i).classList.remove('answered');
+  });
+  calc();
+}
+</script>
+</body>
+</html>

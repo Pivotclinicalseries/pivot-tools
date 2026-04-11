@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M02 — Wells Score & DVT Anatomy</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#05202A;--deep:#014F5C;--teal:#028090;--teal-d:#014F5C;
+  --mint:#02C39A;--fog:#E8F5F7;--muted:#5A7A82;
+  --amber:#E67E22;--red:#C0392B;--red-l:#FADBD8;
+  --green:#1E8449;--green-l:#D5F5E3;--white:#fff;--card:#071E26;
+}
+body{font-family:Arial,sans-serif;background:var(--ink);color:var(--white);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── HEADER ── */
+.header{background:var(--ink);border-bottom:2px solid var(--teal);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.hbadge{background:var(--teal);color:var(--white);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:1px;}
+.htitle{font-size:14px;font-weight:700;}
+.hsub{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.tab{flex:1;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.15s;text-align:center;letter-spacing:0.5px;}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.tab:hover:not(.active){color:var(--fog);}
+
+.panel{display:none;flex:1;overflow:hidden;}
+.panel.active{display:flex;}
+
+/* ══════════════════════════════════════════
+   TAB 1 — WELLS SCORE
+══════════════════════════════════════════ */
+.wells-layout{display:flex;flex:1;overflow:hidden;}
+.wells-criteria{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.wells-sidebar{width:260px;border-left:1px solid rgba(255,255,255,0.06);overflow-y:auto;padding:12px;background:var(--card);flex-shrink:0;display:flex;flex-direction:column;gap:10px;}
+
+/* Score bar */
+.score-bar{background:var(--card);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.score-num{font-size:46px;font-weight:700;font-family:Georgia,serif;line-height:1;transition:color 0.3s;color:var(--green);}
+.score-num.mod{color:var(--amber);}
+.score-num.high{color:var(--red);}
+.score-of{font-size:12px;color:var(--muted);margin-top:4px;}
+.score-info{flex:1;}
+.score-risk{font-size:14px;font-weight:700;color:var(--green);transition:color 0.3s;margin-bottom:3px;}
+.score-risk.mod{color:var(--amber);}
+.score-risk.high{color:#E88;}
+.action-box{border-left:3px solid var(--green);padding:8px 12px;background:rgba(30,132,73,0.07);transition:all 0.3s;margin-top:4px;}
+.action-box.mod{border-color:var(--amber);background:rgba(230,126,34,0.07);}
+.action-box.high{border-color:var(--red);background:rgba(192,57,43,0.08);}
+.action-lbl{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);margin-bottom:4px;text-transform:uppercase;}
+.action-lbl.mod{color:var(--amber);}
+.action-lbl.high{color:#E88;}
+.action-steps{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.action-steps li{font-size:11px;line-height:1.5;padding-left:16px;position:relative;color:rgba(255,255,255,0.85);}
+.action-steps li::before{content:"→";position:absolute;left:0;color:var(--teal);}
+
+/* Criteria cards */
+.criterion{background:var(--card);border-left:3px solid var(--teal);padding:10px 14px;cursor:pointer;transition:border-color 0.2s;}
+.criterion.checked{border-left-color:var(--mint);}
+.criterion label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
+.criterion input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--mint);cursor:pointer;}
+.crit-body{flex:1;}
+.crit-name{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+.crit-desc{font-size:10.5px;color:var(--muted);line-height:1.4;}
+.crit-pts{font-size:12px;font-weight:700;color:var(--mint);flex-shrink:0;padding-top:1px;white-space:nowrap;}
+
+.section-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:4px 0 2px;}
+
+/* Sidebar content */
+.sid-title{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:8px;}
+.risk-tier{padding:8px 10px;border-radius:4px;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start;opacity:0.45;transition:opacity 0.3s;}
+.risk-tier.active{opacity:1;}
+.tier-badge{min-width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--white);font-family:Georgia,serif;flex-shrink:0;}
+.tier-lbl{font-size:11px;font-weight:700;margin-bottom:2px;}
+.tier-act{font-size:10px;color:var(--muted);line-height:1.4;}
+
+.pearl{background:rgba(2,128,144,0.08);border-left:3px solid var(--teal);padding:10px 12px;}
+.pearl-lbl{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:4px;}
+.pearl p{font-size:10.5px;color:rgba(255,255,255,0.72);line-height:1.6;}
+
+.reset-btn{background:none;border:1px solid rgba(255,255,255,0.12);color:var(--muted);padding:6px 14px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;margin-top:4px;width:100%;}
+.reset-btn:hover{border-color:var(--teal);color:var(--fog);}
+
+/* ══════════════════════════════════════════
+   TAB 2 — DVT ANATOMY
+══════════════════════════════════════════ */
+.anatomy-layout{flex:1;display:flex;overflow:hidden;}
+.anatomy-main{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;align-items:center;}
+.anatomy-title{font-size:13px;font-weight:700;color:var(--fog);margin-bottom:4px;align-self:flex-start;}
+.anatomy-sub{font-size:11px;color:var(--muted);margin-bottom:16px;align-self:flex-start;}
+
+/* SVG leg diagram */
+.leg-diagram{position:relative;width:320px;flex-shrink:0;}
+.leg-diagram svg{width:100%;height:auto;}
+.hotspot{cursor:pointer;transition:all 0.2s;}
+.hotspot circle{transition:all 0.2s;}
+.hotspot:hover circle{r:14;}
+.hotspot.active circle{fill:var(--mint) !important;}
+.hotspot.active text{fill:var(--ink) !important;}
+
+/* Popup */
+.anatomy-popup{display:none;background:var(--card);border:1px solid var(--teal);border-radius:6px;padding:14px;margin-top:12px;width:320px;}
+.anatomy-popup.show{display:block;}
+.popup-badge{display:inline-block;background:var(--teal);color:var(--white);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:1px;margin-bottom:6px;}
+.popup-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+.popup-body{font-size:11.5px;color:#B0C4C8;line-height:1.6;margin-bottom:8px;}
+.popup-flag{font-size:11px;font-weight:700;padding:6px 10px;border-radius:4px;border-left:3px solid var(--red);background:rgba(192,57,43,0.08);color:var(--red);}
+.popup-flag.safe{border-color:var(--green);background:rgba(30,132,73,0.07);color:#5DD39E;}
+
+.anatomy-sidebar{width:260px;border-left:1px solid rgba(255,255,255,0.06);overflow-y:auto;padding:12px;background:var(--card);flex-shrink:0;}
+.as-title{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:10px;}
+.vessel-item{padding:7px 10px;border-left:3px solid var(--teal);margin-bottom:6px;cursor:pointer;background:rgba(2,128,144,0.04);transition:all 0.15s;}
+.vessel-item:hover,.vessel-item.active{background:rgba(2,128,144,0.12);border-left-color:var(--mint);}
+.vessel-name{font-size:11.5px;font-weight:700;color:var(--fog);}
+.vessel-risk{font-size:10px;margin-top:1px;}
+
+.footer{background:var(--card);border-top:1px solid rgba(255,255,255,0.04);padding:5px 20px;font-size:9px;color:#1a3040;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+      <span class="hbadge">M02</span>
+      <span class="htitle">Wells Score &amp; DVT Anatomy</span>
+    </div>
+    <div class="hsub">PIVOT Module 02 — Post-Op Complications in the SNF Setting</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-wells" onclick="switchTab('wells')">📊 Wells Score — DVT Risk</div>
+  <div class="tab" id="tab-anatomy" onclick="switchTab('anatomy')">🦵 DVT Anatomy — Venous System</div>
+</div>
+
+<!-- ══════════ TAB 1: WELLS SCORE ══════════ -->
+<div class="panel active" id="panel-wells">
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- Score bar -->
+    <div class="score-bar">
+      <div>
+        <div class="score-num" id="w-num">0</div>
+        <div class="score-of">total points</div>
+      </div>
+      <div class="score-info">
+        <div class="score-risk" id="w-risk">Low Probability — DVT unlikely</div>
+        <div class="action-box" id="w-box">
+          <div class="action-lbl" id="w-lbl">CLINICAL GUIDANCE</div>
+          <ul class="action-steps" id="w-steps">
+            <li>Check each criterion that applies to your patient</li>
+            <li>Score and nurse actions update automatically</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="wells-layout">
+      <div class="wells-criteria">
+
+        <div class="section-label">Clinical Features — Check all that apply</div>
+
+        <div class="criterion" id="wc0">
+          <label><input type="checkbox" id="w0" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Active cancer (treatment ongoing, within 6 months, or palliative)</div><div class="crit-desc">Any current malignancy or cancer treatment in the past 6 months.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc1">
+          <label><input type="checkbox" id="w1" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Paralysis, paresis, or recent plaster immobilization of lower extremity</div><div class="crit-desc">Includes stroke with leg weakness, recent casting, or splinting.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc2">
+          <label><input type="checkbox" id="w2" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Recently bedridden ≥ 3 days OR major surgery within 12 weeks</div><div class="crit-desc">Post-op SNF patients almost always meet this criterion.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc3">
+          <label><input type="checkbox" id="w3" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Localized tenderness along the deep venous system</div><div class="crit-desc">Pain on palpation along the femoral vein in the thigh or popliteal space behind the knee.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc4">
+          <label><input type="checkbox" id="w4" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Entire leg swollen</div><div class="crit-desc">Swelling involving the entire limb, not just the calf. Compare bilaterally.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc5">
+          <label><input type="checkbox" id="w5" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Calf swelling &gt; 3 cm compared to asymptomatic leg</div><div class="crit-desc">Measure 10 cm below tibial tuberosity. &gt;3 cm difference = significant.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc6">
+          <label><input type="checkbox" id="w6" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Pitting edema confined to symptomatic leg</div><div class="crit-desc">Unilateral pitting edema is more suspicious than bilateral. Press firmly for 5 seconds.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc7">
+          <label><input type="checkbox" id="w7" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Collateral superficial veins (non-varicose)</div><div class="crit-desc">Newly visible, non-varicose superficial veins — indicates deep system obstruction.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+        <div class="criterion" id="wc8">
+          <label><input type="checkbox" id="w8" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Previously documented DVT</div><div class="crit-desc">Prior confirmed DVT in either leg — strongest single predictor of recurrence.</div></div>
+            <div class="crit-pts">+1</div>
+          </label>
+        </div>
+
+        <div class="section-label" style="margin-top:4px;">Alternative Diagnosis — Deduct if applicable</div>
+
+        <div class="criterion" id="wc9" style="border-left-color:var(--red);">
+          <label><input type="checkbox" id="w9" onchange="calcWells()">
+            <div class="crit-body"><div class="crit-name">Alternative diagnosis at least as likely as DVT</div><div class="crit-desc">Cellulitis, muscle strain, Baker's cyst, post-op swelling without DVT features. If you can explain the findings another way, check this.</div></div>
+            <div class="crit-pts" style="color:var(--red);">−2</div>
+          </label>
+        </div>
+
+        <button class="reset-btn" onclick="resetWells()" style="margin-top:8px;">↺ Reset</button>
+
+      </div>
+
+      <!-- Wells Sidebar -->
+      <div class="wells-sidebar">
+        <div class="sid-title">Risk Tiers</div>
+
+        <div class="risk-tier active" id="tier-low" style="background:rgba(30,132,73,0.07);border-left:3px solid var(--green);">
+          <div class="tier-badge" style="background:var(--green);">0–1</div>
+          <div>
+            <div class="tier-lbl" style="color:var(--green);">Low Probability</div>
+            <div class="tier-act">DVT unlikely. D-dimer if concerned. No imaging usually needed.</div>
+          </div>
+        </div>
+        <div class="risk-tier" id="tier-mod" style="background:rgba(230,126,34,0.07);border-left:3px solid var(--amber);">
+          <div class="tier-badge" style="background:var(--amber);">2</div>
+          <div>
+            <div class="tier-lbl" style="color:var(--amber);">Moderate Probability</div>
+            <div class="tier-act">D-dimer + consider ultrasound. Notify provider with Wells score.</div>
+          </div>
+        </div>
+        <div class="risk-tier" id="tier-high" style="background:rgba(192,57,43,0.07);border-left:3px solid var(--red);">
+          <div class="tier-badge" style="background:var(--red);">≥3</div>
+          <div>
+            <div class="tier-lbl" style="color:var(--red);">High Probability</div>
+            <div class="tier-act">DVT likely. Duplex ultrasound urgently. Anticoagulation discussion.</div>
+          </div>
+        </div>
+
+        <div class="pearl" style="margin-top:8px;">
+          <div class="pearl-lbl">SNF Pearl</div>
+          <p>Post-op SNF patients start with at least +1 (recent surgery). Most post-TKR or post-hip patients score moderate before you assess the leg. Know the baseline going in.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 2: DVT ANATOMY ══════════ -->
+<div class="panel" id="panel-anatomy">
+  <div class="anatomy-layout">
+    <div class="anatomy-main">
+      <div class="anatomy-title">Lower Extremity Venous System</div>
+      <div class="anatomy-sub">Tap any highlighted vessel to learn about DVT risk at that location</div>
+
+      <!-- SVG Leg Diagram -->
+      <div class="leg-diagram">
+        <svg viewBox="0 0 320 520" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background leg silhouette -->
+          <defs>
+            <linearGradient id="legGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#0d2535;stop-opacity:1"/>
+              <stop offset="50%" style="stop-color:#122d40;stop-opacity:1"/>
+              <stop offset="100%" style="stop-color:#0d2535;stop-opacity:1"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Leg outline -->
+          <path d="M110,30 Q95,60 90,120 Q82,200 80,260 Q78,320 82,380 Q86,430 90,470 Q92,490 100,500 L105,500 Q98,480 96,450 Q92,400 90,360 Q88,300 90,240 Q93,180 98,120 Q104,70 115,40 Z" fill="url(#legGrad)" stroke="#1a3a4a" stroke-width="1"/>
+          <path d="M210,30 Q225,60 230,120 Q238,200 240,260 Q242,320 238,380 Q234,430 230,470 Q228,490 220,500 L215,500 Q222,480 224,450 Q228,400 230,360 Q232,300 230,240 Q227,180 222,120 Q216,70 205,40 Z" fill="url(#legGrad)" stroke="#1a3a4a" stroke-width="1"/>
+          <path d="M115,40 Q160,20 205,40 Q222,120 222,240 Q222,360 215,500 L105,500 Q98,360 98,240 Q98,120 115,40 Z" fill="url(#legGrad)" stroke="#1a3a4a" stroke-width="1"/>
+
+          <!-- Vein paths -->
+          <!-- Common Femoral -->
+          <path d="M160,55 L160,110" stroke="#3a6a8a" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+          <!-- Femoral vein -->
+          <path d="M160,110 Q158,160 157,210" stroke="#3a6a8a" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+          <!-- Popliteal -->
+          <path d="M157,210 Q156,240 156,270" stroke="#3a6a8a" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+          <!-- Anterior tibial -->
+          <path d="M156,270 Q150,320 148,370" stroke="#2a5a7a" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+          <!-- Posterior tibial -->
+          <path d="M156,270 Q162,320 164,370" stroke="#2a5a7a" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+          <!-- Peroneal -->
+          <path d="M156,270 Q156,330 156,390" stroke="#2a5a7a" stroke-width="2.5" stroke-linecap="round" opacity="0.35"/>
+          <!-- Great saphenous (superficial) -->
+          <path d="M185,80 Q190,160 192,260 Q193,350 190,430" stroke="#2a7a5a" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,3" opacity="0.4"/>
+
+          <!-- HOTSPOTS -->
+          <!-- 1: Common Femoral -->
+          <g class="hotspot" id="hs-cfe" onclick="showVessel('cfe')">
+            <circle cx="160" cy="72" r="11" fill="#028090" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="160" y="76" text-anchor="middle" font-size="10" font-weight="700" fill="white">1</text>
+          </g>
+          <!-- 2: Femoral -->
+          <g class="hotspot" id="hs-fem" onclick="showVessel('fem')">
+            <circle cx="158" cy="160" r="11" fill="#028090" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="158" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="white">2</text>
+          </g>
+          <!-- 3: Popliteal -->
+          <g class="hotspot" id="hs-pop" onclick="showVessel('pop')">
+            <circle cx="157" cy="238" r="11" fill="#028090" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="157" y="242" text-anchor="middle" font-size="10" font-weight="700" fill="white">3</text>
+          </g>
+          <!-- 4: Posterior Tibial -->
+          <g class="hotspot" id="hs-ptib" onclick="showVessel('ptib')">
+            <circle cx="166" cy="330" r="10" fill="#028090" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="166" y="334" text-anchor="middle" font-size="10" font-weight="700" fill="white">4</text>
+          </g>
+          <!-- 5: Anterior Tibial -->
+          <g class="hotspot" id="hs-atib" onclick="showVessel('atib')">
+            <circle cx="147" cy="330" r="10" fill="#028090" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="147" y="334" text-anchor="middle" font-size="10" font-weight="700" fill="white">5</text>
+          </g>
+          <!-- 6: Saphenous (superficial) -->
+          <g class="hotspot" id="hs-saph" onclick="showVessel('saph')">
+            <circle cx="192" cy="180" r="10" fill="#1A6B3C" stroke="#02C39A" stroke-width="2" opacity="0.9"/>
+            <text x="192" y="184" text-anchor="middle" font-size="10" font-weight="700" fill="white">6</text>
+          </g>
+
+          <!-- Labels -->
+          <text x="178" y="76" font-size="9" fill="#5A7A82">CFV</text>
+          <text x="176" y="164" font-size="9" fill="#5A7A82">FV</text>
+          <text x="175" y="242" font-size="9" fill="#5A7A82">Pop</text>
+          <text x="182" y="334" font-size="9" fill="#5A7A82">PT</text>
+          <text x="126" y="334" font-size="9" fill="#5A7A82">AT</text>
+          <text x="205" y="184" font-size="9" fill="#5A7A82" font-style="italic">GSV</text>
+        </svg>
+      </div>
+
+      <!-- Popup -->
+      <div class="anatomy-popup" id="anatomy-popup">
+        <div class="popup-badge" id="pp-badge">VESSEL</div>
+        <div class="popup-title" id="pp-title"></div>
+        <div class="popup-body" id="pp-body"></div>
+        <div class="popup-flag" id="pp-flag"></div>
+      </div>
+    </div>
+
+    <!-- Anatomy sidebar -->
+    <div class="anatomy-sidebar">
+      <div class="as-title">Vessels — tap to explore</div>
+
+      <div class="vessel-item" id="vi-cfe" onclick="showVessel('cfe')">
+        <div class="vessel-name">1 — Common Femoral Vein</div>
+        <div class="vessel-risk" style="color:var(--red);">⚠ Proximal — High risk</div>
+      </div>
+      <div class="vessel-item" id="vi-fem" onclick="showVessel('fem')">
+        <div class="vessel-name">2 — Femoral Vein</div>
+        <div class="vessel-risk" style="color:var(--red);">⚠ Proximal — High risk</div>
+      </div>
+      <div class="vessel-item" id="vi-pop" onclick="showVessel('pop')">
+        <div class="vessel-name">3 — Popliteal Vein</div>
+        <div class="vessel-risk" style="color:var(--amber);">△ Proximal-distal junction</div>
+      </div>
+      <div class="vessel-item" id="vi-ptib" onclick="showVessel('ptib')">
+        <div class="vessel-name">4 — Posterior Tibial Vein</div>
+        <div class="vessel-risk" style="color:var(--amber);">△ Distal — monitor closely</div>
+      </div>
+      <div class="vessel-item" id="vi-atib" onclick="showVessel('atib')">
+        <div class="vessel-name">5 — Anterior Tibial Vein</div>
+        <div class="vessel-risk" style="color:var(--muted);">Distal — lower PE risk</div>
+      </div>
+      <div class="vessel-item" id="vi-saph" onclick="showVessel('saph')">
+        <div class="vessel-name">6 — Great Saphenous Vein</div>
+        <div class="vessel-risk" style="color:var(--green);">Superficial — rarely embolic</div>
+      </div>
+
+      <div class="pearl" style="margin-top:12px;">
+        <div class="pearl-lbl">PE Risk Rule</div>
+        <p style="font-size:10.5px;">Proximal DVT (above the knee) carries a 40–50% risk of pulmonary embolism if untreated. Distal (below knee) carries ~5%. Location changes urgency.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">PIVOT Clinical Series · Module 02 Post-Op · Wells Score DVT Risk &amp; Venous Anatomy · For educational use</div>
+
+<script>
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ── WELLS SCORE ───────────────────────────────────────────────────────────────
+function calcWells() {
+  var pts = [1,1,1,1,1,1,1,1,1];
+  var total = 0;
+  for (var i = 0; i < 9; i++) {
+    var checked = document.getElementById('w'+i).checked;
+    document.getElementById('wc'+i).classList.toggle('checked', checked);
+    total += checked ? (i === 9 ? -2 : pts[i]) : 0;
+  }
+  // Handle deduction item separately
+  var alt = document.getElementById('w9').checked;
+  document.getElementById('wc9').classList.toggle('checked', alt);
+  // Recalculate properly
+  total = 0;
+  for (var j = 0; j < 9; j++) {
+    if (document.getElementById('w'+j).checked) total += (j === 9 ? -2 : 1);
+  }
+
+  var num   = document.getElementById('w-num');
+  var risk  = document.getElementById('w-risk');
+  var box   = document.getElementById('w-box');
+  var lbl   = document.getElementById('w-lbl');
+  var steps = document.getElementById('w-steps');
+
+  num.textContent = total;
+
+  // Update tiers
+  document.getElementById('tier-low').classList.toggle('active', total <= 1);
+  document.getElementById('tier-mod').classList.toggle('active', total === 2);
+  document.getElementById('tier-high').classList.toggle('active', total >= 3);
+
+  if (total <= 1) {
+    num.className='score-num'; risk.className='score-risk'; box.className='action-box'; lbl.className='action-lbl';
+    risk.textContent = 'Low Probability (Score: '+total+') — DVT unlikely';
+    steps.innerHTML = '<li>DVT is unlikely but not impossible — clinical judgment applies</li><li>Consider D-dimer if clinical concern persists</li><li>Continue monitoring for symptom progression</li><li>Document assessment and rationale</li>';
+  } else if (total === 2) {
+    num.className='score-num mod'; risk.className='score-risk mod'; box.className='action-box mod'; lbl.className='action-lbl mod';
+    risk.textContent = 'Moderate Probability (Score: 2) — Further workup warranted';
+    steps.innerHTML = '<li>Notify provider with Wells Score of 2</li><li>D-dimer ordered — negative result makes DVT unlikely</li><li>If D-dimer positive: duplex ultrasound required</li><li>Elevate limb, monitor for worsening</li><li>Document Wells criteria met and provider notification</li>';
+  } else {
+    num.className='score-num high'; risk.className='score-risk high'; box.className='action-box high'; lbl.className='action-lbl high';
+    risk.textContent = 'High Probability (Score: '+total+') — DVT likely, act now';
+    steps.innerHTML = '<li><strong>Notify provider immediately</strong> — Wells Score '+total+', DVT likely</li><li>Duplex ultrasound urgently — do not wait for D-dimer</li><li>Anticoagulation discussion with provider</li><li>Assess for PE symptoms: chest pain, dyspnea, tachycardia, hemoptysis</li><li>Bed rest until imaging — limit weight bearing on affected leg</li><li>Document all findings, time of notification, and orders received</li>';
+  }
+  try { parent.postMessage({ action: 'pivotComplete', module: 'M02_Wells', score: total }, '*'); } catch(e) {}
+}
+
+function resetWells() {
+  for (var i = 0; i < 10; i++) {
+    if (document.getElementById('w'+i)) {
+      document.getElementById('w'+i).checked = false;
+      document.getElementById('wc'+i).classList.remove('checked');
+    }
+  }
+  calcWells();
+}
+
+// Fix: recalculate properly handling the -2 item
+function calcWells() {
+  var total = 0;
+  for (var i = 0; i < 10; i++) {
+    var el = document.getElementById('w'+i);
+    if (!el) continue;
+    var checked = el.checked;
+    if (document.getElementById('wc'+i)) document.getElementById('wc'+i).classList.toggle('checked', checked);
+    if (checked) total += (i === 9 ? -2 : 1);
+  }
+
+  var num   = document.getElementById('w-num');
+  var risk  = document.getElementById('w-risk');
+  var box   = document.getElementById('w-box');
+  var lbl   = document.getElementById('w-lbl');
+  var steps = document.getElementById('w-steps');
+
+  num.textContent = total;
+  document.getElementById('tier-low').classList.toggle('active', total <= 1);
+  document.getElementById('tier-mod').classList.toggle('active', total === 2);
+  document.getElementById('tier-high').classList.toggle('active', total >= 3);
+
+  if (total <= 1) {
+    num.className='score-num'; risk.className='score-risk'; box.className='action-box'; lbl.className='action-lbl';
+    risk.textContent = 'Low Probability (Score: '+total+') — DVT unlikely';
+    steps.innerHTML = '<li>DVT is unlikely but not impossible — clinical judgment applies</li><li>Consider D-dimer if clinical concern persists</li><li>Continue monitoring for symptom progression</li><li>Document assessment and rationale</li>';
+  } else if (total === 2) {
+    num.className='score-num mod'; risk.className='score-risk mod'; box.className='action-box mod'; lbl.className='action-lbl mod';
+    risk.textContent = 'Moderate Probability (Score: 2) — Further workup warranted';
+    steps.innerHTML = '<li>Notify provider with Wells Score of 2</li><li>D-dimer ordered — negative result makes DVT unlikely</li><li>If D-dimer positive: duplex ultrasound required</li><li>Elevate limb, monitor for worsening</li><li>Document Wells criteria met and provider notification</li>';
+  } else {
+    num.className='score-num high'; risk.className='score-risk high'; box.className='action-box high'; lbl.className='action-lbl high';
+    risk.textContent = 'High Probability (Score: '+total+') — DVT likely, act now';
+    steps.innerHTML = '<li><strong>Notify provider immediately</strong> — Wells Score '+total+', DVT likely</li><li>Duplex ultrasound urgently — do not wait for D-dimer</li><li>Anticoagulation discussion with provider</li><li>Assess for PE symptoms: chest pain, dyspnea, tachycardia</li><li>Limit weight bearing on affected leg until imaging</li><li>Document all findings, notification time, and orders received</li>';
+  }
+  try { parent.postMessage({ action: 'pivotComplete', module: 'M02_Wells', score: total }, '*'); } catch(e) {}
+}
+
+// ── DVT ANATOMY ───────────────────────────────────────────────────────────────
+var vessels = {
+  cfe: {
+    name: 'Common Femoral Vein (CFV)',
+    badge: 'PROXIMAL — HIGH RISK',
+    badgeColor: '#C0392B',
+    body: 'The common femoral vein is the main drainage vessel of the entire lower limb, located in the femoral triangle just below the inguinal ligament. DVT at this level is considered proximal and carries a 40–50% risk of pulmonary embolism if untreated. Thrombus here is palpable as tenderness in the upper inner thigh.',
+    flag: '⚠ Proximal DVT — high PE risk. Duplex ultrasound and anticoagulation discussion required urgently.',
+    flagType: 'danger'
+  },
+  fem: {
+    name: 'Femoral Vein (FV)',
+    badge: 'PROXIMAL — HIGH RISK',
+    badgeColor: '#C0392B',
+    body: 'The femoral vein runs the length of the thigh alongside the femoral artery. It is the most common site for DVT in post-surgical patients. Tenderness on palpation along the medial thigh is the classic finding. Often called the "superficial femoral vein" — a misnomer, as it is a deep vein with high embolic risk.',
+    flag: '⚠ Most common post-op DVT site. Tenderness on medial thigh palpation. Requires immediate provider notification.',
+    flagType: 'danger'
+  },
+  pop: {
+    name: 'Popliteal Vein',
+    badge: 'PROXIMAL-DISTAL JUNCTION',
+    badgeColor: '#E67E22',
+    body: 'The popliteal vein sits behind the knee in the popliteal fossa. DVT here is at the proximal-distal boundary — it carries higher PE risk than purely distal clots. Calf pain that radiates behind the knee, or pain with knee flexion, may indicate popliteal involvement. This is why the calf squeeze test (Homan\'s sign) is unreliable — it can be positive anywhere from calf to popliteal.',
+    flag: '△ At the proximal-distal boundary. Treat as proximal DVT — duplex ultrasound required.',
+    flagType: 'warn'
+  },
+  ptib: {
+    name: 'Posterior Tibial Vein',
+    badge: 'DISTAL — MONITOR CLOSELY',
+    badgeColor: '#E67E22',
+    body: 'The posterior tibial vein runs along the back of the lower leg. Distal DVT here carries lower immediate PE risk (~5%) but can propagate proximally if untreated. In post-surgical patients — especially post-TKR and post-hip — serial ultrasound is often recommended to monitor for proximal extension.',
+    flag: '△ Distal DVT — lower PE risk but monitor for proximal propagation. Discuss anticoagulation with provider.',
+    flagType: 'warn'
+  },
+  atib: {
+    name: 'Anterior Tibial Vein',
+    badge: 'DISTAL — LOWER RISK',
+    badgeColor: '#5A7A82',
+    body: 'The anterior tibial vein runs along the front of the lower leg. Isolated anterior tibial DVT is the least common and carries the lowest embolic risk of the calf veins. However, it often occurs alongside posterior tibial or peroneal involvement. Tenderness along the anterior shin with unilateral swelling warrants ultrasound.',
+    flag: 'Distal location — lower PE risk. Still requires provider notification and monitoring.',
+    flagType: 'safe'
+  },
+  saph: {
+    name: 'Great Saphenous Vein (GSV)',
+    badge: 'SUPERFICIAL — RARELY EMBOLIC',
+    badgeColor: '#1A6B3C',
+    body: 'The great saphenous vein is the longest vein in the body, running superficially from the foot to the groin. Superficial thrombophlebitis here causes visible redness, warmth, and a palpable cord along the vein. Rarely causes pulmonary embolism on its own — but if thrombus extends to the saphenofemoral junction near the groin, it can propagate into the deep system.',
+    flag: 'Superficial vein — low PE risk unless extending to saphenofemoral junction. Monitor and notify provider.',
+    flagType: 'safe'
+  }
+};
+
+function showVessel(id) {
+  // Clear all active states
+  document.querySelectorAll('.hotspot').forEach(function(h){ h.classList.remove('active'); });
+  document.querySelectorAll('.vessel-item').forEach(function(v){ v.classList.remove('active'); });
+
+  // Set active
+  document.getElementById('hs-'+id).classList.add('active');
+  document.getElementById('vi-'+id).classList.add('active');
+
+  var v = vessels[id];
+  var popup = document.getElementById('anatomy-popup');
+  var badge = document.getElementById('pp-badge');
+  var title = document.getElementById('pp-title');
+  var body  = document.getElementById('pp-body');
+  var flag  = document.getElementById('pp-flag');
+
+  badge.textContent = v.badge;
+  badge.style.background = v.badgeColor;
+  title.textContent = v.name;
+  body.textContent = v.body;
+  flag.textContent = v.flag;
+  flag.className = 'popup-flag' + (v.flagType === 'safe' ? ' safe' : '');
+
+  popup.classList.add('show');
+  popup.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

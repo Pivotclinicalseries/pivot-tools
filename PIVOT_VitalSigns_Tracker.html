@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT — Vital Signs Trend Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;--fog:#E8F5F7;--white:#FFFFFF;--muted:#5A7A82;--amber:#E67E22;--red:#C0392B;--green:#1E8449;--card:#071E26;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;}
+.header{background:var(--ink);padding:20px 28px 14px;border-bottom:3px solid var(--mint);}
+.mod-logo{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--mint);text-transform:uppercase;margin-bottom:5px;}
+.mod-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.mod-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--ink);background:var(--mint);padding:3px 10px;font-weight:700;text-transform:uppercase;margin-top:3px;display:inline-block;}
+.scenario-bar{display:flex;background:var(--deep);border-bottom:1px solid rgba(255,255,255,0.06);overflow-x:auto;}
+.sc-btn{flex-shrink:0;padding:13px 16px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.sc-btn.active{color:var(--mint);border-bottom-color:var(--mint);}
+.layout{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 115px);}
+.entry-col{padding:22px;border-right:1px solid rgba(255,255,255,0.05);overflow-y:auto;}
+.chart-col{padding:22px;background:var(--card);}
+.col-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.scenario-info{background:rgba(2,128,144,0.08);border-left:3px solid var(--teal);padding:12px 14px;margin-bottom:18px;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;}
+.scenario-info strong{color:var(--fog);}
+.time-point{background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,255,255,0.1);padding:14px;margin-bottom:10px;transition:border-color 0.2s;}
+.time-point.filled{border-left-color:var(--teal);}
+.tp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.tp-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;}
+.tp-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.vital-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.vi-wrap{display:flex;flex-direction:column;gap:3px;}
+.vi-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.vi-input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--white);padding:7px 9px;font-family:'DM Mono',monospace;font-size:13px;width:100%;transition:border-color 0.2s;}
+.vi-input:focus{outline:none;border-color:var(--teal);}
+.vi-input::placeholder{color:rgba(255,255,255,0.2);font-size:11px;}
+.analyze-btn{width:100%;padding:13px;background:var(--teal);color:var(--white);border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:background 0.2s;}
+.analyze-btn:hover{background:var(--mint);color:var(--ink);}
+.reset-btn{width:100%;padding:9px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--muted);color:var(--fog);}
+/* Chart area */
+.chart-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.chart-tab{padding:9px 14px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:all 0.2s;}
+.chart-tab.active{color:var(--mint);border-bottom-color:var(--mint);}
+.chart-canvas-wrap{position:relative;background:rgba(0,0,0,0.25);padding:16px;margin-bottom:14px;}
+canvas{display:block;width:100%;height:200px;}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+/* Alert panel */
+.alert-panel{margin-top:4px;}
+.alert-card{padding:12px 14px;border-left:4px solid;margin-bottom:8px;}
+.alert-card.danger{border-color:var(--red);background:rgba(192,57,43,0.08);}
+.alert-card.warn{border-color:var(--amber);background:rgba(230,126,34,0.06);}
+.alert-card.ok{border-color:var(--green);background:rgba(30,132,73,0.06);}
+.alert-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.alert-label.danger{color:var(--red);}
+.alert-label.warn{color:var(--amber);}
+.alert-label.ok{color:var(--green);}
+.alert-text{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6;}
+.trend-arrow{font-size:16px;margin-right:4px;}
+.placeholder{text-align:center;padding:60px 20px;color:var(--muted);font-size:13px;line-height:1.9;}
+.qsofa-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;text-transform:uppercase;margin-top:8px;}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="mod-logo">PIVOT Clinical Series — P-03 · P-06</div>
+  <div class="mod-title">Vital Signs Trend Tracker</div>
+  <div class="mod-badge">Recognize Deterioration Over Time</div>
+</div>
+<div class="scenario-bar">
+  <button class="sc-btn active" onclick="loadScenario(0,this)">P-03 · AMS / Sepsis</button>
+  <button class="sc-btn" onclick="loadScenario(1,this)">P-06 · Cardiac</button>
+  <button class="sc-btn" onclick="loadScenario(2,this)">P-05 · Respiratory</button>
+  <button class="sc-btn" onclick="loadScenario(3,this)">Free Entry</button>
+</div>
+<div class="layout">
+  <div class="entry-col">
+    <div class="col-lbl">Enter Vital Signs Over Time</div>
+    <div class="scenario-info" id="scInfo"></div>
+    <div id="timePoints"></div>
+    <button class="analyze-btn" onclick="analyze()">Analyze Trend →</button>
+    <button class="reset-btn" onclick="resetEntries()">Reset Entries</button>
+  </div>
+  <div class="chart-col">
+    <div class="col-lbl">Trend Analysis</div>
+    <div class="chart-tabs">
+      <button class="chart-tab active" onclick="showChart('bp',this)">BP</button>
+      <button class="chart-tab" onclick="showChart('hr',this)">HR</button>
+      <button class="chart-tab" onclick="showChart('rr',this)">RR</button>
+      <button class="chart-tab" onclick="showChart('sat',this)">O₂ Sat</button>
+      <button class="chart-tab" onclick="showChart('temp',this)">Temp</button>
+    </div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--mint);"></div>Actual Value</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--muted);border:2px dashed var(--muted);background:none;width:20px;height:0;border-radius:0;border-top:2px dashed var(--muted);"></div>Baseline</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red);"></div>Critical Threshold</div>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="mainChart"></canvas>
+    </div>
+    <div class="alert-panel" id="alertPanel">
+      <div class="placeholder">Enter vital signs on the left and press<br><strong style="color:var(--mint);">Analyze Trend</strong> to see the clinical picture unfold.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCENARIOS=[
+  {
+    name:"Mrs. Vasquez — AMS / Sepsis Watch",
+    info:"<strong>Mrs. Vasquez, 84, mild dementia.</strong> Her aide reported she's 'acting strange' at 7:30 PM. Enter the vitals below across 3 time points to watch the clinical picture develop. The trending tool will flag qSOFA criteria and sepsis risk as the data accumulates.",
+    baseline:{sbp:128,dbp:78,hr:74,rr:16,sat:97,temp:98.2},
+    timeLabels:["7:30 PM — Initial","8:30 PM — 1hr Later","10:00 PM — 2.5hrs Later"],
+    prefill:[[102,64,108,22,93,101.4],[96,58,114,24,91,101.9],[88,52,118,26,88,102.4]]
+  },
+  {
+    name:"Mrs. Delgado — Cardiac Watch",
+    info:"<strong>Mrs. Delgado, 78, diabetic.</strong> Vague malaise at breakfast. Track vitals over three assessment periods to see the cardiac deterioration pattern emerge.",
+    baseline:{sbp:128,dbp:78,hr:72,rr:16,sat:96,temp:98.4},
+    timeLabels:["7:00 AM — Breakfast","9:30 AM — Mid-morning","12:00 PM — Noon"],
+    prefill:[[156,94,108,20,91,98.6],[162,98,114,22,89,98.8],[158,90,118,24,87,99.0]]
+  },
+  {
+    name:"Mrs. Torres — CHF / Respiratory",
+    info:"<strong>Mrs. Torres, 76, CHF + COPD.</strong> Morning assessment shows worsening respiratory status. Enter vitals at three points to see the fluid overload trend.",
+    baseline:{sbp:134,dbp:82,hr:78,rr:16,sat:94,temp:98.2},
+    timeLabels:["6:00 AM — Morning","10:00 AM — Mid-morning","2:00 PM — Afternoon"],
+    prefill:[[158,96,92,22,91,98.4],[162,100,96,24,89,98.6],[168,104,100,26,86,98.8]]
+  },
+  {
+    name:"Free Entry — Your Resident",
+    info:"Enter your own baseline and vitals. Use this tool at the bedside or in post-conference to visualize a real clinical case and identify the trend pattern.",
+    baseline:{sbp:130,dbp:80,hr:78,rr:16,sat:96,temp:98.6},
+    timeLabels:["Time Point 1","Time Point 2","Time Point 3"],
+    prefill:[[null,null,null,null,null,null],[null,null,null,null,null,null],[null,null,null,null,null,null]]
+  }
+];
+
+let currentSc=0;
+let currentChart='bp';
+let chartData=null;
+
+const VITAL_CONFIGS={
+  bp:{label:"Systolic BP",unit:"mmHg",dangerLow:90,warnLow:100,warnHigh:160,dangerHigh:180,color:"#E74C3C",thresholdLow:100},
+  hr:{label:"Heart Rate",unit:"bpm",dangerLow:50,warnLow:60,warnHigh:100,dangerHigh:120,color:"#E67E22",thresholdHigh:100},
+  rr:{label:"Respiratory Rate",unit:"br/min",dangerLow:8,warnLow:12,warnHigh:20,dangerHigh:30,color:"#3498DB",thresholdHigh:22},
+  sat:{label:"O₂ Saturation",unit:"%",dangerLow:88,warnLow:92,warnHigh:100,dangerHigh:100,color:"#02C39A",thresholdLow:92},
+  temp:{label:"Temperature",unit:"°F",dangerLow:96,warnLow:97,warnHigh:100.4,dangerHigh:103,color:"#9B59B6",thresholdHigh:100.4}
+};
+
+function loadScenario(idx,btn){
+  currentSc=idx;
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEntries();
+  document.getElementById('alertPanel').innerHTML='<div class="placeholder">Enter vital signs on the left and press<br><strong style="color:var(--mint);">Analyze Trend</strong> to see the clinical picture unfold.</div>';
+  chartData=null;
+  drawChart([],[]);
+}
+
+function renderEntries(){
+  const sc=SCENARIOS[currentSc];
+  document.getElementById('scInfo').innerHTML=sc.info;
+  const bl=sc.baseline;
+  // Baseline row
+  let html=`<div style="background:rgba(255,255,255,0.03);border-left:3px solid var(--muted);padding:12px 14px;margin-bottom:14px;">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">RESIDENT BASELINE</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div class="vi-wrap"><div class="vi-label">SBP</div><input class="vi-input" id="bl_sbp" value="${bl.sbp}" placeholder="120"></div>
+      <div class="vi-wrap"><div class="vi-label">DBP</div><input class="vi-input" id="bl_dbp" value="${bl.dbp}" placeholder="80"></div>
+      <div class="vi-wrap"><div class="vi-label">HR</div><input class="vi-input" id="bl_hr" value="${bl.hr}" placeholder="72"></div>
+      <div class="vi-wrap"><div class="vi-label">RR</div><input class="vi-input" id="bl_rr" value="${bl.rr}" placeholder="16"></div>
+      <div class="vi-wrap"><div class="vi-label">O₂ Sat %</div><input class="vi-input" id="bl_sat" value="${bl.sat}" placeholder="96"></div>
+      <div class="vi-wrap"><div class="vi-label">Temp °F</div><input class="vi-input" id="bl_temp" value="${bl.temp}" placeholder="98.6"></div>
+    </div>
+  </div>`;
+  sc.timeLabels.forEach((lbl,i)=>{
+    const pre=sc.prefill[i];
+    html+=`<div class="time-point ${pre[0]?'filled':''}" id="tp${i}">
+      <div class="tp-header"><div class="tp-label">Assessment ${i+1}</div><div class="tp-time">${lbl}</div></div>
+      <div class="vital-inputs">
+        <div class="vi-wrap"><div class="vi-label">SBP</div><input class="vi-input" id="t${i}_sbp" value="${pre[0]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+        <div class="vi-wrap"><div class="vi-label">DBP</div><input class="vi-input" id="t${i}_dbp" value="${pre[1]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+        <div class="vi-wrap"><div class="vi-label">HR</div><input class="vi-input" id="t${i}_hr" value="${pre[2]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+        <div class="vi-wrap"><div class="vi-label">RR</div><input class="vi-input" id="t${i}_rr" value="${pre[3]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+        <div class="vi-wrap"><div class="vi-label">O₂ Sat %</div><input class="vi-input" id="t${i}_sat" value="${pre[4]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+        <div class="vi-wrap"><div class="vi-label">Temp °F</div><input class="vi-input" id="t${i}_temp" value="${pre[5]||''}" placeholder="—" oninput="markFilled(${i})"></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('timePoints').innerHTML=html;
+}
+
+function markFilled(i){
+  const sbp=document.getElementById(`t${i}_sbp`)?.value;
+  document.getElementById(`tp${i}`)?.classList.toggle('filled',!!sbp);
+}
+
+function getVal(id){const v=document.getElementById(id)?.value;return v?parseFloat(v):null;}
+
+function analyze(){
+  const sc=SCENARIOS[currentSc];
+  const baseline={sbp:getVal('bl_sbp'),dbp:getVal('bl_dbp'),hr:getVal('bl_hr'),rr:getVal('bl_rr'),sat:getVal('bl_sat'),temp:getVal('bl_temp')};
+  const points=sc.timeLabels.map((_,i)=>({
+    label:sc.timeLabels[i],
+    sbp:getVal(`t${i}_sbp`),dbp:getVal(`t${i}_dbp`),hr:getVal(`t${i}_hr`),
+    rr:getVal(`t${i}_rr`),sat:getVal(`t${i}_sat`),temp:getVal(`t${i}_temp`)
+  })).filter(p=>p.sbp||p.hr||p.rr||p.sat);
+
+  if(!points.length){alert('Please enter at least one set of vital signs.');return;}
+  chartData={baseline,points,labels:points.map(p=>p.label)};
+  drawChart(chartData.labels,points.map(p=>p[currentChart==='bp'?'sbp':currentChart]));
+  generateAlerts(baseline,points,sc);
+}
+
+function showChart(key,btn){
+  currentChart=key;
+  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(chartData){
+    const vals=chartData.points.map(p=>key==='bp'?p.sbp:p[key]);
+    drawChart(chartData.labels,vals);
+  }
+}
+
+function drawChart(labels,values){
+  const canvas=document.getElementById('mainChart');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth||600;const H=200;
+  canvas.width=W;canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+
+  if(!values.length){ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(0,0,W,H);return;}
+
+  const vc=VITAL_CONFIGS[currentChart==='bp'?'bp':currentChart]||VITAL_CONFIGS.bp;
+  const pad={top:20,right:20,bottom:40,left:50};
+  const cw=W-pad.left-pad.right,ch=H-pad.top-pad.bottom;
+
+  const allVals=[...values.filter(v=>v!==null)];
+  let minV=Math.min(...allVals)*0.95;let maxV=Math.max(...allVals)*1.05;
+  if(chartData?.baseline){const bl=chartData.baseline[currentChart==='bp'?'sbp':currentChart];if(bl){minV=Math.min(minV,bl*0.95);maxV=Math.max(maxV,bl*1.05);}}
+  const range=maxV-minV||10;
+
+  const toY=v=>pad.top+ch-(((v-minV)/range)*ch);
+  const toX=i=>pad.left+(i/(Math.max(values.length-1,1)))*cw;
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad.top+(ch/4)*i;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+cw,y);ctx.stroke();}
+
+  // Y-axis labels
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){const v=maxV-((maxV-minV)/4)*i;const y=pad.top+(ch/4)*i;ctx.fillText(v.toFixed(currentChart==='temp'?1:0),pad.left-6,y+4);}
+
+  // Baseline line
+  if(chartData?.baseline){
+    const bl=chartData.baseline[currentChart==='bp'?'sbp':currentChart];
+    if(bl){
+      const by=toY(bl);
+      ctx.strokeStyle='rgba(90,122,130,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+      ctx.beginPath();ctx.moveTo(pad.left,by);ctx.lineTo(pad.left+cw,by);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='rgba(90,122,130,0.7)';ctx.textAlign='left';ctx.font='9px DM Mono,monospace';
+      ctx.fillText('BL:'+bl,pad.left+4,by-4);
+    }
+  }
+
+  // Threshold lines
+  const thresh=currentChart==='bp'?vc.thresholdLow:currentChart==='hr'?vc.thresholdHigh:currentChart==='rr'?22:currentChart==='sat'?92:vc.thresholdHigh;
+  if(thresh){
+    const ty=toY(thresh);
+    ctx.strokeStyle='rgba(192,57,43,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(pad.left,ty);ctx.lineTo(pad.left+cw,ty);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Data line
+  const validPts=values.map((v,i)=>({v,i})).filter(p=>p.v!==null);
+  if(validPts.length>1){
+    ctx.beginPath();ctx.strokeStyle=vc.color;ctx.lineWidth=2.5;
+    validPts.forEach((p,idx)=>{if(idx===0)ctx.moveTo(toX(p.i),toY(p.v));else ctx.lineTo(toX(p.i),toY(p.v));});
+    ctx.stroke();
+  }
+
+  // Dots + labels
+  validPts.forEach(p=>{
+    const x=toX(p.i),y=toY(p.v);
+    const isDanger=currentChart==='sat'?p.v<=92:currentChart==='bp'?p.v<=100:currentChart==='rr'?p.v>=22:p.v>=vc.warnHigh;
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=isDanger?'var(--red)':vc.color;ctx.fill();
+    ctx.fillStyle=isDanger?'#FF9999':'rgba(255,255,255,0.7)';ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(p.v+(currentChart==='sat'?'%':''),x,y-10);
+  });
+
+  // X-axis labels
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';
+  labels.forEach((lbl,i)=>{
+    const shortLbl=lbl.split('—')[0].trim();
+    ctx.fillText(shortLbl,toX(i),H-8);
+  });
+}
+
+function generateAlerts(baseline,points,sc){
+  const panel=document.getElementById('alertPanel');
+  const alerts=[];
+  const last=points[points.length-1];
+  const first=points[0];
+
+  // qSOFA calculation on last point
+  let qsofa=0;const qsofa_details=[];
+  if(last.rr&&last.rr>=22){qsofa++;qsofa_details.push(`RR ${last.rr} ≥22`);}
+  if(last.sbp&&last.sbp<=100){qsofa++;qsofa_details.push(`SBP ${last.sbp} ≤100`);}
+  const qsofaAMS=document.getElementById('scInfo')?.textContent.includes('AMS')||currentSc===0;
+
+  // Trend analysis
+  const trends=[];
+  if(points.length>1){
+    const sbpDrop=first.sbp&&last.sbp?first.sbp-last.sbp:0;
+    const hrRise=first.hr&&last.hr?last.hr-first.hr:0;
+    const satDrop=first.sat&&last.sat?first.sat-last.sat:0;
+    const rrRise=first.rr&&last.rr?last.rr-first.rr:0;
+    if(sbpDrop>15)alerts.push({type:'danger',label:'↓ BLOOD PRESSURE DROPPING',text:`Systolic BP dropped ${sbpDrop} mmHg over the assessment period (${first.sbp} → ${last.sbp}). A sustained decline in BP is a critical hemodynamic warning. Combined with tachycardia, this suggests impaired perfusion. Provider notification required.`});
+    if(hrRise>20)alerts.push({type:'danger',label:'↑ HEART RATE ESCALATING',text:`HR increased ${hrRise} bpm (${first.hr} → ${last.hr}). Sustained tachycardia escalation = compensatory response to inadequate perfusion, infection, pain, or fluid loss. This trend, not a single reading, is the clinical warning.`});
+    if(satDrop>4)alerts.push({type:'danger',label:'↓ OXYGEN SATURATION DECLINING',text:`O₂ sat dropped ${satDrop}% (${first.sat}% → ${last.sat}%). A declining sat trend is more clinically significant than a single low reading. If sat is now ≤92%, supplemental oxygen and provider notification are indicated.`});
+    if(rrRise>4)alerts.push({type:'warn',label:'↑ RESPIRATORY RATE INCREASING',text:`RR increased ${rrRise} breaths/min (${first.rr} → ${last.rr}). Rising respiratory rate = increased respiratory effort — the body working harder to maintain oxygenation. This often precedes saturation drops.`});
+  }
+
+  // Absolute critical values
+  if(last.sbp&&last.sbp<=90)alerts.push({type:'danger',label:'CRITICAL: HYPOTENSION',text:`SBP ${last.sbp} is severely hypotensive. Systolic ≤90 indicates hemodynamic compromise. Provider notification now — this may require IV fluids, transfer, or emergent evaluation.`});
+  if(last.hr&&last.hr>=120)alerts.push({type:'danger',label:'CRITICAL: TACHYCARDIA ≥120',text:`HR ${last.hr} exceeds critical threshold. Sustained tachycardia ≥120 in an elderly SNF resident requires immediate assessment and provider notification.`});
+  if(last.rr&&last.rr>=24)alerts.push({type:'danger',label:'CRITICAL: RESPIRATORY DISTRESS',text:`RR ${last.rr} — significant tachypnea. At this rate, respiratory fatigue can develop. Assess breath sounds, work of breathing, accessory muscle use. Supplemental oxygen and provider call indicated.`});
+  if(last.sat&&last.sat<=88)alerts.push({type:'danger',label:'CRITICAL: OXYGEN SATURATION ≤88%',text:`Sat ${last.sat}% is critically low. Supplemental oxygen per orders/protocol, immediate provider notification, and prepare for possible transfer.`});
+  if(last.temp&&last.temp>=101.5)alerts.push({type:'warn',label:'FEVER — INFECTION SOURCE WORKUP',text:`Temp ${last.temp}°F. Fever in an elderly resident combined with other vital sign abnormalities = infection/sepsis workup. Assess for UTI source (voiding history), respiratory source (breath sounds), skin/wounds. Provider notification.`});
+  if(last.temp&&last.temp<=96.8)alerts.push({type:'danger',label:'HYPOTHERMIA — SEPSIS SIGN',text:`Temp ${last.temp}°F. Hypothermia in elderly residents is a sepsis equivalent. Elderly patients with sepsis may have hypothermia rather than fever. This is critical.`});
+
+  // Baseline comparison
+  if(baseline.sbp&&last.sbp&&baseline.sbp-last.sbp>=20)alerts.push({type:'warn',label:'BP DROP FROM RESIDENT BASELINE',text:`BP dropped ${baseline.sbp-last.sbp} mmHg from this resident's baseline (BL: ${baseline.sbp} → Now: ${last.sbp}). Even if within normal range, a significant drop from personal baseline is clinically meaningful.`});
+  if(baseline.sat&&last.sat&&baseline.sat-last.sat>=4)alerts.push({type:'warn',label:'SAT DROP FROM RESIDENT BASELINE',text:`O₂ sat dropped ${baseline.sat-last.sat}% from this resident's documented baseline. Baseline-referenced assessment is more sensitive than population-based thresholds in elderly residents with chronic conditions.`});
+
+  // qSOFA summary
+  let qsofaHtml='';
+  if(currentSc===0||currentSc===3){
+    const qc=qsofa>=2?'danger':qsofa===1?'warn':'ok';
+    const ql=qsofa>=2?'HIGH RISK — qSOFA ≥2':qsofa===1?'INTERMEDIATE — qSOFA 1':'LOW RISK — qSOFA 0';
+    qsofaHtml=`<div class="alert-card ${qc}"><div class="alert-label ${qc}">qSOFA SCORE: ${qsofa}/3 — ${ql}</div><div class="alert-text">Criteria met at last assessment: ${qsofa_details.length?qsofa_details.join(', '):'None'}${qsofa>=2?'<br><br><strong style="color:var(--red);">qSOFA ≥2 = Sepsis evaluation now. Call provider with SBAR. Prepare for possible transfer.</strong>':qsofa===1?'<br>Monitor closely. If fever or other abnormals are present, consider provider notification.':''}</div></div>`;
+  }
+
+  if(!alerts.length&&!qsofa_details.length){
+    panel.innerHTML=`<div class="alert-card ok"><div class="alert-label ok">✓ Vital Signs Within Acceptable Range</div><div class="alert-text">No critical trends identified at this time. Continue monitoring per facility protocol. Remember: a single normal reading is not reassurance — the trend over time is the clinical story.</div></div>`;
+  } else {
+    panel.innerHTML=qsofaHtml+alerts.map(a=>`<div class="alert-card ${a.type}"><div class="alert-label ${a.type}">${a.type==='danger'?'⚠ ':'△ '}${a.label}</div><div class="alert-text">${a.text}</div></div>`).join('');
+  }
+
+  // Teaching moment
+  if(points.length>1){
+    panel.innerHTML+=`<div style="background:rgba(2,128,144,0.08);border-left:3px solid var(--teal);padding:14px 16px;margin-top:10px;"><div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:6px;">PIVOT TEACHING MOMENT</div><div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;">No single vital sign tells the story. The trend across time — BP gradually falling, HR gradually climbing, sat slowly dropping — is often visible hours before the resident becomes acutely unstable. <strong style="color:var(--fog);">The nurse who reads the trend prevents the transfer. The nurse who waits for a crisis manages one.</strong></div></div>`;
+  }
+}
+
+function resetEntries(){
+  const sc=SCENARIOS[currentSc];
+  sc.prefill=sc.prefill.map(()=>[null,null,null,null,null,null]);
+  renderEntries();
+  document.getElementById('alertPanel').innerHTML='<div class="placeholder">Enter vital signs on the left and press<br><strong style="color:var(--mint);">Analyze Trend</strong> to see the clinical picture unfold.</div>';
+  chartData=null;drawChart([],[]);
+}
+
+loadScenario(0,document.querySelector('.sc-btn'));
+window.addEventListener('resize',()=>{if(chartData){const vals=chartData.points.map(p=>currentChart==='bp'?p.sbp:p[currentChart]);drawChart(chartData.labels,vals);}});
+</script>
+</body>
+</html>

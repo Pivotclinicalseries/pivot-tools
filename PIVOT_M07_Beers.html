@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT M07 — Beers Criteria MAR Checker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#05202A;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.header{background:#05202A;border-bottom:2px solid #1A6B3C;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.hbadge{background:#1A6B3C;color:#fff;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:10px;letter-spacing:1px}
+.htitle{font-size:14px;font-weight:bold}
+.hsub{font-size:11px;color:#5A7A82;margin-top:1px}
+.hright{margin-left:auto;display:flex;align-items:center;gap:16px}
+.flag-count{text-align:right}
+.flag-num{font-size:26px;font-weight:bold;color:#C0392B;line-height:1;font-family:Georgia,serif}
+.flag-lbl{font-size:9px;color:#5A7A82;letter-spacing:1px}
+
+.tabs{display:flex;background:#040f16;border-bottom:1px solid #1a3040;flex-shrink:0}
+.tab{padding:9px 20px;font-size:12px;font-weight:bold;cursor:pointer;color:#5A7A82;border-bottom:2px solid transparent;transition:all 0.15s;letter-spacing:0.5px}
+.tab.active{color:#1A6B3C;border-bottom-color:#1A6B3C}
+.tab:hover:not(.active){color:#B0C4C8}
+
+.body{flex:1;overflow:hidden;display:flex}
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex}
+
+/* ── TAB 1: MAR ── */
+.mar-layout{display:flex;flex:1;overflow:hidden;gap:0}
+.mar-list{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.mar-header{font-size:11px;font-weight:bold;color:#1A6B3C;letter-spacing:1px;padding:4px 0 8px;border-bottom:1px solid #1a3040;margin-bottom:4px}
+.mar-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;background:#0A1A22;border:1px solid #1a3040;cursor:pointer;transition:all 0.2s}
+.mar-row:hover{border-color:#1A6B3C}
+.mar-row.flagged{border-color:#C0392B;background:#150808}
+.mar-row.flagged-amber{border-color:#E67E22;background:#120a00}
+.mar-row.safe{border-color:#1E8449;opacity:0.7}
+.mar-check{width:20px;height:20px;border-radius:4px;border:2px solid #1a3040;background:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.15s}
+.mar-row.checked .mar-check{background:#1A6B3C;border-color:#1A6B3C}
+.mar-row.checked.flagged .mar-check{background:#C0392B;border-color:#C0392B}
+.mar-row.checked.flagged-amber .mar-check{background:#E67E22;border-color:#E67E22}
+.drug-name{font-size:12.5px;font-weight:bold;color:#fff;flex:1}
+.drug-dose{font-size:10px;color:#5A7A82;flex:0 0 auto}
+.drug-tag{font-size:9px;font-weight:bold;padding:2px 7px;border-radius:8px;flex-shrink:0;letter-spacing:0.5px;display:none}
+.mar-row.flagged .drug-tag,.mar-row.flagged-amber .drug-tag{display:block}
+.mar-row.flagged .drug-tag{background:#C0392B;color:#fff}
+.mar-row.flagged-amber .drug-tag{background:#E67E22;color:#fff}
+
+.mar-sidebar{width:280px;border-left:1px solid #1a3040;overflow-y:auto;padding:12px;background:#040f16;flex-shrink:0}
+.sidebar-title{font-size:11px;font-weight:bold;color:#1A6B3C;letter-spacing:1px;margin-bottom:10px}
+.drug-detail{display:none}
+.drug-detail.show{display:block}
+.det-name{font-size:13px;font-weight:bold;color:#fff;margin-bottom:4px}
+.det-badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:10px;margin-bottom:10px;letter-spacing:0.5px}
+.det-section{margin-bottom:10px}
+.det-lbl{font-size:9px;font-weight:bold;letter-spacing:1px;margin-bottom:4px}
+.det-text{font-size:11px;color:#B0C4C8;line-height:1.5}
+.det-action{background:#0A1A22;border-radius:6px;padding:8px 10px;border-left:3px solid #1A6B3C;margin-top:8px}
+.det-action-lbl{font-size:9px;font-weight:bold;color:#1A6B3C;letter-spacing:1px;margin-bottom:4px}
+.det-action-text{font-size:11px;color:#B0C4C8;line-height:1.5}
+.sidebar-empty{color:#2a4a5a;font-size:12px;text-align:center;padding:30px 10px;line-height:1.6}
+
+/* ── TAB 2: SUMMARY ── */
+.summary-panel{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.sum-patient{background:#0A1A22;border:1px solid #1A6B3C;border-radius:8px;padding:14px;margin-bottom:4px}
+.sum-name{font-size:14px;font-weight:bold;margin-bottom:8px}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sum-stat{background:#040f16;border-radius:6px;padding:10px;text-align:center}
+.sum-num{font-size:24px;font-weight:bold;font-family:Georgia,serif;line-height:1}
+.sum-slbl{font-size:10px;color:#5A7A82;margin-top:2px}
+.sum-section{background:#0A1A22;border-radius:8px;overflow:hidden}
+.sum-head{padding:10px 14px;font-size:11px;font-weight:bold;letter-spacing:1px}
+.sum-item{padding:9px 14px;border-top:1px solid #0d2030;display:flex;gap:10px;align-items:flex-start}
+.sum-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.sum-drug{font-size:12px;font-weight:bold;flex:0 0 180px}
+.sum-risk{font-size:11px;color:#B0C4C8;flex:1;line-height:1.4}
+.sum-empty{color:#2a4a5a;font-size:12px;padding:16px 14px}
+.sum-action-box{background:#0A1A22;border:1px solid #1A6B3C;border-radius:8px;padding:14px}
+.sum-action-title{font-size:12px;font-weight:bold;color:#1A6B3C;margin-bottom:10px;letter-spacing:0.5px}
+.action-row{display:flex;gap:8px;font-size:11px;color:#B0C4C8;margin-bottom:7px;align-items:flex-start;line-height:1.4}
+.adot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+
+.footer{background:#040f16;border-top:1px solid #1a2030;padding:5px 20px;font-size:9px;color:#1a3040;flex-shrink:0}
+.review-btn{background:#1A6B3C;color:#fff;border:none;border-radius:6px;padding:7px 18px;font-size:12px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;flex-shrink:0}
+.review-btn:hover{background:#145C30}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+      <span class="hbadge">BEERS CRITERIA</span>
+      <span class="htitle">MAR Safety Checker</span>
+    </div>
+    <div class="hsub">PIVOT Module 07 — Polypharmacy &amp; Medication Safety</div>
+  </div>
+  <div class="hright">
+    <div class="flag-count">
+      <div class="flag-num" id="flag-count">0</div>
+      <div class="flag-lbl">FLAGS IDENTIFIED</div>
+    </div>
+    <button class="review-btn" onclick="switchTab('summary')">View Summary →</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-mar" onclick="switchTab('mar')">📋 Mrs. Delgado's MAR (14 medications)</div>
+  <div class="tab" id="tab-summary" onclick="switchTab('summary')">⚠ Risk Summary & Nurse Actions</div>
+</div>
+
+<div class="body">
+
+  <!-- TAB 1: MAR -->
+  <div class="panel active" id="panel-mar">
+    <div class="mar-layout">
+      <div class="mar-list">
+        <div class="mar-header">TAP EACH MEDICATION TO REVIEW — IDENTIFY WHICH CARRY BEERS CRITERIA FLAGS</div>
+        <div id="mar-items"></div>
+      </div>
+      <div class="mar-sidebar">
+        <div class="sidebar-title">MEDICATION DETAIL</div>
+        <div class="sidebar-empty" id="sidebar-empty">Tap any medication on the left to view its risk profile and nurse action.</div>
+        <div class="drug-detail" id="drug-detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: SUMMARY -->
+  <div class="panel" id="panel-summary">
+    <div class="summary-panel" id="summary-content"></div>
+  </div>
+
+</div>
+
+<div class="footer">PIVOT Clinical Series · Module 07 Polypharmacy · Beers Criteria MAR Safety Checker · For educational use</div>
+
+<script>
+var meds = [
+  { id:'lisinopril', name:'Lisinopril', dose:'10mg daily', cat:'Antihypertensive (ACE inhibitor)',
+    flag:null,
+    desc:'ACE inhibitor for hypertension and heart failure. Appropriate in elderly with dose adjustment for renal function.',
+    risk:'No Beers flag. Monitor renal function and potassium. Check for orthostatic hypotension.',
+    action:'Confirm renal function supports current dose. Monitor BP lying and standing. No Beers concern.' },
+
+  { id:'metformin', name:'Metformin', dose:'500mg BID', cat:'Biguanide (diabetes)',
+    flag:null,
+    desc:'First-line oral diabetes medication. Requires renal monitoring in elderly.',
+    risk:'No Beers flag at this dose. Contraindicated if eGFR < 30. Requires dose reduction at eGFR 30–45.',
+    action:'Verify current eGFR before administering. If eGFR < 45, flag for provider review before next dose.' },
+
+  { id:'furosemide', name:'Furosemide', dose:'40mg daily', cat:'Loop diuretic',
+    flag:null,
+    desc:'Loop diuretic for CHF and fluid overload. Effective but requires monitoring.',
+    risk:'No direct Beers flag, but increases fall risk via orthostatic hypotension and urinary urgency.',
+    action:'Administer in morning when possible. Monitor electrolytes. Assess for orthostasis before ambulation.' },
+
+  { id:'atorvastatin', name:'Atorvastatin', dose:'20mg nightly', cat:'Statin (cholesterol)',
+    flag:null,
+    desc:'Statin for cardiovascular risk reduction. Generally appropriate in elderly.',
+    risk:'No Beers flag. Consider whether primary prevention still indicated in frail elderly > 85, but not flagged here.',
+    action:'No immediate concern. Ensure patient is not on interacting medications (clarithromycin, amiodarone).' },
+
+  { id:'omeprazole', name:'Omeprazole', dose:'20mg daily', cat:'PPI (acid suppression)',
+    flag:'amber',
+    desc:'Proton pump inhibitor. Often continued beyond clinical indication.',
+    risk:'Beers amber: Long-term PPI use (> 8 weeks) without documented indication increases risk of C. diff, fracture, and hypomagnesemia in elderly.',
+    action:'Flag for provider review: Is there an active documented indication? Duration? Consider H2 blocker if short-term use needed.' },
+
+  { id:'zolpidem', name:'Zolpidem', dose:'10mg nightly', cat:'Non-BZD hypnotic (Z-drug)',
+    flag:'red',
+    desc:'Z-drug sleep aid. AGS Beers Criteria: AVOID in older adults.',
+    risk:'HIGH RISK — Beers Criteria: Zolpidem is one of the top 10 drugs causing ER visits in elderly. Same fall and cognitive risks as benzodiazepines. This patient already fell.',
+    action:'HOLD and flag immediately. Notify provider before administering tonight\'s dose. Recommend non-pharmacologic sleep interventions. Document concern.' },
+
+  { id:'hydroxyzine', name:'Hydroxyzine', dose:'25mg TID', cat:'Anticholinergic (antihistamine)',
+    flag:'red',
+    desc:'First-generation antihistamine with high anticholinergic activity. AGS Beers Criteria: AVOID.',
+    risk:'HIGH RISK — Anticholinergic Beers drug. Causes confusion, sedation, urinary retention. This patient is ALSO on zolpidem and oxybutynin — anticholinergic burden is critically high.',
+    action:'Flag immediately. Notify provider. This is the third anticholinergic/sedating drug. Combined burden likely contributed to fall. Do not administer without explicit provider confirmation.' },
+
+  { id:'oxybutynin', name:'Oxybutynin', dose:'5mg BID', cat:'Anticholinergic (bladder)',
+    flag:'red',
+    desc:'Anticholinergic bladder medication. AGS Beers Criteria: AVOID — high anticholinergic burden.',
+    risk:'HIGH RISK — Oxybutynin is specifically called out in Beers Criteria for high anticholinergic activity. Causes confusion, urinary retention (paradoxically), and falls. Combined with hydroxyzine and zolpidem = critical burden.',
+    action:'Flag immediately. Notify provider of the triple anticholinergic/sedating combination. Consider bladder diary before any pharmacologic bladder treatment is continued.' },
+
+  { id:'aspirin', name:'Aspirin', dose:'81mg daily', cat:'Antiplatelet',
+    flag:null,
+    desc:'Low-dose aspirin for secondary cardiovascular prevention.',
+    risk:'No Beers flag at 81mg in patients with established CVD. For primary prevention in elderly, guideline support has weakened.',
+    action:'Confirm indication (secondary vs. primary prevention). Appropriate here given cardiac history. Monitor for GI symptoms.' },
+
+  { id:'amlodipine', name:'Amlodipine', dose:'5mg daily', cat:'Calcium channel blocker',
+    flag:null,
+    desc:'Calcium channel blocker for hypertension and angina.',
+    risk:'No Beers flag. Can cause peripheral edema and orthostatic hypotension. Monitor BP standing in fall-risk patients.',
+    action:'Check for peripheral edema. Assess orthostasis on ambulation days. No Beers concern at this dose.' },
+
+  { id:'levothyroxine', name:'Levothyroxine', dose:'75mcg daily', cat:'Thyroid hormone',
+    flag:null,
+    desc:'Thyroid hormone replacement for hypothyroidism.',
+    risk:'No Beers flag. Overtreatment (suppressed TSH) in elderly increases AFib and bone loss risk.',
+    action:'Confirm TSH has been checked recently. Overtreatment risk in elderly — flag if TSH is suppressed.' },
+
+  { id:'gabapentin', name:'Gabapentin', dose:'300mg TID', cat:'Neuropathic pain / anticonvulsant',
+    flag:'amber',
+    desc:'Used for neuropathic pain. Increasing use in elderly for multiple indications.',
+    risk:'Beers amber: Gabapentin increases fall risk, sedation, and respiratory depression in elderly — especially in combination with opioids or CNS depressants. This patient is on zolpidem.',
+    action:'Flag for provider review. Combination with zolpidem increases sedation and fall risk significantly. Assess whether pain indication is still valid and whether dose reduction is possible.' },
+
+  { id:'calcium', name:'Calcium carbonate + Vit D', dose:'600mg / 400IU BID', cat:'Supplement',
+    flag:null,
+    desc:'Calcium and vitamin D supplementation for bone health.',
+    risk:'No Beers flag. Routine supplementation in SNF patients. Calcium carbonate requires adequate stomach acid (take with food).',
+    action:'Administer with food for best absorption. No Beers concern.' },
+
+  { id:'senna', name:'Senna', dose:'2 tablets nightly', cat:'Stimulant laxative',
+    flag:null,
+    desc:'Stimulant laxative for constipation prevention — likely added due to opioid or anticholinergic use.',
+    risk:'No Beers flag. The fact this was prescribed suggests anticholinergic constipation has already been noted. Treating the symptom rather than the cause.',
+    action:'Note: Senna here is treating constipation caused by anticholinergic drugs. Addressing the anticholinergic burden will likely resolve the constipation.' },
+];
+
+var checked = {};
+var flagged = [];
+
+function buildMAR() {
+  var html = '';
+  meds.forEach(function(m) {
+    var cls = m.flag === 'red' ? 'flagged' : m.flag === 'amber' ? 'flagged-amber' : '';
+    var tag = m.flag === 'red' ? 'HIGH RISK' : m.flag === 'amber' ? 'REVIEW' : '';
+    html += '<div class="mar-row '+cls+(checked[m.id]?' checked':'')+'" id="row-'+m.id+'" onclick="selectMed(\''+m.id+'\')">' +
+      '<div class="mar-check">'+(checked[m.id]?'✓':'')+'</div>' +
+      '<div class="drug-name">'+m.name+'</div>' +
+      '<div class="drug-dose">'+m.dose+'</div>' +
+      (tag ? '<div class="drug-tag">'+tag+'</div>' : '') +
+      '</div>';
+  });
+  document.getElementById('mar-items').innerHTML = html;
+}
+
+function selectMed(id) {
+  // Mark checked
+  if (!checked[id]) {
+    checked[id] = true;
+    var row = document.getElementById('row-'+id);
+    if (row) {
+      row.classList.add('checked');
+      row.querySelector('.mar-check').textContent = '✓';
+    }
+    updateFlagCount();
+  }
+
+  // Show detail
+  var m = meds.find(function(x){ return x.id===id; });
+  document.getElementById('sidebar-empty').style.display = 'none';
+  var color = m.flag === 'red' ? '#C0392B' : m.flag === 'amber' ? '#E67E22' : '#1A6B3C';
+  var bgColor = m.flag === 'red' ? '#2a0808' : m.flag === 'amber' ? '#1a0e00' : '#0A1A22';
+  var badgeText = m.flag === 'red' ? '⚠ HIGH RISK — BEERS CRITERIA' : m.flag === 'amber' ? '⚠ BEERS REVIEW' : '✓ NO BEERS FLAG';
+  var det = document.getElementById('drug-detail');
+  det.className = 'drug-detail show';
+  det.innerHTML =
+    '<div class="det-name">'+m.name+'</div>' +
+    '<div class="det-badge" style="background:'+color+';color:#fff">'+badgeText+'</div>' +
+    '<div class="det-section"><div class="det-lbl" style="color:'+color+'">CATEGORY</div><div class="det-text">'+m.cat+'</div></div>' +
+    '<div class="det-section"><div class="det-lbl" style="color:'+color+'">DESCRIPTION</div><div class="det-text">'+m.desc+'</div></div>' +
+    '<div class="det-section"><div class="det-lbl" style="color:'+color+'">RISK IN ELDERLY</div><div class="det-text">'+m.risk+'</div></div>' +
+    '<div class="det-action" style="border-color:'+color+'"><div class="det-action-lbl" style="color:'+color+'">NURSE ACTION</div><div class="det-action-text">'+m.action+'</div></div>';
+}
+
+function updateFlagCount() {
+  var total = 0;
+  meds.forEach(function(m){ if (checked[m.id] && m.flag) total++; });
+  document.getElementById('flag-count').textContent = total;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (tab === 'summary') buildSummary();
+}
+
+function buildSummary() {
+  var red = meds.filter(function(m){ return m.flag==='red'; });
+  var amber = meds.filter(function(m){ return m.flag==='amber'; });
+  var reviewed = Object.keys(checked).length;
+  var html = '';
+
+  // Patient stat card
+  html += '<div class="sum-patient">' +
+    '<div class="sum-name">👤 Mrs. Rosa Delgado — Medication Risk Summary</div>' +
+    '<div class="sum-grid">' +
+    '<div class="sum-stat"><div class="sum-num" style="color:#fff">'+meds.length+'</div><div class="sum-slbl">Total medications</div></div>' +
+    '<div class="sum-stat"><div class="sum-num" style="color:#C0392B">'+red.length+'</div><div class="sum-slbl">High-risk flags</div></div>' +
+    '<div class="sum-stat"><div class="sum-num" style="color:#E67E22">'+amber.length+'</div><div class="sum-slbl">Review flags</div></div>' +
+    '</div></div>';
+
+  // High risk section
+  html += '<div class="sum-section"><div class="sum-head" style="background:#2a0808;color:#C0392B">HIGH RISK — BEERS CRITERIA (Avoid in elderly)</div>';
+  if (red.length) {
+    red.forEach(function(m){
+      html += '<div class="sum-item"><div class="sum-dot" style="background:#C0392B"></div><div class="sum-drug">'+m.name+'<br><span style="font-size:9px;color:#5A7A82;font-weight:normal">'+m.dose+'</span></div><div class="sum-risk">'+m.risk+'</div></div>';
+    });
+  } else {
+    html += '<div class="sum-empty">No high-risk Beers drugs identified yet — review the MAR tab.</div>';
+  }
+  html += '</div>';
+
+  // Amber section
+  html += '<div class="sum-section"><div class="sum-head" style="background:#1a0e00;color:#E67E22">REVIEW FLAGS — Use with caution</div>';
+  if (amber.length) {
+    amber.forEach(function(m){
+      html += '<div class="sum-item"><div class="sum-dot" style="background:#E67E22"></div><div class="sum-drug">'+m.name+'<br><span style="font-size:9px;color:#5A7A82;font-weight:normal">'+m.dose+'</span></div><div class="sum-risk">'+m.risk+'</div></div>';
+    });
+  } else {
+    html += '<div class="sum-empty">No review-level flags identified yet.</div>';
+  }
+  html += '</div>';
+
+  // Anticholinergic burden callout
+  html += '<div class="sum-section" style="border:1px solid #C0392B"><div class="sum-head" style="background:#2a0808;color:#C0392B">⚠ CRITICAL: ANTICHOLINERGIC BURDEN</div>' +
+    '<div class="sum-item"><div class="sum-dot" style="background:#C0392B"></div><div class="sum-risk" style="flex:1">Mrs. Delgado is simultaneously on <strong style="color:#fff">Zolpidem</strong> (Z-drug / CNS depressant), <strong style="color:#fff">Hydroxyzine</strong> (high anticholinergic), and <strong style="color:#fff">Oxybutynin</strong> (high anticholinergic) — plus <strong style="color:#fff">Gabapentin</strong> (CNS depressant). This combination of sedating and anticholinergic agents is clinically significant and represents the likely cause of her fall. All four require immediate provider discussion before continuation.</div></div></div>';
+
+  // Nurse action plan
+  html += '<div class="sum-action-box"><div class="sum-action-title">NURSE ACTION PLAN — IMMEDIATE STEPS</div>' +
+    '<div class="action-row"><div class="adot" style="background:#C0392B"></div><span><strong>Hold zolpidem tonight</strong> — notify provider before administering. Document the hold and reason.</span></div>' +
+    '<div class="action-row"><div class="adot" style="background:#C0392B"></div><span><strong>Do not administer hydroxyzine or oxybutynin</strong> without explicit provider confirmation of the anticholinergic burden concern.</span></div>' +
+    '<div class="action-row"><div class="adot" style="background:#E67E22"></div><span><strong>Flag gabapentin + zolpidem interaction</strong> to provider — combined sedation risk in a patient who has already fallen.</span></div>' +
+    '<div class="action-row"><div class="adot" style="background:#E67E22"></div><span><strong>Review omeprazole indication</strong> — confirm documented indication for long-term PPI use exists in the chart.</span></div>' +
+    '<div class="action-row"><div class="adot" style="background:#1A6B3C"></div><span><strong>SBAR to provider</strong> — present the three high-risk drugs, the anticholinergic burden, and request medication review before next administration cycle.</span></div>' +
+    '<div class="action-row"><div class="adot" style="background:#1A6B3C"></div><span><strong>Document the reconciliation</strong> — medications reviewed, flags identified, provider notified, medications held, response received.</span></div>' +
+    '</div>';
+
+  document.getElementById('summary-content').innerHTML = html;
+  try{ parent.postMessage({action:'pivotComplete',module:'M07_BeersMARChecker',flags:red.length+amber.length},'*'); }catch(e){}
+}
+
+buildMAR();
+</script>
+</body>
+</html>
