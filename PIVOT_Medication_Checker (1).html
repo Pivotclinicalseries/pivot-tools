@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVOT P-07 — Medication Interaction Checker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#05202A;--deep:#014F5C;--teal:#028090;--mint:#02C39A;--fog:#E8F5F7;--white:#FFFFFF;--muted:#5A7A82;--amber:#E67E22;--red:#C0392B;--green:#1E8449;--card:#071E26;--purple:#7D3C98;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;}
+.header{background:var(--ink);padding:20px 28px 14px;border-bottom:3px solid var(--mint);}
+.mod-logo{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--mint);text-transform:uppercase;margin-bottom:5px;}
+.mod-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.mod-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--ink);background:var(--mint);padding:3px 10px;font-weight:700;text-transform:uppercase;margin-top:3px;display:inline-block;}
+.main{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 100px);}
+.select-col{padding:24px;border-right:1px solid rgba(255,255,255,0.05);}
+.result-col{padding:24px;background:var(--card);}
+.col-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.search-box{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);color:var(--white);padding:11px 14px;font-size:13px;margin-bottom:12px;}
+.search-box:focus{outline:none;border-color:var(--teal);}
+.search-box::placeholder{color:var(--muted);}
+.cat-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin:14px 0 6px;}
+.med-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.08);cursor:pointer;font-size:12px;color:rgba(255,255,255,0.8);margin:3px;transition:all 0.2s;}
+.med-chip:hover{border-color:var(--teal);background:rgba(2,128,144,0.1);}
+.med-chip.selected-a{border-color:var(--mint);background:rgba(2,195,154,0.15);color:var(--mint);}
+.med-chip.selected-b{border-color:var(--amber);background:rgba(230,126,34,0.12);color:var(--amber);}
+.med-chip .chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.selected-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.sel-pill{padding:8px 14px;font-family:'DM Mono',monospace;font-size:10px;border:2px solid;display:flex;align-items:center;gap:8px;}
+.sel-pill.a{border-color:var(--mint);color:var(--mint);}
+.sel-pill.b{border-color:var(--amber);color:var(--amber);}
+.sel-pill.empty{border-color:rgba(255,255,255,0.1);color:var(--muted);font-style:italic;}
+.sel-pill button{background:none;border:none;cursor:pointer;font-size:14px;line-height:1;color:inherit;padding:0;}
+.check-btn{width:100%;padding:13px;background:var(--teal);color:var(--white);border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:background 0.2s;}
+.check-btn:hover{background:var(--mint);color:var(--ink);}
+.check-btn:disabled{background:rgba(255,255,255,0.1);color:var(--muted);cursor:not-allowed;}
+/* Results */
+.severity-banner{padding:20px 22px;margin-bottom:16px;border-left:6px solid;}
+.sev-level{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:4px;}
+.sev-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.sev-desc{font-size:13px;line-height:1.7;opacity:0.85;}
+.detail-section{margin-bottom:14px;padding:14px 16px;background:rgba(255,255,255,0.03);}
+.detail-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:6px;}
+.detail-text{font-size:13px;line-height:1.7;color:rgba(255,255,255,0.8);}
+.snf-action{padding:16px 18px;border-left:4px solid;margin-bottom:12px;}
+.snf-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.snf-text{font-size:13px;line-height:1.7;}
+.no-interaction{padding:28px;text-align:center;}
+.no-int-icon{font-size:36px;margin-bottom:12px;}
+.no-int-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--green);margin-bottom:8px;}
+.no-int-text{font-size:13px;color:var(--muted);line-height:1.7;}
+.placeholder-msg{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;line-height:1.8;}
+.beers-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;background:rgba(125,60,152,0.2);color:#D2B4DE;padding:2px 7px;margin-left:6px;}
+@media(max-width:768px){.main{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="mod-logo">PIVOT Clinical Series · P-07</div>
+  <div class="mod-title">Medication Interaction Checker <span style="font-size:14px;font-family:'DM Mono',monospace;color:var(--muted);">— SNF Edition</span></div>
+  <div class="mod-badge">40 Common SNF Medications</div>
+</div>
+<div class="main">
+  <div class="select-col">
+    <div class="col-label">Select Medications to Check</div>
+    <div class="selected-bar">
+      <div class="sel-pill a" id="pillA"><span style="font-size:9px;margin-right:4px;">MED A</span> <span id="pillAname">Select first medication</span></div>
+      <div class="sel-pill b" id="pillB"><span style="font-size:9px;margin-right:4px;">MED B</span> <span id="pillBname">Select second medication</span></div>
+    </div>
+    <input class="search-box" type="text" placeholder="Search medications..." oninput="filterMeds(this.value)" id="searchBox">
+    <div id="medList"></div>
+    <button class="check-btn" id="checkBtn" onclick="checkInteraction()" disabled>Check Interaction →</button>
+  </div>
+  <div class="result-col" id="resultCol">
+    <div class="placeholder-msg">Select <strong style="color:var(--mint);">two medications</strong> from the list<br>and press <strong style="color:var(--mint);">Check Interaction</strong> to see<br>the clinical significance and SNF action steps.</div>
+  </div>
+</div>
+<script>
+const MEDS={
+  "Anticoagulants":[
+    {id:"warfarin",name:"Warfarin (Coumadin)",beers:false},
+    {id:"apixaban",name:"Apixaban (Eliquis)",beers:false},
+    {id:"rivaroxaban",name:"Rivaroxaban (Xarelto)",beers:false},
+    {id:"aspirin",name:"Aspirin",beers:false},
+  ],
+  "Antidepressants / CNS":[
+    {id:"sertraline",name:"Sertraline (Zoloft)",beers:false},
+    {id:"escitalopram",name:"Escitalopram (Lexapro)",beers:false},
+    {id:"mirtazapine",name:"Mirtazapine (Remeron)",beers:false},
+    {id:"amitriptyline",name:"Amitriptyline",beers:true},
+    {id:"duloxetine",name:"Duloxetine (Cymbalta)",beers:false},
+  ],
+  "Pain / Opioids":[
+    {id:"tramadol",name:"Tramadol (Ultram)",beers:false},
+    {id:"oxycodone",name:"Oxycodone",beers:false},
+    {id:"hydrocodone",name:"Hydrocodone",beers:false},
+    {id:"morphine",name:"Morphine",beers:false},
+    {id:"gabapentin",name:"Gabapentin (Neurontin)",beers:false},
+    {id:"ibuprofen",name:"Ibuprofen (Motrin)",beers:true},
+    {id:"naproxen",name:"Naproxen (Aleve)",beers:true},
+  ],
+  "Cardiac / BP":[
+    {id:"metoprolol",name:"Metoprolol (Lopressor)",beers:false},
+    {id:"lisinopril",name:"Lisinopril",beers:false},
+    {id:"amlodipine",name:"Amlodipine (Norvasc)",beers:false},
+    {id:"furosemide",name:"Furosemide (Lasix)",beers:false},
+    {id:"digoxin",name:"Digoxin (Lanoxin)",beers:true},
+    {id:"amiodarone",name:"Amiodarone",beers:false},
+  ],
+  "Diabetes":[
+    {id:"metformin",name:"Metformin (Glucophage)",beers:false},
+    {id:"glipizide",name:"Glipizide (Glucotrol)",beers:false},
+    {id:"insulin",name:"Insulin (various)",beers:false},
+    {id:"sitagliptin",name:"Sitagliptin (Januvia)",beers:false},
+  ],
+  "Sedatives / Sleep":[
+    {id:"lorazepam",name:"Lorazepam (Ativan)",beers:true},
+    {id:"alprazolam",name:"Alprazolam (Xanax)",beers:true},
+    {id:"zolpidem",name:"Zolpidem (Ambien)",beers:true},
+    {id:"quetiapine",name:"Quetiapine (Seroquel)",beers:false},
+    {id:"diphenhydramine",name:"Diphenhydramine (Benadryl)",beers:true},
+    {id:"melatonin",name:"Melatonin",beers:false},
+  ],
+  "Antibiotics":[
+    {id:"ciprofloxacin",name:"Ciprofloxacin",beers:false},
+    {id:"metronidazole",name:"Metronidazole (Flagyl)",beers:false},
+    {id:"trimethoprim",name:"Trimethoprim-Sulfa (Bactrim)",beers:false},
+    {id:"nitrofurantoin",name:"Nitrofurantoin (Macrobid)",beers:false},
+  ],
+  "Other Common":[
+    {id:"omeprazole",name:"Omeprazole (Prilosec)",beers:false},
+    {id:"donepezil",name:"Donepezil (Aricept)",beers:false},
+    {id:"prednisone",name:"Prednisone",beers:false},
+    {id:"cyclobenzaprine",name:"Cyclobenzaprine (Flexeril)",beers:true},
+    {id:"simvastatin",name:"Simvastatin (Zocor)",beers:false},
+  ]
+};
+
+const INTERACTIONS={
+  "tramadol+sertraline":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Serotonin Syndrome Risk",mechanism:"Both tramadol and sertraline increase serotonergic activity. Tramadol inhibits serotonin reuptake AND increases serotonin release. Combined with an SSRI, the additive serotonergic effect can trigger serotonin syndrome.",presentation:"Agitation, restlessness, tremor, diaphoresis, hyperthermia, tachycardia, hyperreflexia. In severe cases: seizures, rhabdomyolysis, death. Onset typically within hours of starting or increasing dose.",snfAction:"Notify provider of this combination. If resident develops agitation, tremor, or diaphoresis after tramadol was added to an SSRI regimen — this is serotonin syndrome until proven otherwise. Consider alternative analgesic (acetaminophen, topical diclofenac, low-dose opioid without serotonergic activity).",document:"Document: the combination identified, provider notification time, medication review outcome, any symptoms observed and when reported."},
+  "tramadol+escitalopram":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Serotonin Syndrome Risk",mechanism:"Same mechanism as tramadol + sertraline. All SSRIs carry this risk when combined with tramadol. Escitalopram is one of the most commonly prescribed SSRIs in SNF.",presentation:"Agitation, tremor, diaphoresis, hyperthermia, tachycardia. Onset within hours of combination.",snfAction:"Notify provider. Monitor closely for first 48–72 hours after tramadol initiation in any resident on an SSRI. Alternative analgesics preferred.",document:"Document the combination, monitoring plan, provider awareness."},
+  "tramadol+duloxetine":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Serotonin Syndrome Risk — SNRI + Tramadol",mechanism:"Duloxetine is an SNRI — it inhibits both serotonin and norepinephrine reuptake. Combined with tramadol (which also increases serotonin), the risk of serotonin syndrome is significant.",presentation:"Same as tramadol+SSRI: agitation, tremor, diaphoresis, hyperthermia, tachycardia.",snfAction:"Notify provider of this combination immediately. SNRIs + tramadol is a high-risk pairing. Consider alternative pain management.",document:"Document: combination identified, date started, provider notified, alternative discussed."},
+  "tramadol+gabapentin":{severity:"MODERATE",color:"var(--amber)",bg:"rgba(230,126,34,0.1)",title:"Additive CNS Depression",mechanism:"Both tramadol and gabapentin cause CNS depression. Combined, they produce additive sedation, respiratory depression, and ataxia — significantly increasing fall risk in elderly residents.",presentation:"Excessive sedation, confusion, unsteady gait, slow respirations. Symptoms may appear days after initiating the combination as levels accumulate.",snfAction:"Monitor closely for sedation and gait changes when this combination is prescribed. Fall precautions must be heightened. Notify provider if sedation is new or worsening. Consider whether both medications are clinically necessary simultaneously.",document:"Document fall risk reassessment after combination initiated, monitoring plan, provider awareness."},
+  "warfarin+ibuprofen":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Major Bleeding Risk",mechanism:"NSAIDs like ibuprofen inhibit platelet aggregation AND irritate the GI mucosa. Combined with warfarin (which prevents clot formation), the bleeding risk is dramatically elevated — particularly for GI hemorrhage.",presentation:"GI bleeding (dark tarry stools, blood in vomit, abdominal pain), bruising, prolonged bleeding from minor cuts. Can be life-threatening.",snfAction:"This combination should be flagged to the provider immediately. In most SNF residents on warfarin, ibuprofen is contraindicated. Acetaminophen is the preferred OTC analgesic in anticoagulated patients. Notify provider if you see this on the MAR.",document:"Document: combination identified, provider notified, alternative analgesic ordered, resident education."},
+  "warfarin+aspirin":{severity:"MODERATE",color:"var(--amber)",bg:"rgba(230,126,34,0.1)",title:"Increased Bleeding Risk",mechanism:"Aspirin inhibits platelet aggregation; warfarin prevents clot formation through a different mechanism. Together, bleeding risk is additive. However, this combination IS sometimes intentionally prescribed (e.g., mechanical heart valve + AFib).",presentation:"Increased bruising, GI bleeding risk, prolonged bleeding. Monitor INR more frequently.",snfAction:"Check whether this combination is intentional — some residents are prescribed dual therapy for specific cardiac indications. If intentional, monitor INR per order. If the aspirin appears to be self-administered OTC or from a different prescriber, notify the provider.",document:"Document: whether combination is intentional per chart, INR monitoring status, provider awareness if newly identified."},
+  "warfarin+ciprofloxacin":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"INR Elevation — Bleeding Risk",mechanism:"Ciprofloxacin inhibits warfarin metabolism through the CYP1A2 enzyme pathway, causing warfarin to accumulate to supratherapeutic levels. INR can rise significantly within days of starting ciprofloxacin.",presentation:"Elevated INR, unexpected bruising, bleeding from minor wounds, hematuria (blood in urine), or GI bleeding.",snfAction:"Whenever ciprofloxacin is prescribed for a resident on warfarin: notify the provider and request increased INR monitoring (within 3–5 days of starting ciprofloxacin). Watch for signs of supratherapeutic anticoagulation. Document INR trend.",document:"Document: combination start date, provider notification, INR monitoring frequency ordered, any bleeding signs observed."},
+  "warfarin+metronidazole":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"INR Elevation — Significant Bleeding Risk",mechanism:"Metronidazole (Flagyl) strongly inhibits warfarin metabolism (CYP2C9 pathway), often causing INR to double or triple. This is one of the most significant antibiotic-warfarin interactions.",presentation:"Elevated INR, bruising, GI bleeding, hematuria. Can occur within 2–3 days of starting metronidazole.",snfAction:"Notify provider BEFORE starting metronidazole in a warfarin patient if possible. INR check within 3 days of starting is essential. Watch for active bleeding signs. This combination is high-risk — provider may choose an alternative antibiotic.",document:"Document: provider notified before/at initiation, INR monitoring ordered, bleeding assessment findings."},
+  "metronidazole+warfarin":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"INR Elevation — Significant Bleeding Risk",mechanism:"See warfarin+metronidazole above. Same interaction regardless of which is listed first.",presentation:"Same as above.",snfAction:"Same as above.",document:"Same as above."},
+  "furosemide+lisinopril":{severity:"MODERATE",color:"var(--amber)",bg:"rgba(230,126,34,0.1)",title:"Orthostatic Hypotension / Dehydration Risk",mechanism:"Furosemide (diuretic) reduces blood volume. Lisinopril (ACE inhibitor) dilates blood vessels. Together, they significantly increase the risk of orthostatic hypotension — particularly on standing — and dehydration in elderly patients.",presentation:"Dizziness on standing, lightheadedness, falls, confusion from dehydration, syncope. Worse in warm weather, with poor fluid intake, or after vomiting/diarrhea.",snfAction:"Both medications individually increase fall risk — together the risk is compounded. Orthostatic BP check (lying → sitting → standing) when any new symptoms arise. Monitor hydration. Fall risk reassessment when either medication is started, changed, or dose-adjusted.",document:"Document: orthostatic BP results, fall risk score, hydration assessment, provider notification if orthostatics are significantly positive."},
+  "glipizide+furosemide":{severity:"MINOR",color:"var(--green)",bg:"rgba(30,132,73,0.08)",title:"Possible Glycemic Interference",mechanism:"Furosemide can slightly elevate blood glucose by reducing insulin secretion. In a resident on glipizide (which lowers blood sugar), the net effect varies — but blood sugar monitoring is warranted when starting furosemide.",presentation:"Unexpected blood sugar fluctuations — either elevated (furosemide effect) or hypoglycemia if resident has reduced food intake in context of diuresis.",snfAction:"Monitor blood sugars more closely when furosemide dose is changed in a glipizide-controlled diabetic. No immediate action usually required, but document blood sugar trend.",document:"Document blood sugar monitoring plan, note the combination in care plan medication review."},
+  "lorazepam+oxycodone":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Life-Threatening Respiratory Depression",mechanism:"Benzodiazepines and opioids both cause CNS and respiratory depression through different mechanisms. The combination produces synergistic — not merely additive — respiratory depression. FDA Black Box Warning exists for this combination.",presentation:"Excessive sedation, slow or stopped breathing, unresponsiveness. Can be fatal. Risk is highest in elderly, opioid-naive, or renally impaired patients.",snfAction:"This combination carries an FDA Black Box Warning. If you see this on the MAR together, notify the provider immediately for review. Monitor respiratory rate and oxygen saturation closely if the combination is deemed medically necessary. Have reversal agents available per facility policy.",document:"Document: combination identified, provider notification, respiratory monitoring plan, any symptoms observed."},
+  "lorazepam+morphine":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Life-Threatening Respiratory Depression",mechanism:"Same mechanism as lorazepam+oxycodone. Benzodiazepine + any opioid = FDA Black Box Warning for respiratory depression.",presentation:"Excessive sedation, respiratory depression, apnea.",snfAction:"Notify provider immediately. Monitor respiratory rate and sat closely. This combination requires documented medical justification and close monitoring protocol.",document:"Same as above."},
+  "lorazepam+gabapentin":{severity:"MODERATE",color:"var(--amber)",bg:"rgba(230,126,34,0.1)",title:"Additive CNS Depression / Fall Risk",mechanism:"Both are CNS depressants. Combined sedation increases confusion, ataxia, and fall risk in elderly SNF residents.",presentation:"Excessive sedation, confusion, unsteady gait, fall risk.",snfAction:"Fall risk reassessment required. Monitor for sedation. Notify provider if sedation is new or worsening after this combination was initiated.",document:"Document fall risk score change, monitoring plan."},
+  "digoxin+amiodarone":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Digoxin Toxicity Risk",mechanism:"Amiodarone inhibits the elimination of digoxin, causing digoxin blood levels to rise to potentially toxic levels. This can lead to serious cardiac arrhythmias and GI toxicity.",presentation:"Nausea, vomiting, visual disturbances (yellow-green halos, blurred vision), bradycardia, heart block, new arrhythmias.",snfAction:"When amiodarone is started or dose-changed in a resident on digoxin, notify the provider — digoxin dose often needs to be reduced by 50%. Monitor for toxicity symptoms at every assessment. Digoxin level monitoring may be ordered.",document:"Document: combination start date, digoxin level if drawn, any toxicity symptoms, provider notification."},
+  "ciprofloxacin+metronidazole":{severity:"MINOR",color:"var(--green)",bg:"rgba(30,132,73,0.08)",title:"Additive GI Side Effects",mechanism:"Both antibiotics cause GI side effects (nausea, diarrhea). When used together (often for intra-abdominal infections), GI side effects may be additive. No major interaction, but monitoring comfort and hydration is warranted.",presentation:"Nausea, vomiting, diarrhea. Monitor for C. difficile risk with prolonged antibiotic use.",snfAction:"Monitor GI tolerance. Ensure adequate hydration. Monitor for C. diff signs (watery/bloody diarrhea, abdominal cramping) especially if on antibiotics >5 days. Probiotics per provider order may be offered.",document:"Document GI symptom monitoring, hydration assessment, any diarrhea onset with characterization."},
+  "diphenhydramine+lorazepam":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Extreme Anticholinergic + Sedative Burden",mechanism:"Diphenhydramine is both strongly anticholinergic AND sedating. Combined with a benzodiazepine, the sedation is synergistic. Both are Beers Criteria medications in elderly patients.",presentation:"Severe confusion, delirium, excessive sedation, urinary retention, constipation, falls, paradoxical agitation.",snfAction:"Both medications are individually Beers Criteria-flagged for elderly patients. Together they represent extremely high anticholinergic + sedative burden. Notify provider — this combination in an elderly SNF resident is high-risk for delirium induction and fall.",document:"Document: Beers Criteria concern raised, provider notified, alternative options discussed, resident mental status monitoring."},
+  "tramadol+lorazepam":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"CNS/Respiratory Depression + Seizure Risk",mechanism:"Tramadol lowers seizure threshold. Benzodiazepines are CNS depressants. Combined: increased sedation, respiratory depression risk, AND paradoxically — tramadol's seizure-lowering effect is not fully counteracted by the benzo. Complex interaction.",presentation:"Sedation, respiratory depression, and in patients with seizure history or history of alcohol withdrawal — potentially lower seizure threshold.",snfAction:"Notify provider. This is a complex combination requiring clinical review. Monitor for sedation and any seizure activity. Fall risk is significantly elevated.",document:"Document: combination, provider notification, monitoring plan for sedation and respiratory status."},
+  "metformin+furosemide":{severity:"MINOR",color:"var(--green)",bg:"rgba(30,132,73,0.08)",title:"Possible Increased Lactic Acidosis Risk",mechanism:"Furosemide can cause dehydration, which reduces renal function. Metformin is cleared by the kidneys and can accumulate in reduced renal function, increasing the (already low) risk of lactic acidosis.",presentation:"Rare, but watch for nausea, vomiting, abdominal pain, muscle weakness, or confusion that develops during dehydration in a resident on metformin.",snfAction:"In a resident on both metformin and furosemide who becomes significantly dehydrated (vomiting, diarrhea, poor intake) — notify provider. Metformin may need to be held until renal function is confirmed stable.",document:"Document hydration status monitoring, any renal function concerns, provider notification if dehydration develops."},
+  "amitriptyline+lorazepam":{severity:"MAJOR",color:"var(--red)",bg:"rgba(192,57,43,0.1)",title:"Extreme Anticholinergic + CNS Depression",mechanism:"Amitriptyline is a tricyclic antidepressant with very high anticholinergic activity AND sedative properties. Combined with a benzodiazepine, both effects are amplified — anticholinergic toxidrome and severe CNS depression.",presentation:"Delirium, confusion, urinary retention, severe constipation, dry mouth/skin, tachycardia, excessive sedation, falls.",snfAction:"Both are Beers Criteria medications. Together they represent very high risk for delirium in elderly SNF residents. Notify provider immediately. Both should be evaluated for safer alternatives — amitriptyline is particularly inappropriate in elderly patients.",document:"Document: both Beers Criteria flags raised, provider notified, resident mental status assessment, delirium monitoring."},
+};
+
+let selectedMeds=[null,null];
+
+function renderMeds(filter=''){
+  const list=document.getElementById('medList');
+  let html='';
+  Object.entries(MEDS).forEach(([cat,meds])=>{
+    const filtered=meds.filter(m=>m.name.toLowerCase().includes(filter.toLowerCase()));
+    if(!filtered.length)return;
+    html+=`<div class="cat-label">${cat}</div>`;
+    filtered.forEach(m=>{
+      const selA=selectedMeds[0]===m.id;
+      const selB=selectedMeds[1]===m.id;
+      html+=`<div class="med-chip ${selA?'selected-a':selB?'selected-b':''}" onclick="selectMed('${m.id}')">
+        ${selA?'<div class="chip-dot" style="background:var(--mint);"></div>':''}${selB?'<div class="chip-dot" style="background:var(--amber);"></div>':''}
+        ${m.name}${m.beers?'<span class="beers-tag">BEERS</span>':''}
+      </div>`;
+    });
+  });
+  list.innerHTML=html||'<div style="color:var(--muted);font-size:13px;padding:12px 0;">No medications match your search.</div>';
+}
+
+function findMedName(id){
+  for(const meds of Object.values(MEDS)){const m=meds.find(x=>x.id===id);if(m)return m;}return null;
+}
+
+function selectMed(id){
+  if(selectedMeds[0]===id){selectedMeds[0]=null;}
+  else if(selectedMeds[1]===id){selectedMeds[1]=null;}
+  else if(!selectedMeds[0])selectedMeds[0]=id;
+  else if(!selectedMeds[1])selectedMeds[1]=id;
+  else{selectedMeds[0]=selectedMeds[1];selectedMeds[1]=id;}
+  updatePills();renderMeds(document.getElementById('searchBox').value);
+  document.getElementById('checkBtn').disabled=!(selectedMeds[0]&&selectedMeds[1]);
+}
+
+function updatePills(){
+  const aName=selectedMeds[0]?findMedName(selectedMeds[0])?.name:null;
+  const bName=selectedMeds[1]?findMedName(selectedMeds[1])?.name:null;
+  document.getElementById('pillAname').textContent=aName||'Select first medication';
+  document.getElementById('pillBname').textContent=bName||'Select second medication';
+  document.getElementById('pillA').className='sel-pill '+(aName?'a':'empty');
+  document.getElementById('pillB').className='sel-pill '+(bName?'b':'empty');
+}
+
+function filterMeds(val){renderMeds(val);}
+
+function getInteraction(a,b){
+  const key1=`${a}+${b}`;const key2=`${b}+${a}`;
+  return INTERACTIONS[key1]||INTERACTIONS[key2]||null;
+}
+
+function checkInteraction(){
+  const a=selectedMeds[0],b=selectedMeds[1];
+  if(!a||!b)return;
+  const aName=findMedName(a)?.name||a;const bName=findMedName(b)?.name||b;
+  const inter=getInteraction(a,b);
+  const col=document.getElementById('resultCol');
+  const aBeers=findMedName(a)?.beers;const bBeers=findMedName(b)?.beers;
+  const beersBanner=(aBeers||bBeers)?`<div style="background:rgba(125,60,152,0.1);border-left:4px solid var(--purple);padding:12px 16px;margin-bottom:14px;"><div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#D2B4DE;margin-bottom:5px;">BEERS CRITERIA ALERT</div><div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.7;">${[aBeers&&aName,bBeers&&bName].filter(Boolean).join(' and ')} ${aBeers&&bBeers?'are both':'is a'} Beers Criteria medication${aBeers&&bBeers?'s':''} — considered potentially inappropriate for elderly patients regardless of interaction status. Flag for provider review.</div></div>`:'';
+  if(!inter){
+    col.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--mint);">${aName}</div><div style="color:var(--muted);">+</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);">${bName}</div></div>
+    ${beersBanner}
+    <div class="no-interaction"><div class="no-int-icon">✓</div><div class="no-int-title">No Significant Interaction Found</div><div class="no-int-text">No major clinical interaction was identified between these two medications in this database.<br><br>This does not mean no interaction exists — this tool covers the most clinically significant SNF interactions. For a comprehensive check, consult your facility pharmacist or a drug interaction database such as Lexicomp or Micromedex.<br><br>Both medications should still be assessed individually for age-appropriateness and fall risk contribution in your elderly resident.</div></div>`;
+    return;
+  }
+  col.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--mint);">${aName}</div><div style="color:var(--muted);">+</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);">${bName}</div></div>
+  ${beersBanner}
+  <div class="severity-banner" style="border-color:${inter.color};background:${inter.bg};"><div class="sev-level" style="color:${inter.color};">${inter.severity} INTERACTION</div><div class="sev-sub" style="color:${inter.color};">${inter.title}</div><div class="sev-desc">${inter.mechanism}</div></div>
+  <div class="detail-section"><div class="detail-label">Signs & Presentation to Watch For</div><div class="detail-text">${inter.presentation}</div></div>
+  <div class="snf-action" style="border-color:${inter.color};background:${inter.bg};"><div class="snf-label" style="color:${inter.color};">SNF Nursing Action</div><div class="snf-text" style="color:rgba(255,255,255,0.85);">${inter.snfAction}</div></div>
+  <div class="detail-section"><div class="detail-label">Documentation Guidance</div><div class="detail-text">${inter.document}</div></div>`;
+}
+
+renderMeds();
+</script>
+</body>
+</html>
