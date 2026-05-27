@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-06 Neuro & Dementia Reference — PIVOT Foundations Bootcamp</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05202A;--tdk:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--white:#FFFFFF;
+  --red:#C0392B;--amber:#E67E22;--green:#1E8449;
+  --purple:#6C3483;--blue:#1A5276;--gold:#C9A84C;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--fog);color:var(--ink);min-height:100vh;}
+.hdr{background:var(--ink);padding:13px 20px 11px;display:flex;align-items:flex-start;justify-content:space-between;}
+.mtag{font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.16em;text-transform:uppercase;}
+.htitle{font-size:15px;font-weight:600;color:var(--fog);margin-top:2px;}
+.hsub{font-size:10.5px;color:var(--muted);margin-top:1px;}
+.badge{background:var(--purple);color:#fff;font-size:9.5px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.prog{height:2px;background:rgba(108,52,131,.2);}
+.pfill{height:100%;background:var(--purple);transition:width .35s;}
+.tabs{display:flex;background:var(--ink);overflow-x:auto;border-bottom:2px solid rgba(108,52,131,.35);}
+.tab{flex-shrink:0;padding:9px 14px;font-size:10.5px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.tab:hover{color:var(--fog);}
+.tab.active{color:#D2A8E8;border-bottom-color:#D2A8E8;}
+.instr{background:var(--tdk);padding:6px 16px;font-size:10.5px;color:var(--fog);}
+.instr span{color:var(--mint);font-weight:500;}
+.sec{display:none;padding:12px 12px 90px;}
+.sec.active{display:block;}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:10px;}
+.dbtn{background:var(--white);border:1.5px solid rgba(2,128,144,.14);border-radius:9px;padding:10px 6px 8px;cursor:pointer;text-align:center;transition:all .18s;position:relative;overflow:hidden;}
+.dbtn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .18s;transform-origin:left;}
+.dbtn:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 4px 12px rgba(108,52,131,.1);}
+.dbtn:hover::before,.dbtn.on::before{transform:scaleX(1);}
+.dbtn.on{background:var(--fog);}
+.c-pur::before{background:var(--purple);} .c-pur.on{border-color:var(--purple);}
+.c-teal::before{background:var(--teal);} .c-teal.on{border-color:var(--teal);}
+.c-red::before{background:var(--red);} .c-red.on{border-color:var(--red);}
+.c-amb::before{background:var(--amber);} .c-amb.on{border-color:var(--amber);}
+.c-grn::before{background:var(--green);} .c-grn.on{border-color:var(--green);}
+.c-blu::before{background:var(--blue);} .c-blu.on{border-color:var(--blue);}
+.c-gold::before{background:var(--gold);} .c-gold.on{border-color:var(--gold);}
+.dico{font-size:20px;margin-bottom:4px;display:block;}
+.dnm{font-size:9.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.dsub{font-size:8px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;}
+.dp{background:var(--white);border-radius:11px;border:1.5px solid rgba(108,52,131,.15);overflow:hidden;display:none;animation:sli .18s ease;}
+.dp.on{display:block;}
+@keyframes sli{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.dh{background:var(--tdk);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.dhico{font-size:18px;}
+.dhtitle{font-size:13px;font-weight:600;color:var(--fog);}
+.dhsub{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase;margin-top:1px;}
+.dbody{padding:13px 15px 15px;display:flex;flex-direction:column;gap:10px;}
+.dc{border-radius:7px;overflow:hidden;border:1px solid transparent;}
+.dc.red{background:#FEF0EE;border-color:rgba(192,57,43,.15);}
+.dc.amb{background:#FEF6EE;border-color:rgba(230,126,34,.15);}
+.dc.grn{background:#EAF5EE;border-color:rgba(30,132,73,.12);}
+.dc.teal{background:var(--fog);border-color:rgba(2,128,144,.18);}
+.dc.pur{background:#F5EEF8;border-color:rgba(108,52,131,.15);}
+.dc.blu{background:#EAF2F8;border-color:rgba(26,82,118,.15);}
+.dc.dark{background:var(--ink);border-color:var(--ink);}
+.dc.gold{background:#FFFAED;border-color:rgba(201,168,76,.2);}
+.dch{padding:6px 11px;display:flex;align-items:center;gap:6px;border-bottom:1px solid transparent;}
+.dc.red .dch{background:rgba(192,57,43,.07);border-color:rgba(192,57,43,.1);}
+.dc.amb .dch{background:rgba(230,126,34,.07);border-color:rgba(230,126,34,.1);}
+.dc.grn .dch{background:rgba(30,132,73,.07);border-color:rgba(30,132,73,.08);}
+.dc.teal .dch{background:rgba(2,128,144,.06);border-color:rgba(2,128,144,.12);}
+.dc.pur .dch{background:rgba(108,52,131,.07);border-color:rgba(108,52,131,.1);}
+.dc.blu .dch{background:rgba(26,82,118,.07);border-color:rgba(26,82,118,.1);}
+.dc.gold .dch{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.15);}
+.dd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dc.red .dd{background:var(--red);}.dc.amb .dd{background:var(--amber);}
+.dc.grn .dd{background:var(--green);}.dc.teal .dd{background:var(--teal);}
+.dc.pur .dd{background:var(--purple);}.dc.blu .dd{background:var(--blue);}
+.dc.gold .dd{background:var(--gold);}
+.dlbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.dc.red .dlbl{color:var(--red);}.dc.amb .dlbl{color:var(--amber);}
+.dc.grn .dlbl{color:var(--green);}.dc.teal .dlbl{color:var(--teal);}
+.dc.pur .dlbl{color:var(--purple);}.dc.blu .dlbl{color:var(--blue);}
+.dc.gold .dlbl{color:var(--gold);}
+.dcb{padding:8px 11px 10px;}
+.fl{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.fl li{font-size:11px;color:var(--ink);padding-left:12px;position:relative;line-height:1.5;}
+.fl li::before{content:'›';position:absolute;left:0;font-weight:600;font-size:12px;line-height:1.35;}
+.dc.red .fl li::before{color:var(--red);}.dc.amb .fl li::before{color:var(--amber);}
+.dc.grn .fl li::before{color:var(--green);}.dc.teal .fl li::before{color:var(--teal);}
+.dc.pur .fl li::before{color:var(--purple);}.dc.blu .fl li::before{color:var(--blue);}
+.dc.gold .fl li::before{color:var(--gold);}
+.tbl{width:100%;border-collapse:collapse;font-size:10.5px;}
+.tbl th{background:var(--tdk);color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(2,128,144,.08);vertical-align:top;line-height:1.5;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:nth-child(even) td{background:rgba(2,128,144,.03);}
+.tbl td:first-child{font-weight:600;color:var(--tdk);}
+.scw{border-radius:7px;overflow:hidden;border:1.5px solid rgba(108,52,131,.22);}
+.sch{background:var(--purple);padding:5px 11px;}
+.sch span{font-size:9px;font-weight:600;color:#fff;letter-spacing:.1em;text-transform:uppercase;}
+.scc{display:grid;grid-template-columns:1fr 1fr;}
+.scol{padding:8px 11px;}
+.scol:first-child{border-right:1px solid rgba(108,52,131,.1);background:var(--fog);}
+.scol:last-child{background:var(--white);}
+.srole{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);margin-bottom:3px;}
+.si{font-size:10px;color:var(--ink);padding-left:13px;position:relative;line-height:1.45;margin-bottom:2px;}
+.si::before{content:'✓';position:absolute;left:0;font-size:9.5px;color:var(--purple);font-weight:600;}
+.leg{background:var(--ink);border-radius:7px;padding:10px 12px;display:flex;gap:8px;}
+.legi{font-size:12px;flex-shrink:0;margin-top:1px;}
+.legt{font-size:10px;color:var(--fog);line-height:1.6;}
+.legt strong{color:var(--mint);font-weight:500;}
+.convo{background:var(--fog);border-radius:8px;padding:12px 14px;border-left:3px solid var(--teal);margin-bottom:8px;}
+.convo-q{font-size:11px;font-weight:600;color:var(--tdk);margin-bottom:5px;font-style:italic;}
+.convo-a{font-size:10.5px;color:var(--ink);line-height:1.6;}
+.alert{background:#FEF0EE;border:1.5px solid rgba(192,57,43,.25);border-radius:7px;padding:10px 12px;display:flex;gap:8px;}
+.alert-text{font-size:10.5px;color:var(--ink);line-height:1.55;}
+.alert-text strong{color:var(--red);font-weight:600;}
+.ftr{background:var(--ink);padding:8px 18px;display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0;}
+.fbr{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.fn{font-size:8px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <div class="mtag">F-06 · Neuro & Dementia · Foundations Bootcamp · PIVOT Clinical Series</div>
+    <div class="htitle">Dementia Clinical Reference Guide</div>
+    <div class="hsub">Types · Behaviors · Medications · Non-Pharm · Documentation · Family Conversations</div>
+  </div>
+  <div class="badge">F-06</div>
+</div>
+<div class="prog"><div class="pfill" id="pf" style="width:0%"></div></div>
+<div class="tabs">
+  <div class="tab active" onclick="sw('types',this)">🧠 Types & Staging</div>
+  <div class="tab" onclick="sw('behaviors',this)">💬 Behaviors</div>
+  <div class="tab" onclick="sw('nonpharm',this)">🌿 Non-Pharm</div>
+  <div class="tab" onclick="sw('meds',this)">💊 Medications</div>
+  <div class="tab" onclick="sw('preserve',this)">⭐ Preserve Cognition</div>
+  <div class="tab" onclick="sw('docs',this)">🛡️ Documentation & SBAR</div>
+  <div class="tab" onclick="sw('family',this)">👨‍👩‍👧 Family Conversations</div>
+</div>
+<div class="instr">Tap any card — <span>clinical detail, nursing interventions, scope of practice, and documentation guidance</span></div>
+
+<!-- TYPES & STAGING -->
+<div class="sec active" id="tab-types">
+  <div class="dgrid" id="g-types"></div>
+  <div class="dp" id="d-types">
+    <div class="dh"><div class="dhico" id="ico-types"></div><div><div class="dhtitle" id="title-types"></div><div class="dhsub" id="sub-types"></div></div></div>
+    <div class="dbody" id="body-types"></div>
+  </div>
+</div>
+
+<!-- BEHAVIORS -->
+<div class="sec" id="tab-behaviors">
+  <div style="padding:4px 0 12px;">
+    <div class="alert" style="margin-bottom:12px;">
+      <div style="font-size:14px;flex-shrink:0;">⚠️</div>
+      <div class="alert-text"><strong>The Rule:</strong> If the behavior is not causing harm to the resident or others — it does not automatically need medication. It needs understanding. Every behavior is communication. Decode before you medicate.</div>
+    </div>
+  </div>
+  <div class="dgrid" id="g-behaviors"></div>
+  <div class="dp" id="d-behaviors">
+    <div class="dh"><div class="dhico" id="ico-behaviors"></div><div><div class="dhtitle" id="title-behaviors"></div><div class="dhsub" id="sub-behaviors"></div></div></div>
+    <div class="dbody" id="body-behaviors"></div>
+  </div>
+</div>
+
+<!-- NON-PHARM -->
+<div class="sec" id="tab-nonpharm">
+  <div class="dgrid" id="g-nonpharm"></div>
+  <div class="dp" id="d-nonpharm">
+    <div class="dh"><div class="dhico" id="ico-nonpharm"></div><div><div class="dhtitle" id="title-nonpharm"></div><div class="dhsub" id="sub-nonpharm"></div></div></div>
+    <div class="dbody" id="body-nonpharm"></div>
+  </div>
+</div>
+
+<!-- MEDICATIONS -->
+<div class="sec" id="tab-meds">
+  <div class="dgrid" id="g-meds"></div>
+  <div class="dp" id="d-meds">
+    <div class="dh"><div class="dhico" id="ico-meds"></div><div><div class="dhtitle" id="title-meds"></div><div class="dhsub" id="sub-meds"></div></div></div>
+    <div class="dbody" id="body-meds"></div>
+  </div>
+</div>
+
+<!-- PRESERVE COGNITION -->
+<div class="sec" id="tab-preserve">
+  <div class="dgrid" id="g-preserve"></div>
+  <div class="dp" id="d-preserve">
+    <div class="dh"><div class="dhico" id="ico-preserve"></div><div><div class="dhtitle" id="title-preserve"></div><div class="dhsub" id="sub-preserve"></div></div></div>
+    <div class="dbody" id="body-preserve"></div>
+  </div>
+</div>
+
+<!-- DOCUMENTATION -->
+<div class="sec" id="tab-docs">
+  <div class="dgrid" id="g-docs"></div>
+  <div class="dp" id="d-docs">
+    <div class="dh"><div class="dhico" id="ico-docs"></div><div><div class="dhtitle" id="title-docs"></div><div class="dhsub" id="sub-docs"></div></div></div>
+    <div class="dbody" id="body-docs"></div>
+  </div>
+</div>
+
+<!-- FAMILY CONVERSATIONS -->
+<div class="sec" id="tab-family">
+  <div id="body-family-static"></div>
+</div>
+
+<div class="ftr">
+  <div class="fbr">Innovative Care Concepts · F-06 · pivotclinicalseries.com</div>
+  <div class="fn">Educational use only · Not a substitute for facility policy</div>
+</div>
+
+<script>
+function infoCard(color,label,items){
+  return `<div class="dc ${color}"><div class="dch"><div class="dd"></div><div class="dlbl">${label}</div></div><div class="dcb"><ul class="fl">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>`;
+}
+function tblCard(color,label,rows,heads){
+  return `<div class="dc ${color}"><div class="dch"><div class="dd"></div><div class="dlbl">${label}</div></div><div class="dcb">
+    <table class="tbl"><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr>
+    ${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}
+    </table></div></div>`;
+}
+function scopeCard(rn,lpn){
+  return `<div class="scw"><div class="sch"><span>⚖️ Scope of Practice</span></div><div class="scc">
+    <div class="scol"><div class="srole">RN Scope</div>${rn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+    <div class="scol"><div class="srole">LPN Scope</div>${lpn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+  </div></div>`;
+}
+function legalCard(text){
+  return `<div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Legal Shield:</strong> ${text}</div></div>`;
+}
+function alertCard(text){
+  return `<div class="alert"><div style="font-size:14px;flex-shrink:0;">⚠️</div><div class="alert-text">${text}</div></div>`;
+}
+
+// ── DATA ─────────────────────────────────────────────────────────
+
+const typesData=[
+  {id:'alz',ico:'🧠',nm:"Alzheimer's Disease",sub:'60–70% of cases',col:'c-pur',
+   title:"Alzheimer's Disease",sub2:'Most Common · Amyloid & Tau · Anti-Amyloid Therapy Now Available',
+   html:()=>`
+    ${infoCard('pur','What Is Happening in the Brain',['Amyloid plaques accumulate outside neurons — disrupt communication between brain cells','Tau tangles form inside neurons — destroy the internal transport system','Hippocampus affected first — memory loss is the presenting symptom','Progresses over 8–10 years from diagnosis','Cholinergic deficit: acetylcholine-producing neurons die — targeted by cholinesterase inhibitors'])}
+    ${infoCard('teal','Clinical Presentation by Stage',[
+      'Early (MCI): Forgetting recent events, word-finding difficulty, getting lost in familiar places — person often aware and distressed',
+      'Moderate: Cannot learn new information, needs help with ADLs, behavioral symptoms emerge (agitation, paranoia, wandering)',
+      'Moderate-Severe: Does not recognize family, needs complete ADL assistance, limited verbal communication',
+      'Late: Bed-bound, minimal communication, dysphagia, recurrent infections — comfort-focused care',
+    ])}
+    ${infoCard('grn','Disease-Modifying Therapy — Now Available',[
+      'Leqembi (lecanemab) — FDA approved 2023 — monoclonal antibody targeting amyloid — slows progression 27% in early stage',
+      'Kisunla (donanemab) — FDA approved 2024 — monthly IV infusion — clears amyloid plaques',
+      'Leqembi IQLIK SC (subcutaneous) — FDA approved 2025 — weekly self-injection or facility administration',
+      'Indicated for MCI and mild dementia with confirmed amyloid pathology — NOT for moderate or severe stage',
+      'ARIA (Amyloid-Related Imaging Abnormalities) is the primary safety risk — brain swelling or microbleeds',
+      'SNF nurses: learn to recognize ARIA symptoms — headache, confusion, vision changes, gait changes',
+    ])}
+    ${scopeCard(['Assess cognitive status changes and document departure from baseline','Identify ARIA symptoms in patients on anti-amyloid therapy and notify provider immediately','Assess for depression and anxiety — common and underrecognized in early Alzheimer\'s','Coordinate with speech therapy for swallowing and cognitive assessments'],['Monitor for behavioral changes and document with specific language','Administer ordered medications with attention to side effects','Report any new or worsening cognitive symptoms or safety concerns to RN','Maintain familiar routines — consistency reduces behavioral escalation'])}
+    ${legalCard("Document cognitive baseline at admission (MMSE score, specific preserved and lost functions) and every significant departure from baseline. For ARIA-monitored patients: document symptom surveillance (specifically: headache, confusion, vision changes, gait changes) at every assessment.")}
+  `},
+  {id:'vascular',ico:'🫀',nm:'Vascular Dementia',sub:'15–20% · Stepwise Decline',col:'c-blu',
+   title:'Vascular Dementia',sub2:'Cerebrovascular Disease · Stepwise · Cardiovascular Management',
+   html:()=>`
+    ${infoCard('blu','What Is Happening',['Reduced blood flow to the brain from strokes, TIAs, or small vessel disease causes neuronal death','Stepwise decline: stable periods followed by sudden drops after vascular events','Location of damage determines what is lost — frontal damage = executive function, temporal = memory','Often co-exists with Alzheimer\'s (mixed dementia) — most common combination','Cardiovascular risk factor management IS the treatment — blood pressure, diabetes, atrial fibrillation, smoking'])}
+    ${infoCard('teal','Clinical Presentation',['Sudden onset or stepwise worsening — not the gradual slide of Alzheimer\'s','Executive function often affected early: planning, judgment, organizing','Emotional changes: depression, emotional lability (crying easily)','Focal neurological signs may be present depending on stroke location','Memory may be relatively preserved early compared to Alzheimer\'s'])}
+    ${infoCard('amb','Nursing Focus',['Blood pressure monitoring — target < 130/80 in most patients — hypertension drives further vascular events','Anticoagulation management — many have atrial fibrillation — medication compliance and monitoring critical','Fall risk is HIGH — neurological deficits plus cognitive impairment','Depression is extremely common — assess with Cornell Scale for Depression in Dementia','Recognize new neurological changes as potential TIA/stroke — TIME IS BRAIN'])}
+    ${scopeCard(['Assess for new neurological deficits — facial drooping, arm weakness, speech changes, vision changes = stroke protocol','Monitor blood pressure per order and report excursions','Assess for depression — Cornell Scale for Depression in Dementia'],['Monitor blood pressure and document per schedule','Report any sudden new neurological changes, behavior changes, or functional decline to RN immediately','Medication administration with attention to anticoagulant safety'])}
+    ${legalCard("Document blood pressure at each assessment with trend notation. Any sudden new neurological change must be documented with exact time of onset, specific deficit description, and provider notification time. Delayed stroke recognition is a significant liability.")}
+  `},
+  {id:'lbd',ico:'⚡',nm:'Lewy Body Dementia',sub:'Antipsychotic Danger',col:'c-red',
+   title:'Lewy Body Dementia (LBD)',sub2:'ANTIPSYCHOTIC SENSITIVITY — POTENTIALLY FATAL · Visual Hallucinations · Fluctuating Cognition',
+   html:()=>`
+    ${alertCard('<strong>LIFE-SAFETY WARNING — READ FIRST:</strong> LBD patients have extreme sensitivity to antipsychotic medications — including atypical antipsychotics. Haloperidol (Haldol) can cause irreversible severe Parkinsonism and death. Even quetiapine (Seroquel) must be used with extreme caution. If a patient has LBD or undiagnosed dementia and an antipsychotic is ordered, verify the dementia diagnosis with the provider before administering. This is not optional.')}
+    ${infoCard('red','Defining Features — The LBD Triad',['Fluctuating cognition: dramatically better and worse within the same day — clear and lucid in the morning, confused by afternoon — this is NOT delirium, it is the disease','Visual hallucinations: vivid, detailed, often non-threatening — may see people, animals, or children in the room — patient often knows they are not real initially','Parkinsonism: rigidity, resting tremor, shuffling gait, masked facies — similar to Parkinson\'s disease','REM sleep behavior disorder: acts out dreams physically — punching, kicking, yelling during sleep — may predate diagnosis by years'])}
+    ${infoCard('amb','Additional Clinical Features',['Orthostatic hypotension: severe — falls risk is extreme — always sit at edge of bed before standing','Autonomic dysfunction: constipation, urinary retention, temperature dysregulation','Neuroleptic sensitivity: exposure to antipsychotics causes dramatic worsening, rigidity, immobility, high fever','Caregiver note: reassure family that hallucinations in early stages are often not distressing to the resident'])}
+    ${scopeCard(['Verify dementia diagnosis before administering antipsychotics in any patient with undiagnosed dementia','Assess for orthostatic hypotension before ambulation — check sitting then standing BP','Assess for visual hallucinations — use gentle, non-confrontational approach','Never restrain during REM behavior episodes — protect from injury, reduce environmental hazards'],['Report any new tremor, rigidity, or shuffling gait to RN immediately — may indicate antipsychotic reaction','Monitor for falls — extreme orthostatic hypotension risk','Do NOT administer antipsychotic to LBD patient without RN verification of provider order and diagnosis','Document hallucination descriptions — content, time of day, patient\'s response (distressed vs. curious)'])}
+    ${legalCard("For any patient with possible LBD receiving an antipsychotic order: document provider notification that LBD is the diagnosis, confirmation that the prescriber acknowledged the risk, and patient/family consent with black box warning discussion. Document hallucinations with specific descriptions — content, time, duration, patient affect.")}
+  `},
+  {id:'ftd',ico:'🧩',nm:'Frontotemporal Dementia',sub:'Personality Changes First',col:'c-amb',
+   title:'Frontotemporal Dementia (FTD)',sub2:'Frontal & Temporal Lobes · Behavior Before Memory · Often Misdiagnosed',
+   html:()=>`
+    ${infoCard('amb','What Makes FTD Different',['Frontal and temporal lobe degeneration — the regions governing personality, judgment, and behavior','Behavior changes PRECEDE memory loss — this is the opposite of Alzheimer\'s','Memory testing appears relatively normal early — this leads to psychiatric misdiagnosis','Younger onset: commonly diagnosed in 50s and 60s — affects working adults, spouses still working','Patients may not recognize their own behavioral changes — frontal lobe damage impairs self-awareness'])}
+    ${infoCard('red','Behavioral Presentation',['Disinhibition: socially inappropriate behavior — sexual comments, removing clothing in public, inappropriate laughter','Apathy: profound lack of motivation — not depression, but frontal executive failure','Compulsive behaviors: repetitive routines, rigid eating patterns, collecting objects','Dietary changes: sudden craving for sweets, overeating, food fixations','Empathy loss: appears cold, uncaring — devastating for family who knew them differently','Language variant FTD: primary progressive aphasia — language loss before behavioral changes'])}
+    ${infoCard('teal','Nursing Approach',['Do not personalize the behavior — disinhibition and empathy loss are neurological, not character flaws','Redirect without confrontation — distraction is more effective than reasoning','Maintain consistent structure — compulsive tendencies respond well to routine','Family education is critical — behavior changes are terrifying when family does not understand the diagnosis','Falls risk: often unaware of their own limitations — poor insight','Safety: disinhibition may lead to wandering, inappropriate social contact, financial exploitation risk'])}
+    ${scopeCard(['Assess for new behavioral changes and document with specific behaviors, not just labels','Safety assessment — poor insight increases risk','Support family understanding — FTD is often more emotionally devastating for families than other dementias'],['Monitor for behavioral escalation and document specific behaviors','Maintain consistent routines — reduces compulsive behavioral escalation','Report new behaviors or safety concerns to RN'])}
+    ${legalCard("Document specific behaviors with exact language — 'patient removed clothing in dining room at 1200' not 'patient was inappropriate.' This specificity protects the facility in behavioral management documentation and is essential for care plan justification.")}
+  `},
+];
+
+const behaviorsData=[
+  {id:'agit',ico:'😤',nm:'Agitation / Pacing',sub:'Decode the Need',col:'c-teal',
+   title:'Agitation & Pacing',sub2:'Unmet Need · Environment · Pain · Boredom',
+   html:()=>`
+    ${tblCard('teal','Behavior Decoder — Assess Before Acting',
+      [['Hunger or thirst','Meal timing, fluid intake, last offered snack','Offer water, snack, regular scheduled hydration'],
+       ['Pain','Grimacing, guarding, change in gait, holding body part','Pain scale, recent fall or injury, medication timing'],
+       ['Overstimulation','Noisy environment, multiple conversations, television','Quiet space, reduced stimulation, one-to-one engagement'],
+       ['Boredom / excess energy','No purposeful activity, long unstructured periods','Structured activity, walking program, purposeful task'],
+       ['Elimination need','Last void or bowel movement, facial expressions','Toileting schedule, check for constipation — this is the most missed cause'],
+       ['Pain from positioning','Time since repositioning, skin assessment','Reposition, pressure relief, comfort adjustment'],
+      ],
+      ['Possible Cause','Assess','Nursing Action'])}
+    ${infoCard('amb','What NOT To Do',[
+      'Do NOT immediately reach for the PRN — assess first every time',
+      'Do NOT use physical restraints — universally worsens agitation in dementia',
+      'Do NOT argue, correct, or reason — the cognitive pathway for logic is damaged',
+      'Do NOT raise your voice — tone and affect are preserved when words are not',
+      'Do NOT leave the resident alone if agitation is escalating — presence is therapeutic',
+    ])}
+    ${scopeCard(['Assess for medical causes — pain, infection, medication side effects, delirium','Order and interpret relevant assessments — UTI, impaction, pain scale','Notify provider when non-pharm fails and safety is at risk'],['Document specific behavior with time, duration, and triggers identified','Implement non-pharm interventions in order — pain check, toileting, hydration, activity','Report worsening or new onset agitation without identified cause to RN'])}
+    ${legalCard("Document: specific behavior description, duration, interventions tried (each with time and response), pain assessment performed (yes/no with scale used), last bowel movement, vital signs. If PRN given: document behavioral target, time given, reassessment at 1 hour with specific response described.")}
+  `},
+  {id:'sun',ico:'🌅',nm:'Sundowning',sub:'Circadian Disruption',col:'c-pur',
+   title:'Sundowning — Late-Day Agitation',sub2:'Circadian Rhythm Disruption · Evidence-Based Interventions',
+   html:()=>`
+    ${infoCard('pur','Why Sundowning Happens',['Circadian rhythm disruption: the suprachiasmatic nucleus (brain\'s internal clock) is damaged in dementia','Fatigue accumulates through the day — cognitive resources are depleted','Disrupted light-dark cycle: insufficient bright light during day, insufficient darkness at night','Hunger and thirst: late-afternoon glucose dip, dehydration compounds confusion','Overstimulation from shift change: new staff, new voices, increased activity at the exact wrong time'])}
+    ${infoCard('grn','Evidence-Based Intervention Protocol',['Morning bright light therapy (2,500–10,000 lux for 30–60 min): resets circadian clock via suprachiasmatic nucleus — reduces sundowning by up to 50% in studies','Structured late-afternoon activity: channels energy before the agitation window — walk, music, purposeful task at 3–4 PM','Earlier dinner: eating before 5 PM reduces hunger-driven late-day agitation','Familiar caregiver at end of shift: consistent staff reduces disorientation during transition','Environmental modification: dimmer lighting (not darkness), reduced noise, calming music at 5–6 PM','Elimination: check bowels and bladder before the sundowning window — constipation is a hidden driver'])}
+    ${infoCard('red','What Makes Sundowning WORSE',['Daytime napping: disrupts nighttime sleep consolidation — creates a vicious cycle','Restraints: dramatically increase agitation — never use for sundowning','Confrontation and argument: escalates rather than resolves','Benzodiazepines as a first response: worsen confusion, cause paradoxical agitation, increase falls','Skipping the activity window and hoping it resolves on its own'])}
+    ${scopeCard(['Assess for medical causes first — UTI, pain, constipation, medication changes','Implement and document bright light therapy protocol if ordered','Assess medication list for sleep-disrupting agents — notify provider'],['Implement late-afternoon activity per care plan','Check bowels and bladder before sundowning window each day','Document onset time, duration, specific behaviors, and what helped or did not help each day'])}
+    ${legalCard("Document sundowning events with: time of onset, duration, specific behaviors, interventions tried with response, and whether the event was better/worse/same compared to prior day. This trend documentation is essential for care plan adjustments.")}
+  `},
+  {id:'resist',ico:'🙅',nm:'Resisting Care',sub:'Fear · Pain · Control',col:'c-amb',
+   title:'Resisting Care — Fear, Pain & Loss of Control',sub2:'Change the Approach · Not the Resident',
+   html:()=>`
+    ${infoCard('amb','Why Residents Resist Care',['Fear: personal care is intimate — a confused person with dementia experiences care as a threat from strangers','Pain: repositioning, bathing, dressing cause pain in residents with arthritis, pressure injuries, or other conditions','Loss of control: the person who once managed their own body is now completely dependent — this is devastating and triggering','Invasion of personal space: approaching from the front, making eye contact, requesting compliance all register as confrontational','Communication breakdown: the resident cannot understand what is about to happen — surprise is frightening'])}
+    ${tblCard('grn','Approach Modification Strategies',
+      [['Change the approach angle','Come from the side, not the front — less threatening','Approach from the resident\'s dominant visual field'],
+       ['Narrate slowly as you go','Tell them what you are doing in simple, calm language — no questions','\'I\'m going to wash your arm now. Is that okay?\''],
+       ['Use favorite music','Familiar music activates positive memory and reduces defensive arousal','Music from their 20s–30s — ask family what they loved'],
+       ['Offer choices','\'Would you like your bath now or after breakfast?\' — control reduces resistance','Even if both options happen, the illusion of choice matters'],
+       ['Try a different caregiver','Resistance is often person-specific, not care-specific — familiar caregivers encounter less resistance','Consistent assignment is therapeutic'],
+       ['Come back later','An unsuccessful attempt escalates distress — waiting 30 minutes often changes the outcome entirely','Document attempt time and plan to return'],
+      ],
+      ['Strategy','Rationale','How to Implement'])}
+    ${scopeCard(['Assess for underlying pain before labeling resistance as behavioral','Revise care plan to include successful approaches — make them standard','Notify provider if resistance is causing safety issues or care gaps'],['Document successful approaches and share at handoff — this information saves future attempts','Implement care plan approach modifications before attempting personal care','Report care resistance that results in hygiene or safety concerns to RN'])}
+    ${legalCard("Document: care attempted, approach used, resident response, successful modification tried, and plan for next attempt. 'Patient refused bath' is incomplete. 'Patient refused bath at 0800, became verbally agitated with frontal approach. Bath reattempted at 1000 with music and side approach — tolerated with minimal resistance' is the documentation that protects the facility.")}
+  `},
+  {id:'wander',ico:'🚶',nm:'Wandering & Elopement',sub:'Safety Priority',col:'c-red',
+   title:'Wandering & Elopement Risk',sub2:'Environmental Safety · Communication Need · Risk Documentation',
+   html:()=>`
+    ${infoCard('red','Elopement Risk — Know Your Patients',['Elopement: leaving the facility without staff knowledge — potentially fatal','Assess every dementia admission for elopement risk — document in care plan','Elopement risk factors: younger cognitive age (believes they need to be somewhere), previous wandering history, day/night disorientation, access to exits','Wandering may not be elopement-intent: may be need-driven (looking for bathroom, hunger, disoriented)'])}
+    ${infoCard('amb','Why Residents Wander',['Looking for something: the bathroom, their home, their children, their job — their cognitive age is different from their calendar age','Excess energy: insufficient activity and movement creates the need to move','Overstimulation: wandering is sometimes an escape from a noisy or chaotic environment','Pain or discomfort: movement sometimes reduces pain — back pain, leg cramping','Habit: if they walked every evening before dementia, they may still feel that drive at the same time each day'])}
+    ${infoCard('grn','Environmental Safety Interventions',['Secured unit: locked dementia units provide perimeter safety without restraint','Exit camouflage: covering exit doors with curtains, wall murals, or stop signs reduces elopement — person with dementia does not recognize the door as an exit','Wander guard systems: electronic monitoring devices alert staff when a resident approaches exits','Safe walking paths: designated safe indoor walking loops allow wandering safely','Redirection to activity: structured evening walks with staff burns energy and reduces wandering urge'])}
+    ${scopeCard(['Elopement risk assessment on admission and with any new behavioral change','Activate elopement protocol if a resident cannot be located — follow facility policy','Review and update elopement risk on care plan','Notify provider and family of elopement events'],['Monitor exit-seeking behavior and report to RN','Implement redirection to safe walking path','Participate in elopement safety drills and know the facility protocol','Document any exit-seeking behavior with time, behavior description, and intervention'])}
+    ${legalCard("Elopement documentation is critical. Every exit-seeking behavior must be documented with time, specific behavior, staff intervention, and outcome. An actual elopement requires: time discovered missing, last known location and time, search protocol initiated, provider notified (time), family notified (time), return to facility or external response documented.")}
+  `},
+];
+
+const nonpharmData=[
+  {id:'music',ico:'🎵',nm:'Music Therapy',sub:'Preserved Memory Pathway',col:'c-pur',
+   title:'Music Therapy in Dementia',sub2:'Long-Term Memory · Emotional Regulation · Care Facilitation',
+   html:()=>`
+    ${infoCard('pur','Why Music Works in Dementia',['Musical memory is stored in the medial prefrontal cortex and the default mode network — these regions are relatively preserved until late-stage dementia','Even profoundly impaired residents who cannot speak or recognize family members often sing along to familiar songs — musical memory outlasts other memory systems','Familiar music (from the resident\'s 20s–30s) is the most potent — it activates autobiographical memory and emotional memory simultaneously','Music reduces cortisol (stress hormone) and increases dopamine — measurable neurochemical benefit'])}
+    ${infoCard('grn','Evidence-Based Applications',['During personal care: playing favorite music reduces resistance, agitation, and distress during bathing and dressing — transforms the care experience','For sundowning: familiar music at 4–5 PM creates a soothing anchor in the most difficult time of day','Group singing: activates social engagement, rhythmic processing, and language simultaneously — more cognitive demand than passive listening','Music and movement: even chair-based movement to music qualifies as exercise and cognitive engagement simultaneously'])}
+    ${infoCard('teal','Implementation',['Ask family for a list of favorite artists and songs from the resident\'s young adulthood — create an individualized playlist','Document music preferences in the care plan — this is clinical information, not a preference form','Use headphones for individual use during agitated periods — decreases environmental stimulation while providing the benefit','Playing music without knowing the resident\'s preferences is less effective — a country music fan does not benefit from classical music'])}
+  `},
+  {id:'activity',ico:'🎯',nm:'Meaningful Activity',sub:'Coloring is NOT Cognitive',col:'c-amber',
+   title:'Meaningful Activity vs. Passive Occupation',sub2:'Cognitive Engagement · Energy · Purpose',
+   html:()=>`
+    ${alertCard('<strong>Coloring is not a cognitive activity.</strong> It requires minimal executive function, no social engagement, and no language processing. Providing coloring books as the primary activity for dementia residents is passive occupation — not person-centered care. It keeps residents quiet. That is not the same as keeping them well.')}
+    ${tblCard('amb','Activity Level by Cognitive Stage',
+      [['MCI / Early','Full group cognitive programming','Trivia, current events, life review, book club, craft with complex steps','Active engagement in decisions and planning'],
+       ['Moderate','Structured with guidance','Reminiscence therapy, simple cooking, music groups, CST sessions','One-on-one time to supplement group activities'],
+       ['Moderate-Severe','Sensory and procedural','Familiar songs, folding laundry, sorting objects, watering plants','Repetitive tasks match preserved procedural memory'],
+       ['Severe','Sensory stimulation','Hand massage, music, familiar scents, gentle touch, face-to-face engagement','Presence and comfort become the primary interventions'],
+      ],
+      ['Cognitive Stage','Activity Type','Examples','Nursing Role'])}
+    ${infoCard('grn','What Counts as Cognitive Activity',['Reminiscence therapy: sharing memories, looking at photos, discussing historical events — activates long-term memory and language','Cognitive Stimulation Therapy (CST): evidence-based group program endorsed by NICE — uses themed activities to stimulate cognition and social interaction','Word games, simple trivia, category fluency: requires active retrieval, language processing, and working memory','Purposeful tasks: sorting mail, folding towels, organizing items — uses procedural memory and gives a sense of purpose','Intergenerational activities: interacting with children or grandchildren — powerful social and emotional engagement'])}
+  `},
+  {id:'exercise',ico:'🏃',nm:'Movement & Exercise',sub:'BDNF · Hippocampal Volume',col:'c-grn',
+   title:'Movement & Exercise in Dementia',sub2:'Neuroplasticity · Behavior Reduction · Sleep Improvement',
+   html:()=>`
+    ${infoCard('grn','Why Exercise Is Neuroprotective',['BDNF (Brain-Derived Neurotrophic Factor): aerobic exercise increases BDNF — the brain\'s growth factor — promotes neurogenesis in the hippocampus','Hippocampal volume: aerobic exercise training increases hippocampal size 2% in older adults, reversing age-related atrophy (Erickson 2011)','Amyloid clearance: exercise increases cerebral blood flow and glymphatic function — supports amyloid clearance during sleep','Falls risk does NOT eliminate movement — adapted movement is the clinical answer'])}
+    ${infoCard('teal','SNF-Adapted Exercise Programs',['Chair yoga: flexibility, balance, breathing — accessible for all mobility levels — reduces anxiety and improves sleep','Group walking programs: even 10-minute slow walks improve mood, reduce agitation, and tire the body appropriately for nighttime sleep','Balloon toss / ball games: bilateral coordination, social interaction, laughter — powerful behavioral intervention','Dance therapy: music + movement = double benefit — procedural memory for familiar dances remains preserved','Resistance bands (adapted): maintains muscle mass — sarcopenia accelerates functional decline and increases fall risk'])}
+    ${infoCard('amb','The Timing Principle',['Morning movement: optimizes circadian rhythm alignment — reduces sundowning behavior','Afternoon activity (3–4 PM): channels energy during the sundowning window','Avoid exercise within 2 hours of bedtime: elevates arousal and delays sleep onset','Post-meal gentle movement: improves glycemic response, reduces aspiration risk, reduces post-prandial somnolence'])}
+  `},
+  {id:'routine',ico:'🗓️',nm:'Routine & Environment',sub:'Predictability is Therapeutic',col:'c-teal',
+   title:'Routine, Environment & Consistency',sub2:'Procedural Memory · Circadian Health · Caregiver Familiarity',
+   html:()=>`
+    ${infoCard('teal','Why Routine Is Therapeutic in Dementia',['Procedural memory — doing familiar things in familiar sequences — is preserved much longer than declarative memory in Alzheimer\'s','A consistent morning routine activates the procedural memory of self-care, reducing resistance and agitation','Unpredictability is a direct cause of behavioral escalation — every unfamiliar person, sound, or sequence requires the failing brain to re-process from zero','Consistent caregivers: the brain stores the caregiver as familiar even when cognitive memory fails — familiar people trigger safety rather than fear'])}
+    ${infoCard('grn','Environmental Modifications',['Lighting: eliminate shadows — shadows cause paranoia and fear in LBD patients; uniform bright lighting during day, dim (not dark) at night','Noise reduction: loud televisions, intercoms, and overlapping conversations overload the failing sensory filtering system','Visual cueing: label bathroom door, leave bathroom light on — reduces nighttime wandering and inappropriate elimination','Personal objects: familiar items from home on bedside table and in room activate autobiographical memory — reduce disorientation','Color contrast: high contrast between floor and walls, plate and table, food and plate — improves visual processing in dementia'])}
+    ${infoCard('pur','Consistent Assignment — The Undervalued Intervention',['Dementia residents assigned to the same 2–3 caregivers show measurably less behavioral escalation — the face is processed as safe even when the name is not remembered','Inconsistent assignment forces the resident to re-establish safety with every new caregiver — exhausting and distressing','Handoff quality matters: the oncoming caregiver who knows the resident\'s preferences, triggers, and successful approaches delivers better care than a stranger following a care plan'])}
+  `},
+];
+
+const medsData=[
+  {id:'cholinesterase',ico:'💊',nm:'Cholinesterase Inhibitors',sub:'Donepezil · Rivastigmine · Galantamine',col:'c-teal',
+   title:'Cholinesterase Inhibitors',sub2:'Donepezil (Aricept) · Rivastigmine (Exelon) · Galantamine (Razadyne)',
+   html:()=>`
+    ${infoCard('teal','Mechanism & Purpose',['Inhibit acetylcholinesterase — the enzyme that breaks down acetylcholine in the synapse','Result: more acetylcholine available for neuronal communication — partially compensates for cholinergic neuronal loss in Alzheimer\'s','Modest benefit: slows decline modestly — does not stop or reverse the disease','Indicated for mild to moderate Alzheimer\'s (donepezil approved for severe as well)','Rivastigmine: also available as a transdermal patch — reduces GI side effects significantly'])}
+    ${tblCard('amb','Side Effects & Monitoring',
+      [['Nausea/vomiting/diarrhea','Most common — especially at initiation and dose increase','Give with evening meal — slower titration — patch form reduces GI effects'],
+       ['Bradycardia','Can cause significant heart rate reduction — especially concerning in cardiac patients','Monitor heart rate — notify provider if HR < 55 or patient symptomatic'],
+       ['Insomnia/nightmares','CNS stimulation — especially with evening dosing of donepezil','Switch to morning dosing — notify provider if severe'],
+       ['Muscle cramps','Cholinergic effect on skeletal muscle','Reassure — usually mild — notify provider if significant'],
+       ['Syncope','Especially with bradycardia','Fall precautions — report to provider'],
+      ],
+      ['Side Effect','Mechanism','Nursing Action'])}
+    ${legalCard("Document heart rate with each medication administration if patient is on cholinesterase inhibitor + cardiac medications. Document GI complaints and provider notification if affecting medication compliance. Document sleep quality changes — insomnia affects cognition and behavior.")}
+  `},
+  {id:'memantine',ico:'🟦',nm:'Memantine',sub:'NMDA Receptor Antagonist',col:'c-pur',
+   title:'Memantine (Namenda)',sub2:'Moderate to Severe Alzheimer\'s · NMDA Receptor · Generally Well Tolerated',
+   html:()=>`
+    ${infoCard('pur','Mechanism & Purpose',['NMDA (N-methyl-D-aspartate) receptor antagonist — blocks excessive glutamate activity','Glutamate excitotoxicity: in dementia, excess glutamate damages and kills neurons — memantine reduces this damage','Indicated for moderate to severe Alzheimer\'s disease — often used in combination with cholinesterase inhibitors','Generally better tolerated than cholinesterase inhibitors — fewer GI side effects'])}
+    ${infoCard('teal','Side Effects & Nursing Considerations',['Dizziness — most common — especially at initiation. Fall precautions.','Confusion and headache — mild and usually transient — document if persistent','Constipation — monitor bowel pattern — constipation worsens behavioral symptoms in dementia','Hypertension — mild blood pressure elevation possible — monitor baseline','Renally cleared — reduce dose or avoid in significant renal impairment'])}
+    ${legalCard("Document fall risk assessment with any new dizziness complaint. Monitor and document blood pressure quarterly or per order. Document bowel pattern — memantine-related constipation contributes to behavioral escalation.")}
+  `},
+  {id:'antipsych',ico:'⚠️',nm:'Antipsychotics',sub:'BLACK BOX WARNING',col:'c-red',
+   title:'Antipsychotics in Dementia — Black Box Warning',sub2:'Last Resort Only · Increased Mortality · LBD Contraindication',
+   html:()=>`
+    ${alertCard('<strong>BLACK BOX WARNING (FDA 2005):</strong> Antipsychotic medications are associated with increased risk of death in elderly patients with dementia-related psychosis. They are NOT approved for dementia behavioral disturbances. They are a last resort — used only when non-pharmacological approaches have been tried and documented, and when the behavior poses genuine safety risk.')}
+    ${tblCard('red','Antipsychotics Used in Dementia (Off-Label)',
+      [['Quetiapine (Seroquel)','Preferred atypical — lower EPS risk','Sedation, orthostatic hypotension, QTc prolongation, metabolic effects'],
+       ['Risperidone (Risperdal)','More evidence for dementia behaviors','EPS risk (rigidity, tremor), orthostasis, QTc prolongation, cerebrovascular events'],
+       ['Olanzapine (Zyprexa)','Used for severe agitation','Significant sedation, metabolic syndrome, aspiration risk'],
+       ['Haloperidol (Haldol)','Older typical — higher EPS risk','AVOID in LBD — can cause irreversible severe Parkinsonism or death'],
+       ['Aripiprazole (Abilify)','Lower metabolic risk profile','Less sedating — may be better tolerated in some patients'],
+      ],
+      ['Medication','Notes','Monitor For'])}
+    ${infoCard('amb','Before ANY Antipsychotic — Document These Were Tried',['Non-pharmacological interventions: music, redirection, environmental modification, consistent caregiver, sensory stimulation — all documented with response','Pain assessment: pain was ruled out as the behavioral driver','Elimination: constipation and urinary retention were addressed','Medical causes: UTI, delirium, medication side effects were excluded','Provider was notified that non-pharm approaches have been exhausted'])}
+    ${legalCard("When an antipsychotic is administered to a dementia patient: document (1) all non-pharm interventions tried with response, (2) provider notified with time, (3) order received with time, (4) family consent discussion including black box warning with family member name and time, (5) specific behavioral target documented, (6) 1-hour reassessment with specific behavioral response. CMS surveys specifically audit antipsychotic documentation — this is a top survey deficiency.")}
+  `},
+  {id:'benzo',ico:'🔴',nm:'Benzodiazepines',sub:'HIGH RISK in Dementia',col:'c-amb',
+   title:'Benzodiazepines — High Risk in Elderly Dementia Patients',sub2:'Falls · Delirium · Respiratory Depression · Dependence',
+   html:()=>`
+    ${alertCard('<strong>Beers Criteria — Avoid in Older Adults with Dementia:</strong> Benzodiazepines are explicitly listed as potentially inappropriate medications in elderly patients. The risk-benefit calculation is unfavorable in most dementia patients. They worsen cognitive function, increase falls, cause paradoxical agitation, and create dependence. They are not a first-line behavioral intervention.')}
+    ${infoCard('red','Risks Specific to Dementia Patients',['Paradoxical agitation: benzodiazepines can WORSEN agitation in elderly dementia patients — the opposite of the intended effect','Delirium: directly cause and worsen delirium — delirium accelerates dementia progression','Falls: sedation + orthostatic hypotension + impaired proprioception = high fall risk with serious injury potential','Respiratory depression: reduced respiratory drive — aspiration pneumonia risk increases','Anterograde amnesia: cannot form new memories after dose — increases confusion and disorientation','Dependence and withdrawal: even short courses create physical dependence — abrupt discontinuation causes seizures in elderly'])}
+    ${infoCard('teal','Appropriate (Very Limited) Uses in Dementia',['Acute severe anxiety with identifiable, brief trigger (e.g., pre-procedure) — single dose, lowest dose','Active alcohol or benzodiazepine withdrawal — a clinical emergency where risk of seizure outweighs sedation risk','Palliative context: comfort-focused care where agitation reduction outweighs fall/cognitive risk','Not appropriate for: routine sundowning, chronic agitation, behavioral management, sleep initiation'])}
+    ${legalCard("Every benzodiazepine administration in a dementia patient must document: specific behavior prompting use, that non-pharm approaches were tried and documented, provider order received, patient weight and renal function considered, fall precautions implemented post-administration, respiratory rate documented, and 1-hour behavioral reassessment.")}
+  `},
+];
+
+const preserveData=[
+  {id:'mind',ico:'🥗',nm:'MIND Diet',sub:'53% Risk Reduction',col:'c-grn',
+   title:'MIND Diet — Mediterranean-DASH Intervention for Neurodegenerative Delay',sub2:'Morris 2015 · 53% Risk Reduction with High Adherence · SNF Adaptable',
+   html:()=>`
+    ${infoCard('grn','The Evidence',['Morris MC et al. (2015, Alzheimer\'s & Dementia): High adherence to MIND diet associated with 53% reduced risk of Alzheimer\'s disease — even moderate adherence showed 35% reduction','Combines Mediterranean diet and DASH diet with specific focus on brain-protective foods','Works through: reducing oxidative stress, lowering inflammation (CRP), improving cerebrovascular health, and supporting mitochondrial function','Does NOT require perfect adherence — every food substitution toward the MIND framework provides incremental benefit'])}
+    ${tblCard('teal','MIND Diet Foods in SNF Context',
+      [['🥬 Green leafy vegetables','Daily','Spinach, kale, collards — add to eggs, soups, casseroles'],
+       ['🫐 All other vegetables','Every other day','Any vegetables — aim for color variety'],
+       ['🫐 Berries','Twice weekly minimum','Blueberries, strawberries — frozen acceptable — add to oatmeal'],
+       ['🥜 Nuts','Daily snack','Walnuts highest in omega-3 — mixed nuts in small portions'],
+       ['🫒 Olive oil','Primary fat','Replace butter with olive oil in cooking when possible'],
+       ['🌾 Whole grains','3+ times daily','Oatmeal, whole grain bread, brown rice'],
+       ['🐟 Fish','Once weekly','Salmon, tuna, sardines — omega-3 fatty acids'],
+       ['🍷 Wine','Optional · moderate','One glass with meals — contraindicated in dementia medications — discuss with provider'],
+       ['❌ Red meat · butter · cheese · fried','Limit','These increase inflammatory burden — substitute when possible'],
+      ],
+      ['Food Group','Frequency','SNF Implementation'])}
+    ${legalCard("Document dietary preferences and MIND diet food substitutions in the care plan and nutritional assessment. Dietitian consultation for SNF MIND diet adaptation should be documented in the interdisciplinary care plan.")}
+  `},
+  {id:'sleep',ico:'💤',nm:'Sleep Optimization',sub:'Glymphatic System · Amyloid Clearance',col:'c-pur',
+   title:'Sleep Optimization — The Glymphatic Connection',sub2:'Xie 2013 · Amyloid Clearance · Every Dementia Resident',
+   html:()=>`
+    ${infoCard('pur','The Science',['Glymphatic system (Xie et al., 2013, Science): during sleep, the brain\'s glymphatic system becomes 10x more active — flushes amyloid, tau, and metabolic waste from the interstitial space','Poor sleep = amyloid accumulation — the primary driver of Alzheimer\'s pathology','Sleep architecture in dementia: less slow-wave sleep, less REM sleep — the most restorative phases are reduced','One night of sleep deprivation in a healthy young person produces measurable amyloid accumulation on PET scan — the relationship is that direct'])}
+    ${infoCard('teal','Evidence-Based Sleep Protocol',['Morning bright light exposure (2,500 lux for 30–60 min): resets suprachiasmatic nucleus — single most effective non-pharmacological intervention for sleep-wake cycle in dementia','Consistent bedtime routine: warm bath/washing, dimmed lights, quiet environment, familiar music — procedural memory of bedtime signals the brain','Eliminate daytime napping > 30 minutes: each 30-min daytime nap reduces nighttime sleep pressure by 30 minutes','Physical activity in the morning: elevates body temperature that then drops at night — temperature drop triggers sleep onset','Avoid caffeine after 2 PM: half-life is 5–6 hours — a 2 PM coffee may still be active at midnight in an elderly patient'])}
+    ${infoCard('red','Sleep-Disrupting Medications — Review Each Shift',['Diphenhydramine (Benadryl, Tylenol PM): anticholinergic — causes confusion, delirium, worsens sleep quality despite apparent sedation','Beta-blockers: reduce melatonin production — especially propranolol','Diuretics timed in the afternoon/evening: nocturia disrupts sleep — reschedule to morning','Steroids: if given in the evening, cause cortisol-driven arousal — reschedule to morning','Stimulating antidepressants (fluoxetine, bupropion): activate the brain — reschedule to morning'])}
+    ${legalCard("Document sleep quality at every shift handoff: hours slept, number of awakenings, nocturnal wandering, nocturnal agitation. This trending data identifies sleep deterioration before it becomes a behavioral crisis and justifies intervention orders.")}
+  `},
+  {id:'social',ico:'👥',nm:'Social Engagement',sub:'Neuroprotective · Isolation Risk',col:'c-teal',
+   title:'Social Engagement & Isolation Prevention',sub2:'Livingston 2020 · Social Isolation as Dementia Risk Factor · Caregiver Integration',
+   html:()=>`
+    ${infoCard('teal','The Evidence',['Livingston et al. (2020, Lancet Commission): Social isolation is among the top 12 modifiable risk factors for dementia — with an effect size comparable to hypertension','Social interaction stimulates the default mode network, language processing, and executive function simultaneously — it is high-level cognitive exercise','Chronic social isolation reduces BDNF (brain growth factor), increases cortisol, and accelerates hippocampal atrophy','The nursing home is paradoxically one of the highest-risk environments for social isolation — residents can go entire days without meaningful personal interaction'])}
+    ${infoCard('grn','Creating Social Connection in the SNF',['Group dining: eating together is social engagement — never underestimate its cognitive and emotional value','Purposeful interaction during care: narrating care, asking questions, sharing observations — every ADL is an opportunity','Intergenerational programming: visits from children, school programs, baby visits — the oldest preserved social response is warmth toward children','Family integration: structured family involvement in activities, not just visits — families who participate provide significantly more social benefit than families who watch','Consistent caregiver assignment: the most impactful daily social relationship a dementia resident has is with their primary caregiver'])}
+    ${legalCard("Document social engagement: group activity attendance, meaningful interactions during care, family visits and involvement. Isolation is a clinical finding — document it when present and document the intervention implemented.")}
+  `},
+];
+
+const docsData=[
+  {id:'sbar',ico:'📞',nm:'SBAR in Dementia',sub:'Structure Your Clinical Concern',col:'c-teal',
+   title:'SBAR — Dementia Behavioral Change Call',sub2:'Situation · Background · Assessment · Recommendation',
+   html:()=>`
+    ${infoCard('teal','Why SBAR Fails in Dementia Calls',['Nurses describe the behavior (Situation) and the background — but omit the Assessment: their clinical interpretation of what is causing the behavior','Without the Assessment, the provider makes a medication decision without the nurse\'s clinical reasoning — and often defaults to a PRN order','The Assessment is where nursing judgment lives: \'I think this is pain because she grimaces with left hip movement and had an unwitnessed fall risk event last night\'','The Recommendation is where clinical advocacy lives: \'I am requesting a pain assessment order before an antipsychotic order\''])}
+    <div class="dc teal"><div class="dch"><div class="dd"></div><div class="dlbl">SBAR TEMPLATE — DEMENTIA BEHAVIORAL CHANGE</div></div><div class="dcb">
+      ${[
+        {l:'S — SITUATION',c:'var(--teal)',t:'"Dr. [Name], this is [your name] calling about [resident name] in room [X]. I am calling because [he/she] has had [specific behavior description] for the past [time period] that is not responding to our usual non-pharmacological interventions."'},
+        {l:'B — BACKGROUND',c:'var(--blue)',t:'"[Resident name] is a [age]-year-old with [dementia type], baseline [brief cognitive description]. [His/Her] usual baseline is [describe]. [He/She] has no recent medication changes. [Last bowel movement was ___]. [Last meal intake was ___]. [Last void was ___]."'},
+        {l:'A — ASSESSMENT',c:'var(--amber)',t:'"I assessed for pain — [findings]. Vital signs are [vitals]. I am concerned this may be [your clinical interpretation: pain, delirium, infection, environmental cause] because [specific observation that supports your assessment]."'},
+        {l:'R — RECOMMENDATION',c:'var(--green)',t:'"I would like to request [specific intervention: pain assessment order, labs, antipsychotic hold, medication review]. I would also like to discuss whether [alternative] may be appropriate before [escalation]."'},
+      ].map(r=>`<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;">
+        <div style="background:${r.c};border-radius:5px;padding:3px 8px;font-size:9px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0;">${r.l}</div>
+        <div style="font-size:10.5px;color:var(--ink);font-style:italic;line-height:1.55;">${r.t}</div>
+      </div>`).join('')}
+    </div></div>
+    ${legalCard("Document every provider call: time of call, information communicated (S-B-A-R), provider response, orders received with time, your clinical opinion — even if not acted upon. 'Provider notified of behavioral change, no new orders given' is not adequate. Document what you communicated and what the clinical response was.")}
+  `},
+  {id:'handoff',ico:'🔄',nm:'Dementia Handoff',sub:'Baseline · Departure · Trends',col:'c-purple',
+   title:'Dementia-Specific Shift Handoff',sub2:'Establish Baseline · Document Departure · Pass Forward What Works',
+   html:()=>`
+    ${infoCard('pur','What Makes Dementia Handoff Different',['Cognitive baseline must be established first — "her baseline is she knows her name and asks for her daughter" — then the departure is meaningful','Without baseline context, a new nurse cannot distinguish a clinically significant change from normal variation','Trend recognition requires consistent documentation across shifts — you are building the clinical story, not just reporting on your shift'])}
+    ${tblCard('teal','Dementia-Specific Handoff Elements',
+      [['Cognitive baseline','State the resident\'s usual cognitive function specifically','Her baseline is mild restlessness that resolves with music and redirection'],
+       ['Today\'s departure','Specific departure from that baseline with time of onset','Today she was unable to identify her daughter and called out continuously from 1400–1600'],
+       ['Behavioral triggers','What triggered today\'s behavior — and what you figured out','We found she had not had a bowel movement in 3 days — addressed with intervention'],
+       ['What worked / didn\'t work','Specific interventions with response — pass this forward','Music and redirection failed; one-to-one walking at 1500 resolved the agitation within 20 min'],
+       ['PRN medications given','Time, behavioral indication, and specific response','Lorazepam 0.5 mg at 1600 for continuous agitation — patient resting quietly by 1700'],
+       ['Last bowel movement','Always — constipation is the most missed behavioral driver','Last BM documented: 2 days ago — bisacodyl given, watching for effect'],
+       ['Sleep last night','Awakenings, nocturnal wandering, total hours','Woke twice, wandered to hallway, redirected each time — total est. 5 hours'],
+       ['Appetite and intake','Meals consumed — percentage or description','75% breakfast, refused lunch — offered snack at 1400 — 50% consumed'],
+      ],
+      ['Element','Why It Matters','Example'])}
+    ${legalCard("Dementia handoff documentation creates the clinical trend record. Documenting the same baseline finding at every shift (even when unchanged) creates the legal record that change was monitored. A behavioral escalation without a documented baseline departure is legally defenseless.")}
+  `},
+  {id:'behaviors_doc',ico:'📝',nm:'Behavior Documentation',sub:'Specificity = Legal Protection',col:'c-blue',
+   title:'Behavioral Documentation Standards',sub2:'Specific Language · Non-Pharm First · PRN Documentation',
+   html:()=>`
+    ${infoCard('red','What You Must STOP Writing',['\'Patient was agitated\' — this is a label, not a description','\'Patient was combative\' — this is an interpretation with legal implications','\'Patient refused care\' — this is incomplete without context','\'Patient was confused\' — this is baseline in dementia; it tells the reader nothing','These are not documentation — they are shortcuts that leave you and your facility legally exposed'])}
+    ${infoCard('grn','What You Must START Writing',['\'Patient paced continuously in the hallway for 45 minutes, repeatedly asking for her mother, unable to be redirected with verbal interaction\'','\'Patient struck nurse\'s arm with open hand during morning bath — resisted approach from front, verbalized \'get away\' repeatedly\'','\'Patient refused morning bath at 0800 — became verbally agitated with frontal approach, calm at 0900 with music playing and side approach — bath completed\'','\'At baseline patient is calm with familiar caregivers and redirects within 1–2 minutes to music — today represents a significant departure: continuous agitation x 4 hours unresponsive to all standard interventions\''])}
+    ${tblCard('teal','Documentation Requirements for PRN Medication',
+      [['Before PRN','Non-pharm tried (list each)','Music tried at 1400 — no improvement; offered water — refused; pain scale assessed — denied pain, no grimacing; last void checked — voided 1 hour ago'],
+       ['PRN Administration','Drug, dose, route, time, behavioral target','Lorazepam 0.5 mg PO given at 1600 for continuous agitation unresponsive to non-pharmacological interventions'],
+       ['1-Hour Reassessment','Specific behavioral response','At 1700: patient resting in chair in room, no vocalization, redirected with minimal effort — behavioral target (continuous agitation) resolved'],
+       ['Provider notification','What was communicated, orders received','Provider [name] notified at 1530 of behavioral escalation — PRN order confirmed'],
+      ],
+      ['Timing','What to Document','Example'])}
+    ${legalCard("CMS surveyors specifically review antipsychotic and benzodiazepine documentation in dementia patients. The chart must show: (1) non-pharm interventions tried and documented, (2) medical causes excluded, (3) provider notified, (4) family consent including black box warning, (5) behavioral target defined, (6) post-medication reassessment with specific outcome.")}
+  `},
+];
+
+// FAMILY CONVERSATIONS — Static section
+const familyConvos=[
+  {q:'\"Why isn\'t she eating anymore?\"',a:'\"Her appetite has decreased, which is common as dementia progresses — the brain begins to lose its regulation of hunger and thirst signals. We are offering her favorite foods at her preferred times and encouraging dining room meals where the social environment can help stimulate her appetite. We also have a speech therapy evaluation scheduled to make sure her swallowing is safe. This is part of the disease process — it is not a sign that she is giving up.\"',color:'var(--teal)'},
+  {q:'\"Why doesn\'t she know who I am anymore?\"',a:'\"This is one of the hardest things families face — and it is completely understandable to grieve it. Her brain is no longer storing new memories well, and the connections to names and faces are being lost. But what is preserved is emotional memory — she responds to your presence even when she cannot name you. Your voice, your touch, the feeling of being with you — that is still reaching her. Consistent visits still matter deeply, even if she cannot express that recognition the way she used to.\"',color:'var(--purple)'},
+  {q:'\"She\'s never been violent at home — why does she hit the staff here?\"',a:'\"What looks like aggression is almost always communication — she may be experiencing fear, pain, or feeling out of control during personal care. These are not personality changes; they are how her brain is expressing an unmet need. We are identifying her specific triggers and adjusting our approach — changing the caregiver angle, using music she loves during bathing, offering choices even when they are small. We would love to hear from you — what has always soothed her at home? That information is genuinely clinical data for us.\"',color:'var(--amber)'},
+  {q:'\"Why are you giving her so many medications? She seemed better when she was on fewer.\"',a:'\"That is a really important observation, and you are right to ask it. Older adults process medications very differently from younger people — the liver and kidneys slow down, the brain has fewer receptors, and what is therapeutic at 60 can have completely different effects at 85. We review her medications regularly with her provider, and we are always asking whether each medication is still providing more benefit than risk. I would like to schedule a formal medication review meeting with you and her provider — your observation about her functioning on fewer medications is exactly the kind of information we need in that conversation.\"',color:'var(--red)'},
+  {q:'\"Is this going to keep getting worse? How long does she have?\"',a:'\"That is a question we want to answer honestly because you deserve honesty. Dementia is a progressive disease — the trajectory is decline over time, though the pace varies significantly from person to person. What we cannot predict with precision is timing. What I can tell you is that we are focusing on everything that protects and supports her quality of life right now — meaningful activity, familiar faces, comfort, and dignity. If you would like to have a deeper conversation about what the future stages look like and how we plan for them together, I can arrange a family meeting with our social worker and her provider.\"',color:'var(--green)'},
+  {q:'\"Can she get that new Alzheimer\'s drug I saw on the news?\"',a:'\"You may be thinking of Leqembi — it is a medication that can slow the progression of early-stage Alzheimer\'s disease in patients with confirmed amyloid pathology. It is a significant development. Whether she is a candidate depends on her current cognitive stage, her overall health, and confirming that the Alzheimer\'s-related protein is present in her brain. I can help you bring this question to her provider so we can have a proper conversation about whether it might be appropriate for her and what the evaluation process looks like.\"',color:'var(--blue)'},
+];
+
+// ── RENDER ──────────────────────────────────────────────────────────
+const allData={types:typesData,behaviors:behaviorsData,nonpharm:nonpharmData,meds:medsData,preserve:preserveData,docs:docsData};
+const activeItem={};
+const viewed=new Set();
+
+function buildGrids(){
+  Object.entries(allData).forEach(([tab,items])=>{
+    document.getElementById('g-'+tab).innerHTML=items.map(d=>`
+      <button class="dbtn ${d.col}" id="btn-${tab}-${d.id}" onclick="show('${tab}','${d.id}')">
+        <span class="dico">${d.ico}</span>
+        <div class="dnm">${d.nm}</div>
+        <div class="dsub">${d.sub}</div>
+      </button>`).join('');
+  });
+  // Family conversations static
+  document.getElementById('body-family-static').innerHTML=familyConvos.map(c=>`
+    <div class="convo" style="border-left-color:${c.color}">
+      <div class="convo-q">${c.q}</div>
+      <div class="convo-a">${c.a}</div>
+    </div>`).join('')+'<div style="height:80px;"></div>';
+}
+
+function show(tab,id){
+  const items=allData[tab];
+  const d=items.find(x=>x.id===id);
+  if(!d)return;
+  if(activeItem[tab]===id){
+    activeItem[tab]=null;
+    document.getElementById('d-'+tab).classList.remove('on');
+    document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b=>b.classList.remove('on'));
+    return;
+  }
+  activeItem[tab]=id;
+  viewed.add(tab+id);
+  updateProg();
+  document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b=>b.classList.remove('on'));
+  document.getElementById(`btn-${tab}-${id}`).classList.add('on');
+  document.getElementById('ico-'+tab).textContent=d.ico;
+  document.getElementById('title-'+tab).textContent=d.title;
+  document.getElementById('sub-'+tab).textContent=d.sub2;
+  document.getElementById('body-'+tab).innerHTML=d.html();
+  const dp=document.getElementById('d-'+tab);
+  dp.classList.add('on');
+  setTimeout(()=>dp.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function sw(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  viewed.add('tab-'+tab);
+  updateProg();
+}
+
+function updateProg(){
+  const total=Object.values(allData).reduce((a,v)=>a+v.length,0)+7+1;
+  document.getElementById('pf').style.width=Math.min(Math.round(viewed.size/total*100),100)+'%';
+}
+
+buildGrids();
+</script>
+</body>
+</html>

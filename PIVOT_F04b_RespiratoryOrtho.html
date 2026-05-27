@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-04b Respiratory & Ortho Devices — PIVOT Foundations Bootcamp</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05202A;--tdk:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--white:#FFFFFF;
+  --red:#C0392B;--amber:#E67E22;--green:#1E8449;
+  --purple:#6C3483;--blue:#1A5276;--orange:#BA4A00;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--fog);color:var(--ink);min-height:100vh;}
+.hdr{background:var(--ink);padding:14px 20px 12px;display:flex;align-items:flex-start;justify-content:space-between;}
+.mtag{font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.16em;text-transform:uppercase;}
+.htitle{font-size:15px;font-weight:600;color:var(--fog);margin-top:2px;}
+.hsub{font-size:10.5px;color:var(--muted);margin-top:1px;}
+.badge{background:var(--teal);color:#fff;font-size:9.5px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.prog{height:2px;background:rgba(2,128,144,.15);}
+.pfill{height:100%;background:var(--mint);transition:width .35s;}
+.tabs{display:flex;background:var(--ink);overflow-x:auto;border-bottom:2px solid rgba(2,128,144,.3);}
+.tab{flex-shrink:0;padding:9px 16px;font-size:10.5px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.tab:hover{color:var(--fog);}
+.tab.active{color:var(--mint);border-bottom-color:var(--mint);}
+.instr{background:var(--tdk);padding:6px 16px;font-size:10.5px;color:var(--fog);}
+.instr span{color:var(--mint);font-weight:500;}
+.sec{display:none;padding:12px 12px 90px;}
+.sec.active{display:block;}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:10px;}
+.dbtn{background:var(--white);border:1.5px solid rgba(2,128,144,.14);border-radius:9px;padding:10px 6px 8px;cursor:pointer;text-align:center;transition:all .18s;position:relative;overflow:hidden;}
+.dbtn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .18s;transform-origin:left;}
+.dbtn:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 12px rgba(2,128,144,.1);}
+.dbtn:hover::before,.dbtn.on::before{transform:scaleX(1);}
+.dbtn.on{background:var(--fog);}
+.c-red::before{background:var(--red);} .c-red.on{border-color:var(--red);}
+.c-amb::before{background:var(--amber);} .c-amb.on{border-color:var(--amber);}
+.c-teal::before{background:var(--teal);} .c-teal.on{border-color:var(--teal);}
+.c-grn::before{background:var(--green);} .c-grn.on{border-color:var(--green);}
+.c-pur::before{background:var(--purple);} .c-pur.on{border-color:var(--purple);}
+.c-blu::before{background:var(--blue);} .c-blu.on{border-color:var(--blue);}
+.c-org::before{background:var(--orange);} .c-org.on{border-color:var(--orange);}
+.dico{font-size:20px;margin-bottom:4px;display:block;}
+.dnm{font-size:9.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.dsub{font-size:8px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;}
+.dp{background:var(--white);border-radius:11px;border:1.5px solid rgba(2,128,144,.15);overflow:hidden;display:none;animation:sli .18s ease;}
+.dp.on{display:block;}
+@keyframes sli{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.dh{background:var(--tdk);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.dhico{font-size:18px;}
+.dhtitle{font-size:13px;font-weight:600;color:var(--fog);}
+.dhsub{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase;margin-top:1px;}
+.dbody{padding:13px 15px 15px;display:flex;flex-direction:column;gap:10px;}
+.dc{border-radius:7px;overflow:hidden;border:1px solid transparent;}
+.dc.red{background:#FEF0EE;border-color:rgba(192,57,43,.15);}
+.dc.amb{background:#FEF6EE;border-color:rgba(230,126,34,.15);}
+.dc.grn{background:#EAF5EE;border-color:rgba(30,132,73,.12);}
+.dc.teal{background:var(--fog);border-color:rgba(2,128,144,.18);}
+.dc.pur{background:#F5EEF8;border-color:rgba(108,52,131,.15);}
+.dc.blu{background:#EAF2F8;border-color:rgba(26,82,118,.15);}
+.dc.dark{background:var(--ink);border-color:var(--ink);}
+.dch{padding:6px 11px;display:flex;align-items:center;gap:6px;border-bottom:1px solid transparent;}
+.dc.red .dch{background:rgba(192,57,43,.07);border-color:rgba(192,57,43,.1);}
+.dc.amb .dch{background:rgba(230,126,34,.07);border-color:rgba(230,126,34,.1);}
+.dc.grn .dch{background:rgba(30,132,73,.07);border-color:rgba(30,132,73,.08);}
+.dc.teal .dch{background:rgba(2,128,144,.06);border-color:rgba(2,128,144,.12);}
+.dc.pur .dch{background:rgba(108,52,131,.07);border-color:rgba(108,52,131,.1);}
+.dc.blu .dch{background:rgba(26,82,118,.07);border-color:rgba(26,82,118,.1);}
+.dd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dc.red .dd{background:var(--red);}.dc.amb .dd{background:var(--amber);}
+.dc.grn .dd{background:var(--green);}.dc.teal .dd{background:var(--teal);}
+.dc.pur .dd{background:var(--purple);}.dc.blu .dd{background:var(--blue);}
+.dlbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.dc.red .dlbl{color:var(--red);}.dc.amb .dlbl{color:var(--amber);}
+.dc.grn .dlbl{color:var(--green);}.dc.teal .dlbl{color:var(--teal);}
+.dc.pur .dlbl{color:var(--purple);}.dc.blu .dlbl{color:var(--blue);}
+.dcb{padding:8px 11px 10px;}
+.fl{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.fl li{font-size:11px;color:var(--ink);padding-left:12px;position:relative;line-height:1.5;}
+.fl li::before{content:'›';position:absolute;left:0;font-weight:600;font-size:12px;line-height:1.35;}
+.dc.red .fl li::before{color:var(--red);}.dc.amb .fl li::before{color:var(--amber);}
+.dc.grn .fl li::before{color:var(--green);}.dc.teal .fl li::before{color:var(--teal);}
+.dc.pur .fl li::before{color:var(--purple);}.dc.blu .fl li::before{color:var(--blue);}
+.tbl{width:100%;border-collapse:collapse;font-size:10.5px;}
+.tbl th{background:var(--tdk);color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(2,128,144,.08);vertical-align:top;line-height:1.5;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:nth-child(even) td{background:rgba(2,128,144,.03);}
+.tbl td:first-child{font-weight:600;color:var(--tdk);white-space:nowrap;}
+.tbl td.action{color:var(--green);}
+.tbl td.escalate{color:var(--red);font-weight:500;}
+.scw{border-radius:7px;overflow:hidden;border:1.5px solid rgba(2,128,144,.22);}
+.sch{background:var(--teal);padding:5px 11px;}
+.sch span{font-size:9px;font-weight:600;color:#fff;letter-spacing:.1em;text-transform:uppercase;}
+.scc{display:grid;grid-template-columns:1fr 1fr;}
+.scol{padding:8px 11px;}
+.scol:first-child{border-right:1px solid rgba(2,128,144,.1);background:var(--fog);}
+.scol:last-child{background:var(--white);}
+.srole{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);margin-bottom:3px;}
+.si{font-size:10px;color:var(--ink);padding-left:13px;position:relative;line-height:1.45;margin-bottom:2px;}
+.si::before{content:'✓';position:absolute;left:0;font-size:9.5px;color:var(--teal);font-weight:600;}
+.leg{background:var(--ink);border-radius:7px;padding:10px 12px;display:flex;gap:8px;}
+.legi{font-size:12px;flex-shrink:0;margin-top:1px;}
+.legt{font-size:10px;color:var(--fog);line-height:1.6;}
+.legt strong{color:var(--mint);font-weight:500;}
+.shift-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.shift-col{border-radius:6px;padding:9px 11px;}
+.shift-col.assess{background:rgba(2,128,144,.06);border:1px solid rgba(2,128,144,.15);}
+.shift-col.maintain{background:rgba(30,132,73,.06);border:1px solid rgba(30,132,73,.12);}
+.shift-col.escalate{background:rgba(192,57,43,.06);border:1px solid rgba(192,57,43,.12);}
+.sc-hd{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.assess .sc-hd{color:var(--teal);}.maintain .sc-hd{color:var(--green);}.escalate .sc-hd{color:var(--red);}
+.sc-item{font-size:10px;color:var(--ink);padding-left:11px;position:relative;line-height:1.45;margin-bottom:2px;}
+.sc-item::before{content:'·';position:absolute;left:0;font-weight:700;}
+.assess .sc-item::before{color:var(--teal);}.maintain .sc-item::before{color:var(--green);}.escalate .sc-item::before{color:var(--red);}
+.ftr{background:var(--ink);padding:8px 18px;display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0;}
+.fbr{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.fn{font-size:8px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="mtag">F-04b · Foundations Bootcamp · PIVOT Clinical Series</div>
+    <div class="htitle">Respiratory & Ortho Devices — Clinical Reference</div>
+    <div class="hsub">Tracheostomy · CPAP/BiPAP/NIV · Orthopedic Devices · Maintenance · Troubleshooting · Patient Complaints</div>
+  </div>
+  <div class="badge">F-04b</div>
+</div>
+<div class="prog"><div class="pfill" id="pf" style="width:0%"></div></div>
+
+<div class="tabs">
+  <div class="tab active" onclick="sw('trach',this)">🫁 Tracheostomy</div>
+  <div class="tab" onclick="sw('niv',this)">😮‍💨 CPAP / BiPAP / NIV</div>
+  <div class="tab" onclick="sw('ortho',this)">🦴 Ortho Devices</div>
+</div>
+<div class="instr">Tap a device — <span>maintenance · troubleshooting · patient complaints · nursing interventions · escalation criteria</span></div>
+
+<div class="sec active" id="tab-trach">
+  <div class="dgrid" id="g-trach"></div>
+  <div class="dp" id="d-trach">
+    <div class="dh"><div class="dhico" id="ico-trach"></div><div><div class="dhtitle" id="title-trach"></div><div class="dhsub" id="sub-trach"></div></div></div>
+    <div class="dbody" id="body-trach"></div>
+  </div>
+</div>
+
+<div class="sec" id="tab-niv">
+  <div class="dgrid" id="g-niv"></div>
+  <div class="dp" id="d-niv">
+    <div class="dh"><div class="dhico" id="ico-niv"></div><div><div class="dhtitle" id="title-niv"></div><div class="dhsub" id="sub-niv"></div></div></div>
+    <div class="dbody" id="body-niv"></div>
+  </div>
+</div>
+
+<div class="sec" id="tab-ortho">
+  <div class="dgrid" id="g-ortho"></div>
+  <div class="dp" id="d-ortho">
+    <div class="dh"><div class="dhico" id="ico-ortho"></div><div><div class="dhtitle" id="title-ortho"></div><div class="dhsub" id="sub-ortho"></div></div></div>
+    <div class="dbody" id="body-ortho"></div>
+  </div>
+</div>
+
+<div class="ftr">
+  <div class="fbr">Innovative Care Concepts · F-04b · pivotclinicalseries.com</div>
+  <div class="fn">Educational use only · Not a substitute for facility policy</div>
+</div>
+
+<script>
+function shiftBlock(assess, maintain, escalate) {
+  return `<div class="shift-grid">
+    <div class="shift-col assess"><div class="sc-hd">🔍 Assess Each Shift</div>${assess.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+    <div class="shift-col maintain"><div class="sc-hd">🔧 Maintain / Intervene</div>${maintain.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+    <div class="shift-col escalate"><div class="sc-hd">🚨 Escalate If</div>${escalate.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+  </div>`;
+}
+function troubles(rows) {
+  return `<div class="dc amb"><div class="dch"><div class="dd"></div><div class="dlbl">🔧 Troubleshooting — Common Problems</div></div><div class="dcb">
+    <table class="tbl"><tr><th style="width:26%">Problem</th><th style="width:34%">Likely Cause</th><th style="width:40%">Nursing Action</th></tr>
+    ${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="${r[3]||'action'}">${r[2]}</td></tr>`).join('')}
+    </table></div></div>`;
+}
+function complaints(rows) {
+  return `<div class="dc teal"><div class="dch"><div class="dd"></div><div class="dlbl">💬 Patient / Nursing Complaints & Interventions</div></div><div class="dcb">
+    <table class="tbl"><tr><th style="width:30%">Complaint</th><th style="width:35%">Assessment</th><th style="width:35%">Intervention</th></tr>
+    ${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="action">${r[2]}</td></tr>`).join('')}
+    </table></div></div>`;
+}
+function scope(rn, lpn) {
+  return `<div class="scw"><div class="sch"><span>⚖️ Scope of Practice</span></div><div class="scc">
+    <div class="scol"><div class="srole">RN Scope</div>${rn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+    <div class="scol"><div class="srole">LPN Scope</div>${lpn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+  </div></div>`;
+}
+function legal(text) {
+  return `<div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Legal Shield:</strong> ${text}</div></div>`;
+}
+function infoCard(color, label, items) {
+  return `<div class="dc ${color}"><div class="dch"><div class="dd"></div><div class="dlbl">${label}</div></div><div class="dcb"><ul class="fl">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>`;
+}
+function redFlags(items) {
+  return `<div class="dc red"><div class="dch"><div class="dd"></div><div class="dlbl">🚨 Red Flags — Act Immediately</div></div><div class="dcb"><ul class="fl">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>`;
+}
+
+const trachData = [
+  {id:'trach', ico:'🫁', nm:'Tracheostomy', sub:'Airway · Care · Suctioning', col:'c-red',
+   title:'Tracheostomy — Complete Care Reference', sub2:'Airway Maintenance · Suctioning · Humidification · Mucolytics · Emergency Management',
+   html: () => `
+    ${infoCard('red','📋 Tracheostomy Basics — Know Before You Care',[
+      'Surgical airway through anterior neck into trachea — bypasses upper airway entirely',
+      'Types: cuffed (ventilated patients — seals airway for positive pressure), uncuffed (spontaneously breathing), fenestrated (allows vocalization)',
+      'Inner cannula (most trach tubes): removable inner tube — MUST be cleaned or replaced regularly — mucus plugs here first',
+      'Cuff pressure: 20–25 cmH2O — check every 8 hours — too high = tracheal mucosal ischemia, too low = aspiration around cuff',
+      'New tracheostomy (< 7 days): stoma not yet mature — emergency reinsertion extremely difficult — obturator at bedside ALWAYS',
+      'Bedside emergency supplies required AT ALL TIMES: same-size trach, one-size-smaller trach, obturator, bag-valve-mask, suction',
+    ])}
+    ${redFlags([
+      'Trach tube dislodged — cover stoma with sterile gauze — call 911 and RN — do NOT reinsert without trained clinician if < 7 days old',
+      'Complete airway obstruction — no air movement in or out — remove inner cannula immediately — attempt suctioning — call 911',
+      'SpO2 dropping despite O2 — respiratory distress — bag-valve-mask over stoma — call 911',
+      'Sudden bright red blood from trach — tracheoarterial fistula — apply pressure — call 911 immediately — life-threatening',
+      'Cuff pressure unachievable — cuff failure — notify provider immediately — aspiration risk',
+      'Subcutaneous emphysema around stoma — air leaking into tissue — notify provider',
+    ])}
+    ${shiftBlock(
+      ['SpO2 and respiratory rate — compare to baseline','Breath sounds bilateral — equal air entry','Trach tube position — external flange at skin level — not displaced','Cuff pressure (cuffed trach) — every 8 hours — target 20–25 cmH2O','Stoma site: erythema, breakdown, moisture, odor, granulation tissue','Secretion character: color, consistency, amount — compare to prior shift','Inner cannula — clean or replace per protocol','Trach ties/holder — secure but two-finger space under ties'],
+      ['Suction only when clinically indicated — crackles on auscultation, desaturation, visible secretions, patient-triggered cough','Pre-oxygenate with 100% O2 for 30–60 seconds before suctioning','Suction catheter size: no more than half the inner diameter of trach tube (Fr size = trach ID × 2)','Insert catheter without suction — apply suction on withdrawal only — rotate catheter — total suction time < 10–15 seconds','Allow 30 seconds to 1 minute between suction passes — oxygenate between passes','Inner cannula: remove and clean with normal saline or replace disposable — every 8 hours minimum or per order','Humidification: heated humidifier (ventilated), HME filter (heat-moisture exchanger — spontaneously breathing), trach collar/mist — DRY AIR = THICK SECRETIONS','Mucolytics: Acetylcysteine (Mucomyst) nebulized — breaks disulfide bonds in mucus — thins secretions — given before suctioning','Sodium chloride nebulization: 3% hypertonic — draws water into airway — loosens secretions','Stoma care: NS gauze to clean — dry gauze or purpose-made trach foam dressing under flange — keep stoma dry and clean','Trach ties: change every 24–48 hours — two-person technique for new or immature stomas'],
+      ['O2 saturation < 90% not correcting with suctioning and repositioning','Trach tube displaced or visibly out of position','Unable to pass suction catheter — complete obstruction suspected','Bloody sputum (bright red, not blood-tinged)','Cuff pressure not achievable or cuff audibly leaking around tube','Subcutaneous air palpable around stoma — crepitus','Respiratory distress unresponsive to immediate interventions — bag-valve-mask and 911']
+    )}
+    ${troubles([
+      ['Thick, difficult-to-suction secretions','Inadequate humidification, dehydration, infection','Increase humidification — add HME or heated humidifier — increase oral/IV hydration — nebulized NS or Mucomyst (Acetylcysteine) per order — suction technique review','action'],
+      ['Cannot advance suction catheter','Mucus plug in inner cannula, tube kinked, tube displaced','Remove inner cannula immediately — assess patency — if still obstructed, attempt suction through trach barrel — if no air movement, call 911','escalate'],
+      ['Desaturation with suctioning','Hypoxia from suctioning — normal risk','Limit suction to 10–15 sec — pre-oxygenate — allow recovery time between passes — bag-valve-mask if SpO2 < 85%','action'],
+      ['Granulation tissue at stoma','Friction, moisture, infection — common in long-term trach','Silver nitrate per order — moisture management — trach holder adjustment — notify provider','action'],
+      ['Cuff over-pressurized','Manual over-inflation, tracheal swelling','Adjust cuff pressure to 20–25 cmH2O — document — notify provider if unable to seal at correct pressure','action'],
+      ['Blood-tinged secretions','Trauma from suctioning, dry mucosa, infection','Assess suction technique (depth, size, pressure) — increase humidification — culture sputum per order — notify provider if bright red or increasing','escalate'],
+      ['Patient phonates (voices) through cuffed trach','Cuff leak or inadequately inflated cuff — aspiration risk in swallowing patients','Check cuff pressure — inflate to seal — notify provider — speech therapy/swallowing eval may be needed','action'],
+    ])}
+    ${complaints([
+      ['"I can\'t breathe / I am choking"','Mucus plug, tube displacement, anxiety, secretion buildup','Assess SpO2 — remove inner cannula — suction immediately — if no air movement, call 911 and bag-valve-mask over stoma'],
+      ['"My neck feels like it\'s burning"','Stoma irritation, infection, skin breakdown under flange','Assess stoma — change dressing — barrier cream — notify RN — provider call if infection signs'],
+      ['"I can\'t cough up what\'s in there"','Thick secretions, inadequate humidification, weak cough','Suction — increase humidification — nebulized mucolytic per order — cough assist device per RT/order'],
+      ['"The tube feels loose"','Trach ties loose, tube partially displaced','Check tube position and ties — do NOT leave patient — call RN — emergency supplies at bedside'],
+      ['"I want to talk"','Cuffed trach preventing phonation','Discuss cuff deflation trial with provider/speech therapy — fenestrated trach or speaking valve if appropriate — do NOT deflate cuff independently without order'],
+      ['Nursing: secretions are getting thicker','Inadequate humidification — VERY common SNF issue','Check HME filter — change HME — add heated humidifier — increase fluid intake — nebulized normal saline — Mucomyst per order'],
+      ['Nursing: suction isn\'t getting anything but patient sounds congested','Secretions too thick to suction effectively','Mucomyst nebulization before suctioning — hypertonic saline nebulization — increase humidification — cough assist'],
+    ])}
+    ${scope([
+      'Suction tracheostomy — assess need and perform safely',
+      'Perform trach tube changes (per facility policy and training)',
+      'Manage cuff pressure and cuffed trach complications',
+      'Respond to airway emergencies — tube displacement, obstruction',
+      'Order mucolytics, nebulized treatments, cultures per assessment',
+      'Coordinate with respiratory therapy and speech therapy',
+    ],[
+      'Suction tracheostomy per RN assessment and per policy — with documented competency',
+      'Clean or replace inner cannula per protocol',
+      'Perform stoma care and dressing change',
+      'Check and document cuff pressure per schedule',
+      'Administer ordered nebulized medications',
+      'Report: desaturation, secretion changes, stoma breakdown, displaced tube — IMMEDIATELY to RN',
+      'NEVER independently attempt to replace a displaced trach tube without RN present',
+    ])}
+    ${legal('Document: suction performed (catheter size, number of passes, secretion color/amount/consistency), inner cannula cleaned/replaced, cuff pressure (with time), stoma condition, humidification device in use, O2 saturation before and after suctioning, nebulized medications administered, and any emergency events with full timeline.')}
+  `},
+];
+
+const nivData = [
+  {id:'cpap', ico:'😮‍💨', nm:'CPAP / BiPAP / NIV', sub:'Non-Invasive Ventilation', col:'c-blu',
+   title:'CPAP / BiPAP / NIV — Non-Invasive Ventilation', sub2:'Mask Fit · Pressure Settings · Troubleshooting · Compliance · Complications',
+   html: () => `
+    ${infoCard('blu','📋 CPAP vs BiPAP vs NIV — Know the Difference',[
+      'CPAP (Continuous Positive Airway Pressure): single constant pressure — splints airway open — used for OSA, mild hypoxia',
+      'BiPAP (Bilevel Positive Airway Pressure): two pressures — IPAP (inhalation) and EPAP (exhalation) — EPAP is always lower — used for COPD, hypercapnic respiratory failure, sleep apnea with hypoventilation',
+      'NIV (Non-Invasive Ventilation): umbrella term — includes BiPAP used for acute or chronic respiratory failure in SNF post-acute patients',
+      'Common SNF patients: post-COPD exacerbation, obesity hypoventilation, CHF with respiratory compromise, post-respiratory failure step-down from hospital',
+      'Key difference from tracheostomy: patient can remove mask — compliance is a clinical issue — cannot force NIV on an unwilling patient',
+      'Home CPAP patient admitted to SNF: USE THEIR OWN MACHINE if possible — settings programmed to their needs — facility machine may not match',
+    ])}
+    ${shiftBlock(
+      ['Mask fit: proper seal — no major leaks — no pressure sores developing on bridge of nose or cheeks','Machine running with ordered settings: CPAP pressure (cm H2O) or BiPAP IPAP/EPAP settings','Respiratory rate, effort, SpO2 — is NIV achieving the goal?','Patient using device: compliance — especially nightly CPAP for OSA patients','Skin assessment under mask: nose bridge (most common), cheeks, forehead — redness = early pressure injury','Humidifier water level and function — heated humidifier prevents mucosal drying','Condensation (rain-out) in circuit tubing — collects water that patient inhales','Circuit integrity: no cracks, disconnections, air leaks audible from tubing'],
+      ['Mask fitting: try different mask styles if current causing skin breakdown — full face, nasal pillow, nasal mask','Mask cushion: ensure cushion is not cracked or deformed — replace per manufacturer schedule','Chin strap: if mouth breathing causing air leak from mouth (nasal mask only) — mouth breathing bypasses nasal CPAP seal','Position: HOB 30–45° — improves respiratory mechanics and reduces aerophagia (swallowed air)','Humidifier: heated humidification reduces dryness and improves tolerance — adjust humidity level if condensation excessive (rain-out) or mouth dry','Rain-out (condensation): insulate tubing or use heated tubing — empty collected water from tubing before use — patient inhaling water is distressing','Ramp feature: start at low pressure and increase to prescribed — reduces initial mask intolerance in new users','Nasal congestion management: saline nasal spray, nasal decongestant per order — congestion prevents nasal CPAP from working effectively'],
+      ['SpO2 < 90% on NIV — therapy not working — notify provider','Respiratory rate > 30 or labored breathing despite NIV — escalating respiratory failure','Patient in significant distress with mask on — claustrophobia, anxiety, panic — remove mask, assess, reapply if tolerated','CO2 retention signs: headache on waking, confusion, drowsiness, morning headache — BiPAP pressure adjustment may be needed','Persistent significant air leak despite mask adjustment — therapy is ineffective','New or worsening confusion during NIV — CO2 narcosis possible — remove mask, notify provider','Aspiration — vomiting into full face mask — remove mask immediately, clear airway, call 911']
+    )}
+    ${troubles([
+      ['Air leak from mask','Poor mask fit, wrong size, patient mouth breathing, mask cushion worn','Refit mask — try different style — add chin strap for mouth breathers — replace worn cushion — lower cushion pressure slightly','action'],
+      ['Skin breakdown on nose bridge','Pressure from mask — most common NIV complication','Mask fitting change — nose bridge pad/dressing (Mepilex lite) — alternate mask styles — notify provider for wound care order','action'],
+      ['Rain-out (water in tubing)','Heated air cooling in unheated tubing — condensation','Insulate or use heated tubing — check humidifier settings — position tubing with drain loop away from patient','action'],
+      ['Patient refuses mask nightly','Claustrophobia, discomfort, dryness, skin pain','Address specific complaint — nasal pillow mask (less claustrophobic) — adjust humidifier — pad mask — ramp feature — coordinate with RT/provider for mask change trial','action'],
+      ['Aerophagia (swallowed air causing distension)','Air entering esophagus instead of trachea — pressure too high or mouth breathing','Elevate HOB — chin strap — notify provider — IPAP pressure may need adjustment','action'],
+      ['Morning headache or confusion in COPD/BiPAP patient','CO2 retention — BiPAP not effectively eliminating CO2','Assess SpO2 and respiratory status — notify provider immediately — ABG may be needed — BiPAP settings review','escalate'],
+      ['Machine alarming (high or low pressure alarm)','Mask disconnected, significant leak, obstruction in circuit, patient off mask','Check all connections — assess patient respiratory status — notify provider if alarm persists with patient on mask','action'],
+    ])}
+    ${complaints([
+      ['"I can\'t sleep with this mask on"','Claustrophobia, discomfort, dryness, pressure sores','Identify specific complaint — address it specifically — mask style change, humidification, padding, ramp — document compliance and interventions'],
+      ['"My face hurts where the mask sits"','Pressure injury developing — COMMON on nose bridge','Assess skin — apply protective dressing — fit mask differently — notify RN — document skin findings with photo if available'],
+      ['"My nose is so dry" / "My mouth is so dry"','Inadequate humidification — very common complaint','Increase humidifier heat setting — add chinstrap if mouth breathing — saline nasal spray — document and notify RN'],
+      ['"I wake up with terrible headaches"','CO2 retention — serious — especially in COPD/obesity hypoventilation','Assess orientation — SpO2 — notify RN immediately — provider notification — BiPAP settings may need adjustment'],
+      ['"I feel bloated / gassy"','Aerophagia — air swallowing — CPAP/BiPAP pressure related','Elevate HOB — chin strap — notify RN — provider notification for pressure review'],
+      ['"The machine is blowing too hard"','Pressure may be appropriate but new to therapy — or pressure incorrectly set','Check ordered settings vs. machine settings — ramp feature — notify RN if settings do not match order'],
+    ])}
+    ${scope([
+      'Assess respiratory status and BiPAP/CPAP efficacy each shift',
+      'Adjust humidification settings within ordered parameters',
+      'Assess and manage NIV pressure sores — wound care orders',
+      'Notify provider of compliance issues, CO2 retention signs, skin breakdown',
+      'Coordinate with respiratory therapy for settings and circuit management',
+    ],[
+      'Apply and remove mask per order and patient tolerance',
+      'Check machine settings match ordered settings each shift — document',
+      'Assess mask fit and skin under mask each shift',
+      'Empty rain-out water from circuit before use',
+      'Check humidifier water level — refill with distilled water only',
+      'Report: refusal to use, skin breakdown, respiratory complaints, alarm issues, morning headache/confusion to RN',
+    ])}
+    ${legal('Document: NIV applied (time on, time off), settings verified vs. order (CPAP pressure or BiPAP IPAP/EPAP), mask type and fit assessment, skin condition under mask, humidifier function, SpO2 on and off device, compliance (hours of use), patient complaints, and any escalations with provider response.')}
+  `},
+];
+
+const orthoData = [
+  {id:'cast', ico:'🦴', nm:'Plaster / Fiberglass Cast', sub:'Immobilization', col:'c-amb',
+   title:'Cast — Plaster or Fiberglass', sub2:'Neurovascular Checks · Skin Integrity · Compartment Syndrome Prevention',
+   html: () => `
+    ${infoCard('amb','📋 Critical Principle — Compartment Syndrome',[
+      'A cast can become a tourniquet — swelling inside an unyielding cast compresses vessels and nerves',
+      'Compartment syndrome: muscle compartment pressure rises → ischemia → irreversible damage in 6–8 hours',
+      'Classic 6 P\'s: Pain (especially with passive stretch), Pressure, Pallor, Pulselessness, Paresthesia, Paralysis',
+      'Pain out of proportion to injury or increasing pain in a casted extremity = COMPARTMENT SYNDROME UNTIL PROVEN OTHERWISE',
+      'Paresthesia (tingling/numbness) is an early sign — paralysis is a late, catastrophic sign',
+      'Neurovascular checks every 1–2 hours post new cast, every shift once stable — NEVER skip',
+    ])}
+    ${redFlags([
+      '5 P\'s present — especially pain with passive stretch — emergency cast removal needed',
+      'Capillary refill > 3 seconds distal to cast',
+      'Absent or asymmetric pulses distal to cast — Doppler if needed',
+      'New numbness or tingling developing in casted extremity',
+      'Cast wet (plaster) — loses rigidity — structural failure — notify provider',
+      'Cast cracked, broken, or grossly soiled — provider notification for replacement',
+      'Foul odor or staining suggesting wound under cast — skin breakdown or infection',
+    ])}
+    ${shiftBlock(
+      ['Neurovascular check distal to cast: capillary refill (< 2 sec), skin color (pink vs. pale/blue), sensation (compare bilaterally), movement (distal digits), pulse (radial or dorsalis pedis), temperature (warm vs. cool)','Pain level: pain out of proportion or increased pain = RED FLAG','Swelling: digits visible at cast edges — swollen fingers/toes suggest cast too tight','Cast integrity: cracks, soft spots (wet plaster), soiling, odor','Cast edges: skin irritation or breakdown at cast brim'],
+      ['Elevate casted extremity above heart level for first 24–48 hours — reduces swelling','Encourage active movement of exposed distal digits — reduces DVT risk and venous stasis','Ice applied over cast for first 24–48 hours — reduces swelling — wrap ice, never apply directly','Do NOT wet a plaster cast — fiberglass is water-resistant but not waterproof for all patients — cast cover for bathing','Never insert objects under cast to scratch — use cool air from blow dryer instead','Inspect cast edges — pad rough edges with moleskin per order — protect skin from abrasion','Neurovascular checks: every 1–2 hours for new cast, every shift once stable'],
+      ['Pain with passive stretch of digits — compartment syndrome','Increasing pain not controlled by ordered analgesia','Capillary refill > 3 seconds','Pallor, pulselessness, or blue/mottled digits','New paresthesia developing after cast placement','Cast wet, cracked, or grossly soiled','Fever with foul odor — wound infection under cast']
+    )}
+    ${troubles([
+      ['Patient reports severe itch under cast','Normal — dry skin under cast','Cool blow dryer air into cast — knocking on outside of cast — NEVER insert objects — antihistamine per order','action'],
+      ['Toes/fingers swollen','Too much swelling inside cast — circulation at risk','Elevate above heart immediately — neurovascular check — if CRT > 2 sec or color change, notify provider STAT','escalate'],
+      ['Cast soft or wet','Plaster cast wet — structural failure','Keep elevated — contact provider — cast likely needs replacement — do not bear weight on wet cast','escalate'],
+      ['Odor from cast','Wound under cast, skin maceration, infection','Notify provider — wound assessment through cast window or cast removal may be needed','escalate'],
+      ['Pain increasing despite analgesia','Compartment syndrome until proven otherwise','Full neurovascular check — elevate — NOTIFY PROVIDER IMMEDIATELY — do not delay','escalate'],
+    ])}
+    ${complaints([
+      ['"My toes/fingers are tingling or numb"','Early compartment syndrome or nerve compression — URGENT','Full neurovascular check immediately — notify RN — escalate to provider — do not reassure without assessment'],
+      ['"It itches terribly inside"','Normal dry skin under cast','Cool blow dryer — knock gently — antihistamine per order — never objects inside cast'],
+      ['"My cast feels too tight"','Swelling — cast may need splitting or bivalving','Elevate — full neurovascular check — notify RN — provider notification if any neurovascular changes'],
+    ])}
+    ${scope(['Perform and interpret neurovascular assessments','Identify and escalate compartment syndrome signs','Coordinate emergent cast removal with provider','Assess wound under cast window per order'],['Perform neurovascular checks per order schedule — document every finding','Elevate extremity and apply ice per post-procedure order','Report any neurovascular changes, pain increase, or cast integrity issues to RN IMMEDIATELY','Never insert anything under cast — educate patient'])}
+    ${legal('Document: neurovascular check results in full (CRT time, color, sensation, movement, pulse quality, skin temperature) at every scheduled interval — a normal finding must still be documented; absence of documentation implies it was not assessed. Document pain level with each neurovascular check. Report and document any abnormality with exact time and provider notification.')}
+  `},
+
+  {id:'splint', ico:'🩼', nm:'Splint', sub:'Partial Immobilization', col:'c-grn',
+   title:'Splint — Partial Immobilization Device', sub2:'Neurovascular Monitoring · Padding Integrity · Position Maintenance',
+   html: () => `
+    ${infoCard('grn','📋 Splint vs. Cast — Key Difference',[
+      'Splint is open (does not fully encircle the limb) — allows for swelling better than a cast',
+      'Held in place by cotton padding and elastic (Ace) bandage wrap — NOT rigid circumferential plaster',
+      'Neurovascular compromise risk is lower than cast but still present — especially if Ace wrap applied too tightly',
+      'Ace wrap is the danger: too tight = neurovascular compromise; too loose = splint shifts and loses immobilization purpose',
+      'Common SNF splints: wrist (post-fracture, carpal tunnel), foot/ankle (fracture, post-surgery), knee (immobilizer)',
+      'Splints can be removed for hygiene if ordered — replace in exact same position',
+    ])}
+    ${shiftBlock(
+      ['Neurovascular check distal to splint (same as cast) — CRT, color, sensation, movement, pulse, temperature','Ace wrap tension: one finger should slide under wrap easily — too tight = vascular compromise','Splint position: has splint shifted or rotated? Is limb in ordered position?','Padding integrity: no pressure areas, no bunching, no openings in padding at bony prominences','Skin assessment at splint edges and at bony prominences under splint (heel, malleolus, olecranon)'],
+      ['Rewrap Ace bandage if too tight or too loose — use figure-of-8 technique for ankle — spiral for extremity — never circumferential tape alone','Pad bony prominences before rewrapping — heel, malleolus, fibular head are high-pressure areas in lower extremity splints','Elevate splinted extremity above heart level for first 24–48 hours','Skin inspection at each Ace wrap change — check for pressure areas under splint','If splint is removable per order: remove, inspect skin, reapply in same position, rewrap Ace'],
+      ['Pain with passive stretch — compartment syndrome (rare with splints but possible)','Neurovascular compromise (CRT > 2 sec, pallor, paresthesia)','Splint cracked or structurally failed','Significant skin breakdown under splint — wound developing','Ace wrap creating pressure mark or bruising']
+    )}
+    ${troubles([
+      ['Ace wrap too tight (patient complaining, digits discolored)','Over-wrapped, swelling increased','Rewrap Ace bandage — one-finger tension — neurovascular check before and after — notify RN','action'],
+      ['Splint has shifted position','Patient movement, poor immobilization','Reposition splint carefully to ordered position — rewrap — notify provider if significant displacement','action'],
+      ['Pressure sore developing under splint','Inadequate padding at bony prominence','Pad prominently — notify provider — may need splint adjustment or custom padding — wound care order','escalate'],
+    ])}
+    ${complaints([
+      ['"The wrap is too tight"','Ace bandage over-wrapped — neurovascular risk','Check CRT and sensation — rewrap with appropriate tension — document neurovascular check result'],
+      ['"My fingers/toes are numb"','Neurovascular compromise from wrapping or splint position','Full neurovascular check — loosen Ace — notify RN — provider if does not resolve within minutes'],
+      ['"The brace is rubbing my skin"','Pressure at bony prominence','Inspect skin — add padding — if wound present, notify RN — provider for wound care order'],
+    ])}
+    ${scope(['Perform and interpret neurovascular assessments','Identify and manage pressure areas — order wound care','Coordinate splint adjustment with orthotics if needed'],['Perform neurovascular checks per schedule','Rewrap Ace bandage when loose or too tight','Inspect skin at each rewrap','Report: neurovascular changes, skin breakdown, splint position changes to RN immediately'])}
+    ${legal('Document: neurovascular check at each assessment (all 6 components), Ace wrap tension assessment, splint position (correct/shifted), skin under splint (intact/erythema/breakdown with location and size), padding intact, and any provider notifications.')}
+  `},
+
+  {id:'boot', ico:'👢', nm:'CAM / Walking Boot', sub:'Controlled Ankle Motion', col:'c-teal',
+   title:'CAM Boot / Walking Boot', sub2:'Skin Protection · Weight-Bearing · DVT Prevention',
+   html: () => `
+    ${infoCard('teal','📋 Purpose & Common Issues',[
+      'Controlled Ankle Motion boot — rigid shell with adjustable air bladder — immobilizes ankle and foot post-fracture or surgery',
+      'Some are weight-bearing (WB), some are non-weight-bearing (NWB) — verify weight-bearing status from order before ambulation',
+      'Boot must be worn AS ORDERED — patients frequently remove boot for comfort — non-compliance delays healing',
+      'Common issues: pressure sores at heel and malleolus, DVT from reduced mobility, limb length discrepancy (need shoe lift on opposite foot to protect hip and spine), sock liner required',
+      'Boot creates limb length discrepancy: opposite limb is now "shorter" — hip and low back pain result — contralateral shoe lift is standard but frequently missed in SNF',
+    ])}
+    ${shiftBlock(
+      ['Boot worn as ordered — on correct foot, straps secured properly','Weight-bearing compliance — is patient bearing weight correctly per order?','Skin inspection every time boot is removed: heel, malleolus, dorsum of foot — pressure points','Neurovascular check distal to boot — CRT, sensation, movement, toe color','DVT signs: calf pain, calf swelling, warmth — immobility with dependent foot is a DVT risk','Sock liner: worn inside boot — prevents direct boot contact with skin'],
+      ['Sock liner mandatory under boot — prevents skin breakdown from direct rigid contact','Inspect skin at every boot application and removal — document what you find','Contralateral shoe lift: if patient ambulating — shoe or insert to equalize leg lengths — reduces hip and back strain','Strap tension: snug but not tight — check that straps are not cutting into skin','Elevate foot when patient is at rest — reduces swelling inside boot','DVT prophylaxis per order — boot patients often have reduced mobility — document compliance with anticoagulation'],
+      ['Skin breakdown at heel, malleolus, or any pressure point — do not replace boot until wound care addressed','Signs of DVT: unilateral calf swelling, warmth, pain — do not ambulate patient — notify provider','Neurovascular compromise with boot on','Patient weight-bearing in non-weight-bearing boot — fall and re-fracture risk','Boot strap creating pressure wound']
+    )}
+    ${troubles([
+      ['Skin breakdown under boot (heel or malleolus)','Friction, pressure, inadequate padding or sock liner','Remove boot — photograph wound — wound care per order — notify provider — padding adjustment — do not replace boot until provider review of wound','escalate'],
+      ['Patient refuses to wear boot','Discomfort, pain, inconvenience','Assess reason — padding — sock liner — strap adjustment — document refusal and education — notify provider if prolonged non-compliance','action'],
+      ['Hip or low back pain since boot','Limb length discrepancy from boot height','Contralateral shoe lift — notify provider — PT evaluation','action'],
+      ['Swollen calf on boot side','DVT — very common in immobile boot patients','Do not ambulate — notify provider immediately — DVT protocol','escalate'],
+    ])}
+    ${complaints([
+      ['"The boot is rubbing my heel or ankle"','Pressure injury developing','Remove boot — inspect skin — add padding or sock liner — notify RN — do not reapply if open wound without provider guidance'],
+      ['"My hip and back hurt since I got this boot"','Leg length discrepancy','Contralateral shoe lift — notify RN — PT consultation'],
+      ['"My leg hurts and is swollen"','DVT — URGENT','Do not ambulate — full assessment — notify RN immediately — provider call for DVT workup'],
+      ['"I keep taking it off because it\'s hot"','Normal — boot causes heat and discomfort','Document non-compliance — educate — assess skin — notify RN — provider notification for prolonged non-compliance'],
+    ])}
+    ${scope(['Verify weight-bearing orders before ambulation with patient in boot','Assess and manage DVT symptoms','Order wound care for skin breakdown under boot','Coordinate with PT for ambulation and contralateral shoe lift'],['Apply and remove boot per order','Inspect skin at every removal — document findings','Ensure sock liner present at every boot application','Report: skin breakdown, DVT signs, weight-bearing non-compliance, patient refusal to RN immediately'])}
+    ${legal('Document: boot applied (yes/no — every shift), sock liner present, weight-bearing status per order and patient compliance, skin inspection findings at each removal, contralateral limb assessment, DVT signs assessed, and any provider notifications.')}
+  `},
+
+  {id:'tlso', ico:'🦺', nm:'TLSO Brace', sub:'Thoracolumbar Spine', col:'c-purple',
+   title:'TLSO Brace — Thoracolumbar Sacral Orthosis', sub2:'Spine Surgery Post-Op · Brace Compliance · Skin Integrity',
+   html: () => `
+    ${infoCard('pur','📋 Critical Context — Post-Spine Surgery',[
+      'TLSO (clamshell brace): hard rigid brace for thoracic and lumbar spine stabilization after fracture or surgery',
+      'Applied BEFORE patient sits up or is mobilized — must be on BEFORE any position change out of supine',
+      'Common post-op indication: vertebral compression fracture, spinal fusion, spine trauma',
+      'Fit is provider/orthotics specific — do NOT adjust brace straps beyond comfort — contact orthotics if fit is wrong',
+      'Wearing protocol: typically worn whenever out of bed — confirm with provider order for specific protocol (some wear in bed)',
+      'Log roll for position changes: maintain spinal alignment when turning — do NOT let patient twist or flex spine',
+      'Most common complication: pressure injury at iliac crest, ribs, sternum — skin checks mandatory',
+    ])}
+    ${redFlags([
+      'Patient out of bed without TLSO applied — do not allow until brace is on',
+      'New or worsening radicular pain (shooting down legs) — spinal cord compromise',
+      'New urinary or bowel incontinence — cauda equina syndrome — EMERGENCY',
+      'Progressive weakness or numbness in legs — spinal cord compression',
+      'Brace cracked or broken — do not use — notify provider and orthotics',
+      'Deep pressure injury at contact points — do not replace brace over open wound without wound care and provider guidance',
+    ])}
+    ${shiftBlock(
+      ['Brace applied before any position change out of supine — verify before mobilization','Skin inspection under brace with each removal: iliac crest (anterior and posterior), rib margins, sternum, lumbar region — ALL contact points','Neurological: leg sensation and strength — comparison to prior — report any change','Pain level: back pain expected — new or worsening radicular pain (into legs) = escalate','Brace fit: straps at appropriate tension — patient can breathe but brace is not shifting','Bowel and bladder function — new changes = spinal compromise'],
+      ['Apply brace with patient supine before sitting or standing — never have patient flex spine to put brace on from sitting','Log roll technique for all position changes — two-person minimum — maintain spinal alignment','Thin T-shirt or stockinette under brace — prevents direct skin-to-brace contact — reduces friction and moisture','Inspect ALL contact points at each brace removal — the iliac crest is the most common breakdown site','Never apply a new TLSO or adjust fit without orthotics evaluation — improper fit causes pressure injuries and inadequate spinal stabilization','Brace compliance: document on/off times — non-compliance is a spinal safety issue — notify provider'],
+      ['Patient mobilizes without brace in place — spinal injury risk','New radicular symptoms — pain, numbness, weakness into legs','New bowel or bladder incontinence — CAUDA EQUINA EMERGENCY','Skin breakdown at brace contact point — especially iliac crest — deep or open wound','Brace damaged or no longer fitting correctly','Patient refuses brace consistently — document every refusal and notify provider']
+    )}
+    ${troubles([
+      ['Skin breakdown at iliac crest or rib margin','Pressure + friction from brace contact — very common','Remove brace — photograph and document wound — wound care per order — notify provider — orthotics consultation for brace padding modification','escalate'],
+      ['Brace does not fit after patient loses weight','Brace sized to admission weight — loose brace ineffective and causes pressure','Notify provider and orthotics — do not use ineffective brace — log roll precautions until refitted','escalate'],
+      ['Patient refusing brace consistently','Discomfort, denial, poor understanding','Educate on spinal stability risk — padding modification — address specific discomfort — notify provider every refusal — document'],
+      ['Cannot breathe comfortably in brace','Brace too tight at chest — especially in barrel-chested patients','Slightly loosen chest straps per order — if no improvement, notify orthotics — provider notification','action'],
+    ])}
+    ${complaints([
+      ['"I can\'t breathe in this brace"','Chest strap too tight or brace not sized correctly','Loosen chest strap slightly — assess respiratory rate and O2 — notify RN — orthotics if persistent'],
+      ['"My side is killing me where the brace sits"','Pressure injury at iliac crest developing','Remove brace — inspect skin — notify RN — orthotics consultation for padding'],
+      ['"My legs feel weird / numb / weak"','Possible neurological compromise — URGENT','Full neurological assessment — notify RN immediately — provider call — do not delay'],
+      ['"I refuse to wear this"','Non-compliance — spinal safety issue','Document refusal — educate — notify RN — provider notification required'],
+    ])}
+    ${scope(['Assess and document neurological status each shift','Identify and manage pressure injuries at brace contact points','Escalate neurological changes — cauda equina symptoms immediately','Coordinate orthotics for brace adjustments','Document patient refusal and provider notification'],['Apply brace per order before any position change out of supine','Log roll ALL position changes — two-person minimum','Skin inspection at every brace removal — document every contact point','Report: skin breakdown, neurological symptoms, refusal, brace damage to RN IMMEDIATELY'])}
+    ${legal('Document: brace applied before position change (yes/no — mandatory), skin inspection at each removal (all contact points named and assessed — intact/erythema/breakdown with dimensions), log roll technique used (yes/no), neurological assessment (bilateral lower extremity sensation and strength), patient compliance with brace protocol, and all provider notifications.')}
+  `},
+
+  {id:'aspen', ico:'🔵', nm:'Aspen Collar', sub:'Cervical Spine', col:'c-red',
+   title:'Aspen Collar — Cervical Orthosis', sub2:'Cervical Spine Stabilization · Skin Integrity · Airway Monitoring',
+   html: () => `
+    ${infoCard('red','📋 Critical Points — Cervical Collar in SNF',[
+      'Hard cervical collar (Aspen, Philadelphia) — immobilizes cervical spine post-fracture, cervical fusion, or trauma',
+      'Applied 24/7 in most protocols — some providers allow removal for hygiene only with log roll',
+      'Never remove without a provider order — even for hygiene',
+      'Log roll is MANDATORY for all position changes — cervical spine cannot flex, extend, or rotate',
+      'Most important complications: pressure injury at chin, occiput, clavicle — airway monitoring',
+      'Dysphagia risk: collar alters swallowing mechanics — aspiration risk increased — feeding precautions',
+      'Patients with cervical collars cannot manage their own airway effectively if they vomit — side positioning requires log roll',
+    ])}
+    ${redFlags([
+      'New arm weakness, numbness, or tingling — cervical cord compression — EMERGENCY',
+      'New or worsening neck pain — possible hardware failure or nonunion',
+      'Dysphagia worsening — aspiration risk — notify provider, speech therapy',
+      'Collar removed without provider order — repositioning without log roll — spinal injury risk',
+      'Patient vomiting — log roll to side immediately while maintaining spinal alignment',
+      'Pressure injury at occiput or chin — deep wounds here escalate quickly',
+    ])}
+    ${shiftBlock(
+      ['Collar on and properly fitted — chin resting in chin cup, occiput supported, straps at ordered tension','Skin inspection with each collar removal (if ordered): chin, occiput (back of skull), clavicles, ears — all contact points','Neurological: bilateral upper and lower extremity sensation and strength — report any change','Dysphagia assessment: coughing or choking with meals — refer to speech therapy','Airway status: patient able to manage secretions, no respiratory compromise from positioning','Pain: neck pain vs. incisional pain — new or worsening pain = provider notification'],
+      ['Log roll for ALL position changes — three-person for cervical collar patients — one person maintains head/neck alignment throughout — never flex or extend neck during log roll','Collar care — apply with patient supine only — chin first, then posterior component — secure straps','Cotton stockinette or skin liner under collar — reduces friction and moisture at contact points','Chin and occiput inspection at every collar hygiene change — these are highest pressure points','Dysphagia precautions: chin-tuck position if allowed, thickened liquids per ST order, small bites, upright for meals and 30+ minutes after','Oral hygiene with collar on: challenging — use small toothbrush, suction toothbrush if needed — aspiration risk with collar'],
+      ['New arm weakness, numbness, tingling, or loss of hand function — cervical cord emergency','New or worsening neck pain — especially with swallowing or position changes','Collar displaced or removed without order — do not reapply without RN present','Deep pressure injury at occiput — can progress to stage 3–4 rapidly in this location','Fever with dysphagia — aspiration pneumonia','Patient vomiting — log roll immediately to side — clear airway — notify RN']
+    )}
+    ${troubles([
+      ['Pressure sore at occiput','Immobility + collar contact + thin skin','Head repositioning — gel or foam padding at occiput — notify provider and wound care — orthotics consultation for collar modification — document wound every shift','escalate'],
+      ['Pressure sore at chin','Chin cup pressure — especially chin heavy patients','Padding inside chin cup — notify provider and orthotics — document wound','escalate'],
+      ['Patient choking on food','Dysphagia from collar — aspiration risk','Stop feeding — sit upright — assess respiratory status — notify RN — speech therapy evaluation — thickened liquids per order','escalate'],
+      ['Patient reports arm numbness','Cervical cord compromise — URGENT','Full neurological assessment — notify RN and provider IMMEDIATELY — do not move patient until assessed','escalate'],
+    ])}
+    ${complaints([
+      ['"My neck and head are killing me"','Contact pressure — assess for skin breakdown versus pain from cervical pathology','Inspect all contact points — padding — notify RN — provider notification for worsening pain'],
+      ['"I choke every time I eat"','Dysphagia — aspiration risk','Notify RN immediately — speech therapy referral — thickened liquids — proper positioning'],
+      ['"I can\'t feel my hands / arms the same"','Cervical cord compression — URGENT','Full neuro assessment — notify RN immediately — emergency provider notification'],
+      ['"I can\'t sleep — I can\'t get comfortable"','Expected discomfort — but assess for new neurological issue','Log roll assessment for pressure — padding — positioning pillow — notify RN if neurological complaints'],
+    ])}
+    ${scope(['Assess neurological status every shift — bilateral UE and LE','Perform collar changes with log roll — RN present for any new collar changes','Escalate any neurological change immediately — spinal cord compromise','Coordinate speech therapy for dysphagia assessment and diet modification','Assess and manage pressure injuries at collar contact points'],['Log roll ALL position changes — call for assistance — never position alone','Skin inspection at each collar hygiene change — document all contact points','Report: neurological changes, skin breakdown, dysphagia, pain changes, collar position changes to RN IMMEDIATELY','Do NOT remove collar without provider order and RN present'])}
+    ${legal('Document: collar in place and properly positioned (every assessment), skin inspection at every removal (chin, occiput, clavicles, ears — each location documented), log roll technique used with number of staff (yes/no and count), bilateral neurological assessment (upper and lower extremity sensation and strength), dysphagia signs assessed, and ALL provider notifications with time and response. Neurological change with delayed documentation is an indefensible chart.')}
+  `},
+];
+
+const allData = {trach:trachData, niv:nivData, ortho:orthoData};
+const activeItem = {};
+const viewed = new Set();
+
+function buildGrids() {
+  Object.entries(allData).forEach(([tab, items]) => {
+    document.getElementById('g-'+tab).innerHTML = items.map(d => `
+      <button class="dbtn ${d.col}" id="btn-${tab}-${d.id}" onclick="show('${tab}','${d.id}')">
+        <span class="dico">${d.ico}</span>
+        <div class="dnm">${d.nm}</div>
+        <div class="dsub">${d.sub}</div>
+      </button>`).join('');
+  });
+}
+
+function show(tab, id) {
+  const items = allData[tab];
+  const d = items.find(x => x.id === id);
+  if (!d) return;
+  if (activeItem[tab] === id) {
+    activeItem[tab] = null;
+    document.getElementById('d-'+tab).classList.remove('on');
+    document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b => b.classList.remove('on'));
+    return;
+  }
+  activeItem[tab] = id;
+  viewed.add(tab+id);
+  updateProg();
+  document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b => b.classList.remove('on'));
+  document.getElementById(`btn-${tab}-${id}`).classList.add('on');
+  document.getElementById('ico-'+tab).textContent = d.ico;
+  document.getElementById('title-'+tab).textContent = d.nm + ' — ' + d.title;
+  document.getElementById('sub-'+tab).textContent = d.sub2;
+  document.getElementById('body-'+tab).innerHTML = d.html();
+  const dp = document.getElementById('d-'+tab);
+  dp.classList.add('on');
+  setTimeout(() => dp.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+function sw(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  viewed.add('tab-'+tab);
+  updateProg();
+}
+
+function updateProg() {
+  const total = Object.values(allData).reduce((a, v) => a + v.length, 0) + 3;
+  document.getElementById('pf').style.width = Math.min(Math.round(viewed.size / total * 100), 100) + '%';
+}
+
+buildGrids();
+</script>
+</body>
+</html>

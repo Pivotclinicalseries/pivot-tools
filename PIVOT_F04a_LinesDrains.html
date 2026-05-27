@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-04a Lines, Tubes & Drains — PIVOT Foundations Bootcamp</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05202A;--tdk:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--white:#FFFFFF;
+  --red:#C0392B;--amber:#E67E22;--green:#1E8449;
+  --purple:#6C3483;--blue:#1A5276;--orange:#BA4A00;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--fog);color:var(--ink);min-height:100vh;}
+
+/* HEADER */
+.hdr{background:var(--ink);padding:14px 20px 12px;display:flex;align-items:flex-start;justify-content:space-between;}
+.mtag{font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.16em;text-transform:uppercase;}
+.htitle{font-size:15px;font-weight:600;color:var(--fog);margin-top:2px;}
+.hsub{font-size:10.5px;color:var(--muted);margin-top:1px;}
+.badge{background:var(--teal);color:#fff;font-size:9.5px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.prog{height:2px;background:rgba(2,128,144,.15);}
+.pfill{height:100%;background:var(--mint);transition:width .35s;}
+
+/* TABS */
+.tabs{display:flex;background:var(--ink);overflow-x:auto;border-bottom:2px solid rgba(2,128,144,.3);}
+.tab{flex-shrink:0;padding:9px 16px;font-size:10.5px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.tab:hover{color:var(--fog);}
+.tab.active{color:var(--mint);border-bottom-color:var(--mint);}
+.instr{background:var(--tdk);padding:6px 16px;font-size:10.5px;color:var(--fog);}
+.instr span{color:var(--mint);font-weight:500;}
+
+/* SECTIONS */
+.sec{display:none;padding:12px 12px 90px;}
+.sec.active{display:block;}
+
+/* DEVICE GRID */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:10px;}
+.dbtn{background:var(--white);border:1.5px solid rgba(2,128,144,.14);border-radius:9px;padding:10px 6px 8px;cursor:pointer;text-align:center;transition:all .18s;position:relative;overflow:hidden;}
+.dbtn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .18s;transform-origin:left;}
+.dbtn:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 12px rgba(2,128,144,.1);}
+.dbtn:hover::before,.dbtn.on::before{transform:scaleX(1);}
+.dbtn.on{background:var(--fog);}
+.c-red::before{background:var(--red);} .c-red.on{border-color:var(--red);}
+.c-amb::before{background:var(--amber);} .c-amb.on{border-color:var(--amber);}
+.c-teal::before{background:var(--teal);} .c-teal.on{border-color:var(--teal);}
+.c-grn::before{background:var(--green);} .c-grn.on{border-color:var(--green);}
+.c-pur::before{background:var(--purple);} .c-pur.on{border-color:var(--purple);}
+.c-blu::before{background:var(--blue);} .c-blu.on{border-color:var(--blue);}
+.c-org::before{background:var(--orange);} .c-org.on{border-color:var(--orange);}
+.dico{font-size:20px;margin-bottom:4px;display:block;}
+.dnm{font-size:9.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.dsub{font-size:8px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;}
+
+/* DETAIL PANEL */
+.dp{background:var(--white);border-radius:11px;border:1.5px solid rgba(2,128,144,.15);overflow:hidden;display:none;animation:sli .18s ease;}
+.dp.on{display:block;}
+@keyframes sli{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.dh{background:var(--tdk);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.dhico{font-size:18px;}
+.dhtitle{font-size:13px;font-weight:600;color:var(--fog);}
+.dhsub{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase;margin-top:1px;}
+.dbody{padding:13px 15px 15px;display:flex;flex-direction:column;gap:10px;}
+
+/* CARDS */
+.dc{border-radius:7px;overflow:hidden;border:1px solid transparent;}
+.dc.red{background:#FEF0EE;border-color:rgba(192,57,43,.15);}
+.dc.amb{background:#FEF6EE;border-color:rgba(230,126,34,.15);}
+.dc.grn{background:#EAF5EE;border-color:rgba(30,132,73,.12);}
+.dc.teal{background:var(--fog);border-color:rgba(2,128,144,.18);}
+.dc.pur{background:#F5EEF8;border-color:rgba(108,52,131,.15);}
+.dc.blu{background:#EAF2F8;border-color:rgba(26,82,118,.15);}
+.dc.dark{background:var(--ink);border-color:var(--ink);}
+.dch{padding:6px 11px;display:flex;align-items:center;gap:6px;border-bottom:1px solid transparent;}
+.dc.red .dch{background:rgba(192,57,43,.07);border-color:rgba(192,57,43,.1);}
+.dc.amb .dch{background:rgba(230,126,34,.07);border-color:rgba(230,126,34,.1);}
+.dc.grn .dch{background:rgba(30,132,73,.07);border-color:rgba(30,132,73,.08);}
+.dc.teal .dch{background:rgba(2,128,144,.06);border-color:rgba(2,128,144,.12);}
+.dc.pur .dch{background:rgba(108,52,131,.07);border-color:rgba(108,52,131,.1);}
+.dc.blu .dch{background:rgba(26,82,118,.07);border-color:rgba(26,82,118,.1);}
+.dd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dc.red .dd{background:var(--red);}.dc.amb .dd{background:var(--amber);}
+.dc.grn .dd{background:var(--green);}.dc.teal .dd{background:var(--teal);}
+.dc.pur .dd{background:var(--purple);}.dc.blu .dd{background:var(--blue);}
+.dlbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.dc.red .dlbl{color:var(--red);}.dc.amb .dlbl{color:var(--amber);}
+.dc.grn .dlbl{color:var(--green);}.dc.teal .dlbl{color:var(--teal);}
+.dc.pur .dlbl{color:var(--purple);}.dc.blu .dlbl{color:var(--blue);}
+.dcb{padding:8px 11px 10px;}
+
+/* LISTS */
+.fl{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.fl li{font-size:11px;color:var(--ink);padding-left:12px;position:relative;line-height:1.5;}
+.fl li::before{content:'›';position:absolute;left:0;font-weight:600;font-size:12px;line-height:1.35;}
+.dc.red .fl li::before{color:var(--red);}.dc.amb .fl li::before{color:var(--amber);}
+.dc.grn .fl li::before{color:var(--green);}.dc.teal .fl li::before{color:var(--teal);}
+.dc.pur .fl li::before{color:var(--purple);}.dc.blu .fl li::before{color:var(--blue);}
+
+/* TROUBLESHOOT TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:10.5px;}
+.tbl th{background:var(--tdk);color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(2,128,144,.08);vertical-align:top;line-height:1.5;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:nth-child(even) td{background:rgba(2,128,144,.03);}
+.tbl td:first-child{font-weight:600;color:var(--tdk);white-space:nowrap;}
+.tbl td.action{color:var(--green);}
+.tbl td.escalate{color:var(--red);font-weight:500;}
+
+/* SCOPE */
+.scw{border-radius:7px;overflow:hidden;border:1.5px solid rgba(2,128,144,.22);}
+.sch{background:var(--teal);padding:5px 11px;}
+.sch span{font-size:9px;font-weight:600;color:#fff;letter-spacing:.1em;text-transform:uppercase;}
+.scc{display:grid;grid-template-columns:1fr 1fr;}
+.scol{padding:8px 11px;}
+.scol:first-child{border-right:1px solid rgba(2,128,144,.1);background:var(--fog);}
+.scol:last-child{background:var(--white);}
+.srole{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);margin-bottom:3px;}
+.si{font-size:10px;color:var(--ink);padding-left:13px;position:relative;line-height:1.45;margin-bottom:2px;}
+.si::before{content:'✓';position:absolute;left:0;font-size:9.5px;color:var(--teal);font-weight:600;}
+
+/* LEGAL */
+.leg{background:var(--ink);border-radius:7px;padding:10px 12px;display:flex;gap:8px;}
+.legi{font-size:12px;flex-shrink:0;margin-top:1px;}
+.legt{font-size:10px;color:var(--fog);line-height:1.6;}
+.legt strong{color:var(--mint);font-weight:500;}
+
+/* SHIFT CHECK */
+.shift-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.shift-col{border-radius:6px;padding:9px 11px;}
+.shift-col.assess{background:rgba(2,128,144,.06);border:1px solid rgba(2,128,144,.15);}
+.shift-col.maintain{background:rgba(30,132,73,.06);border:1px solid rgba(30,132,73,.12);}
+.shift-col.escalate{background:rgba(192,57,43,.06);border:1px solid rgba(192,57,43,.12);}
+.sc-hd{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.assess .sc-hd{color:var(--teal);}.maintain .sc-hd{color:var(--green);}.escalate .sc-hd{color:var(--red);}
+.sc-item{font-size:10px;color:var(--ink);padding-left:11px;position:relative;line-height:1.45;margin-bottom:2px;}
+.sc-item::before{content:'·';position:absolute;left:0;font-weight:700;}
+.assess .sc-item::before{color:var(--teal);}.maintain .sc-item::before{color:var(--green);}.escalate .sc-item::before{color:var(--red);}
+
+/* FOOTER */
+.ftr{background:var(--ink);padding:8px 18px;display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0;}
+.fbr{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.fn{font-size:8px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="mtag">F-04a · Foundations Bootcamp · PIVOT Clinical Series</div>
+    <div class="htitle">Lines, Tubes & Drains — Clinical Reference</div>
+    <div class="hsub">Troubleshooting · Maintenance · Patient Complaints · Escalation Criteria · Scope of Practice</div>
+  </div>
+  <div class="badge">F-04a</div>
+</div>
+<div class="prog"><div class="pfill" id="pf" style="width:0%"></div></div>
+
+<div class="tabs">
+  <div class="tab active" onclick="sw('urine',this)">💧 Urinary</div>
+  <div class="tab" onclick="sw('gi',this)">🫁 GI & Ostomy</div>
+  <div class="tab" onclick="sw('drains',this)">🩸 Surgical Drains</div>
+  <div class="tab" onclick="sw('pleural',this)">🫁 Pleural</div>
+  <div class="tab" onclick="sw('vascular',this)">💉 Vascular Access</div>
+</div>
+<div class="instr">Tap a device — <span>shift assessment · maintenance · troubleshooting · patient complaints · escalation criteria</span></div>
+
+<!-- ══ URINARY ══ -->
+<div class="sec active" id="tab-urine">
+  <div class="dgrid" id="g-urine"></div>
+  <div class="dp" id="d-urine">
+    <div class="dh"><div class="dhico" id="ico-urine"></div><div><div class="dhtitle" id="title-urine"></div><div class="dhsub" id="sub-urine"></div></div></div>
+    <div class="dbody" id="body-urine"></div>
+  </div>
+</div>
+
+<!-- ══ GI & OSTOMY ══ -->
+<div class="sec" id="tab-gi">
+  <div class="dgrid" id="g-gi"></div>
+  <div class="dp" id="d-gi">
+    <div class="dh"><div class="dhico" id="ico-gi"></div><div><div class="dhtitle" id="title-gi"></div><div class="dhsub" id="sub-gi"></div></div></div>
+    <div class="dbody" id="body-gi"></div>
+  </div>
+</div>
+
+<!-- ══ SURGICAL DRAINS ══ -->
+<div class="sec" id="tab-drains">
+  <div class="dgrid" id="g-drains"></div>
+  <div class="dp" id="d-drains">
+    <div class="dh"><div class="dhico" id="ico-drains"></div><div><div class="dhtitle" id="title-drains"></div><div class="dhsub" id="sub-drains"></div></div></div>
+    <div class="dbody" id="body-drains"></div>
+  </div>
+</div>
+
+<!-- ══ PLEURAL ══ -->
+<div class="sec" id="tab-pleural">
+  <div class="dgrid" id="g-pleural"></div>
+  <div class="dp" id="d-pleural">
+    <div class="dh"><div class="dhico" id="ico-pleural"></div><div><div class="dhtitle" id="title-pleural"></div><div class="dhsub" id="sub-pleural"></div></div></div>
+    <div class="dbody" id="body-pleural"></div>
+  </div>
+</div>
+
+<!-- ══ VASCULAR ══ -->
+<div class="sec" id="tab-vascular">
+  <div class="dgrid" id="g-vascular"></div>
+  <div class="dp" id="d-vascular">
+    <div class="dh"><div class="dhico" id="ico-vascular"></div><div><div class="dhtitle" id="title-vascular"></div><div class="dhsub" id="sub-vascular"></div></div></div>
+    <div class="dbody" id="body-vascular"></div>
+  </div>
+</div>
+
+<div class="ftr">
+  <div class="fbr">Innovative Care Concepts · F-04a · pivotclinicalseries.com</div>
+  <div class="fn">Educational use only · Not a substitute for facility policy</div>
+</div>
+
+<script>
+// ── HELPERS ─────────────────────────────────────────────────────────
+function shiftBlock(assess, maintain, escalate) {
+  return `<div class="shift-grid">
+    <div class="shift-col assess"><div class="sc-hd">🔍 Assess Each Shift</div>${assess.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+    <div class="shift-col maintain"><div class="sc-hd">🔧 Maintain Patency</div>${maintain.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+    <div class="shift-col escalate"><div class="sc-hd">🚨 Escalate If</div>${escalate.map(i=>`<div class="sc-item">${i}</div>`).join('')}</div>
+  </div>`;
+}
+function redFlags(items) {
+  return `<div class="dc red"><div class="dch"><div class="dd"></div><div class="dlbl">🚨 Red Flags — Call Provider Now</div></div><div class="dcb"><ul class="fl">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>`;
+}
+function troubles(rows) {
+  return `<div class="dc amb"><div class="dch"><div class="dd"></div><div class="dlbl">🔧 Troubleshooting — Common Problems</div></div><div class="dcb">
+    <table class="tbl"><tr><th style="width:28%">Problem</th><th style="width:36%">Likely Cause</th><th style="width:36%">Nursing Action</th></tr>
+    ${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="${r[3]||'action'}">${r[2]}</td></tr>`).join('')}
+    </table></div></div>`;
+}
+function complaints(rows) {
+  return `<div class="dc teal"><div class="dch"><div class="dd"></div><div class="dlbl">💬 Patient Complaints & Nursing Response</div></div><div class="dcb">
+    <table class="tbl"><tr><th style="width:32%">Complaint</th><th style="width:38%">Assessment</th><th style="width:30%">Intervention</th></tr>
+    ${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="action">${r[2]}</td></tr>`).join('')}
+    </table></div></div>`;
+}
+function scope(rn, lpn) {
+  return `<div class="scw"><div class="sch"><span>⚖️ Scope of Practice — RN vs LPN</span></div><div class="scc">
+    <div class="scol"><div class="srole">RN Scope</div>${rn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+    <div class="scol"><div class="srole">LPN Scope</div>${lpn.map(r=>`<div class="si">${r}</div>`).join('')}</div>
+  </div></div>`;
+}
+function legal(text) {
+  return `<div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Legal Shield:</strong> ${text}</div></div>`;
+}
+function infoCard(color, label, items) {
+  return `<div class="dc ${color}"><div class="dch"><div class="dd"></div><div class="dlbl">${label}</div></div><div class="dcb"><ul class="fl">${items.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>`;
+}
+
+// ── DATA ─────────────────────────────────────────────────────────────
+
+const urineData = [
+  {id:'foley', ico:'💧', nm:'Foley Catheter', sub:'Indwelling Urethral', col:'c-teal',
+   title:'Indwelling Urinary Catheter (Foley)', sub2:'Infection Prevention · Patency · Patient Comfort',
+   html: () => `
+    ${infoCard('teal','📋 Purpose & Indications',['Urinary retention, accurate I&O monitoring, stage 3–4 pressure injury healing, palliative comfort','NOT appropriate: incontinence management alone (CAUTI risk), convenience — review necessity DAILY','CAUTI bundle: daily necessity review, hand hygiene, sterile insertion, secure catheter, bag below bladder, closed system'])}
+    ${shiftBlock(
+      ['Urine color, clarity, amount — compare to prior shift','Catheter secure to inner thigh — no traction on urethra','Drainage bag below bladder level at all times','Tubing free of kinks, loops, or compression under patient','Meatal care — clean with soap and water every shift','Bag emptied when 2/3 full — note volume and characteristics'],
+      ['Secure catheter to thigh — prevents traction trauma','Never lift bag above bladder level — retrograde contamination risk','Empty drainage bag routinely — do not allow to become full','Keep connecting tubing free of dependent loops','Do not disconnect system unnecessarily — closed system integrity prevents CAUTI','Ensure patient is adequately hydrated — concentrated urine forms sediment/clots'],
+      ['No urine output for 2+ hours despite adequate hydration','Urine output < 30 mL/hr — possible obstruction or AKI','Bright red hematuria or large clots — bleeding source','Fever ≥ 38.5°C with cloudy/foul urine — CAUTI until proven otherwise','Catheter has bypassed — leaking around catheter (bladder spasm, obstruction, wrong size)','Patient reports suprapubic pain, distension — possible obstruction']
+    )}
+    ${troubles([
+      ['No urine output','Kinked tubing, clot, sediment, catheter dislodged','Check tubing, reposition patient, attempt gentle manual flush per order — not an independent nursing action','escalate'],
+      ['Cloudy/dark urine','Dehydration (most common), early UTI, sediment buildup','Increase oral fluids if able, compare to baseline — notify provider if foul odor, fever, or WBC in urine','action'],
+      ['Catheter bypassing (leaking around)','Bladder spasm, catheter too large, obstruction, constipation','Check for constipation — treat, verify balloon inflated, notify provider if persistent — do NOT upsize catheter as first response','action'],
+      ['Catheter fell out / balloon deflated','Defective balloon, self-removal, trauma','Do not reinsert without order — apply absorbent pad, notify provider, document time, output before removal','escalate'],
+      ['Bloody urine (hematuria)','Trauma from insertion/manipulation, UTI, urologic pathology','Assess for trauma, increase fluids if able, notify provider — bright red with clots = urgent call','escalate'],
+      ['Resistance when inserting','Urethral stricture, false passage, sphincter spasm','STOP — do not force — notify provider — forcing causes urethral trauma','escalate'],
+    ])}
+    ${complaints([
+      ['"My catheter hurts / burns"','Bladder spasm, catheter too large, UTI, constipation','Check for kinks, assess for CAUTI signs, check for constipation — notify provider if persistent'],
+      ['"I can feel like I need to go"','Bladder spasm around catheter — normal but distressing','Explain bladder spasms vs. need to void — notify provider if severe, anticholinergics may be ordered'],
+      ['"My bag is full"','Drainage bag not emptied on schedule','Empty bag, document output, reassess emptying frequency'],
+      ['"It feels like the catheter is pulling"','Catheter not secured to thigh','Re-secure catheter to thigh — no tension on urethra'],
+    ])}
+    ${scope(['Insert, replace, and remove catheters','Irrigate catheter per order','Manage CAUTI protocol and daily necessity review','Assess for CAUTI and notify provider'],['Empty and document drainage bag','Perform meatal care every shift','Monitor urine characteristics and report changes to RN','Maintain closed system integrity — do not disconnect'])}
+    ${legal('Document: urine color (pale yellow/yellow/amber/cloudy/bloody), clarity (clear/hazy/turbid), volume each shift, catheter secured (yes/no), bag below bladder (yes/no), meatal care performed, CAUTI necessity review completed, and any provider notifications with time and response.')}
+  `},
+
+  {id:'spc', ico:'🔵', nm:'Suprapubic Catheter', sub:'Abdominal Wall', col:'c-blu',
+   title:'Suprapubic Catheter (SPC)', sub2:'Abdominal Insertion · Site Care · Patency',
+   html: () => `
+    ${infoCard('blu','📋 Purpose & What It Is',['Surgically placed catheter through abdominal wall directly into bladder — bypasses urethra entirely','Used for: long-term urinary drainage, urethral obstruction, neurogenic bladder, preference over urethral catheter for comfort','Balloon holds catheter in bladder — same mechanism as Foley but different site','Site is a WOUND — requires wound care and monitoring in addition to standard catheter care'])}
+    ${shiftBlock(
+      ['Insertion site: erythema, induration, drainage, granulation tissue','Catheter position — should not be excessively mobile or pulled out','Urine output, color, clarity every shift','Site dressing per facility protocol — clean and dry','Balloon integrity — do not deflate without provider order (catheter will fall out)','Tube secured to abdomen — prevents traction on site'],
+      ['Clean site with normal saline or per order — do NOT use hydrogen peroxide at mature site (cytotoxic to granulation tissue)','Apply clean dressing per protocol — keep site dry','Secure tubing to abdomen — avoid tension on insertion site','Same patency maintenance as Foley — check tubing, bag position, hydration','First replacement is provider-only — tract closes within hours if SPC removed accidentally'],
+      ['Catheter falls out — THIS IS AN EMERGENCY — tract closes within hours','No urine output 2+ hours','Fever with site redness, warmth, purulent drainage — site infection','Bright red urine or clots','Urine leaking around catheter with no output through catheter — obstruction']
+    )}
+    ${troubles([
+      ['SPC falls out accidentally','Traction, balloon failure, patient manipulation','Cover site with sterile dressing immediately — call provider URGENTLY — tract closes in hours — reinsertion time-sensitive','escalate'],
+      ['No urine output','Kinked tube, clot, sediment, tube migration','Check tubing — gentle repositioning — notify provider — do NOT attempt to reinsert','escalate'],
+      ['Site drainage / granulation tissue','Normal healing response at mature site, skin irritation','Silver nitrate to granulation tissue per order — barrier cream around site — notify provider if purulent drainage or cellulitis','action'],
+      ['Catheter bypassing (urine leaking around site)','Obstruction, catheter malposition, bladder spasm','Check for kinks, clots — notify provider — do not attempt catheter manipulation','escalate'],
+      ['Bloody site drainage','Granulation trauma, infection, internal irritation','Assess site carefully — apply light pressure — notify provider if heavy or persistent','action'],
+    ])}
+    ${complaints([
+      ['"My stomach hurts at the catheter site"','Site infection, traction on catheter, granulation tissue','Assess site — check catheter security — notify RN — provider notification if signs of infection'],
+      ['"Something is leaking around my tube"','Obstruction or catheter position issue','Assess drainage — check tubing — notify RN immediately'],
+      ['"My tube looks like it is coming out"','Catheter displacement — URGENT','Do not pull — stabilize catheter — notify RN and provider immediately'],
+    ])}
+    ${scope(['First SPC insertion and routine replacements — provider or RN per facility policy','Site assessment and care plan management','Notify provider of dislodgement immediately','Assess for infection and initiate treatment per order'],['Perform routine site care per protocol — normal saline cleanse, dressing change','Monitor urine output and site appearance','Report any site changes, reduced output, or catheter position concerns to RN immediately','Do not deflate balloon or attempt catheter manipulation'])}
+    ${legal('Document: site appearance (erythema/induration/drainage type), dressing applied, catheter secure and patent (yes/no), urine characteristics, and any dislodgement events — time of event, time provider notified, time of reinsertion if applicable. SPC dislodgement is a time-critical documentation event.')}
+  `},
+
+  {id:'urostomy', ico:'🫘', nm:'Urostomy', sub:'Urinary Diversion', col:'c-purple',
+   title:'Urostomy (Ileal Conduit)', sub2:'Pouch Management · Stoma Assessment · Skin Protection',
+   html: () => `
+    ${infoCard('pur','📋 Purpose & What It Is',['Surgically created opening (stoma) on abdomen that diverts urine after bladder removal or bypass — urine drains continuously into external pouch','Most common type: ileal conduit — small segment of ileum used as conduit for ureters to abdominal wall','Stoma: pink/red, moist, protrudes slightly — mucus is NORMAL in urine (intestinal mucus from conduit)','Pouch must have anti-reflux valve — prevents urine backflow to stoma','Night drainage bag recommended — prevents pouch from overfilling during sleep'])}
+    ${shiftBlock(
+      ['Stoma color and moisture — pink/red and moist = healthy','Stoma size and height — report any significant changes','Peristomal skin — erythema, denudation, undermining of wafer','Pouch seal integrity — no lifting edges, leaking, or ballooning','Urine output and characteristics — mucus strands normal, cloudiness abnormal','Pouch fill level — empty when 1/3 to 1/2 full'],
+      ['Empty pouch when 1/3 to 1/2 full — overfull pouches break the wafer seal','Change entire system (wafer + pouch) every 3–5 days or when seal shows signs of leaking','Apply barrier ring or paste to irregular peristomal surfaces before wafer placement — prevents undermining','Ensure correct wafer opening size — too large = peristomal skin exposure, too small = stoma trauma','Night drainage bag: connect to pouch spigot at bedtime — prevents overfilling and seal breakdown overnight','Adequate hydration — concentrated urine increases infection risk and crystal formation around stoma'],
+      ['Stoma turns dark purple, blue, or black — vascular compromise, urgent','Stoma retracted below skin level — may indicate hernia or adhesion issue','Stoma prolapse — extending significantly beyond normal protrusion','Urine output drops significantly without fluid deficit explanation','Bright red bleeding from stoma that does not stop with light pressure','Purulent urine, fever, flank pain — pyelonephritis']
+    )}
+    ${troubles([
+      ['Pouch leaking at wafer seal','Incorrect size cut, wrinkled seal, peristomal skin breakdown, overfull pouch','Empty pouch — change entire system — measure stoma and cut correct size — use barrier paste for irregular surfaces','action'],
+      ['Crystals around stoma (white deposits)','Alkaline urine — often from inadequate hydration or recurrent UTI','Increase fluids — apply dilute white vinegar compresses per order — ensure night drainage connected','action'],
+      ['Peristomal skin red/raw (denudation)','Urine contact with skin from leak, incorrect wafer size, adhesive reaction','Change system — apply barrier powder to denuded area before new wafer — correct wafer sizing — notify RN if widespread','action'],
+      ['Cloudy or foul-smelling urine','UTI (common with urostomy) vs. mucus strands (normal)','Increase fluids — note: mucus strands are NORMAL — foul odor with fever = UTI — notify provider','escalate'],
+      ['Pouch ballooning (fills with gas)','Gas from conduit/intestinal bacteria — common','Burp pouch (open drain valve briefly) — normal finding, reassure patient','action'],
+    ])}
+    ${complaints([
+      ['"My bag keeps falling off"','Poor seal, incorrect fit, peristomal skin breakdown, excessive activity','Assess stoma size and wafer cut — change system — consult ostomy nurse if persistent'],
+      ['"There is blood on my stoma"','Stoma friability — normal with light contact — or trauma from wafer edge','Light pressure with damp gauze — assess wafer fit — notify RN if does not stop in 5 minutes'],
+      ['"My urine smells very bad"','UTI (very common with urostomy) or dehydration','Assess for fever, flank pain, systemic signs — increase fluids — notify provider for urine culture'],
+      ['"My stoma looks different"','Color or size change — may indicate vascular issue or hernia','Assess stoma color immediately — dark = urgent provider notification'],
+    ])}
+    ${scope(['Initial ostomy education and system changes in early post-op period','Assess for complications — stoma necrosis, hernia, prolapse','Order supplies and coordinate ostomy nurse referral','Assess for UTI and obtain urine culture per order'],['Perform routine pouch empty and system change per protocol','Assess stoma color and peristomal skin each shift','Apply barrier products per established care plan','Report any stoma color changes, leaking, or patient complaints to RN immediately'])}
+    ${legal('Document: stoma color (pink/red/purple/black), size (measured at wafer change), peristomal skin condition (intact/erythematous/denuded — specify location and size), system change performed (date/time/wafer size/products used), urine output, characteristics, and any provider notifications.')}
+  `},
+];
+
+const giData = [
+  {id:'peg', ico:'🍽️', nm:'PEG Tube', sub:'Gastrostomy Feeding', col:'c-grn',
+   title:'PEG Tube — Percutaneous Endoscopic Gastrostomy', sub2:'Site Care · Feeding · Patency · Aspiration Prevention',
+   html: () => `
+    ${infoCard('grn','📋 Purpose & Placement',['Enteral feeding access through abdominal wall directly into stomach — used when oral intake is inadequate long-term','Bumper or balloon holds tube in place internally — external bumper sits flush against skin','New PEG (< 2 weeks): site is a fresh wound — treat as surgical wound','Mature PEG (> 4–6 weeks): site is healed — routine site care only','G-button (low-profile): same function as PEG but sits flush with skin — connected to extension set for feeding'])}
+    ${shiftBlock(
+      ['Site condition: erythema, granulation tissue, drainage, skin breakdown under external bumper','Tube placement verification before EVERY feeding — pH of aspirate (< 5 = gastric) or per facility auscultation policy','External bumper position — 0.5–1 cm of play (not too tight = pressure necrosis, not too loose = leaking)','Tube length at skin — mark and document — report any change in external length','Residual volume per order before feeding — hold if above facility threshold (typically > 250–500 mL)','Head of bed elevated 30–45° during feeding and 30–60 minutes after'],
+      ['Flush tube with 30 mL water before and after each feeding/medication — prevents clogging','Crush medications finely — mix with water — give each medication separately — flush between each','Do NOT crush enteric-coated, extended-release, or sublingual medications through PEG','Rotate tube 360° daily (mature PEG) — prevents buried bumper syndrome','If tube feels tight or won\'t rotate — assess for buried bumper — notify provider','Never clamp tube tightly — use designated port clamps or fold and secure'],
+      ['Tube displaced — pulled out or significantly changed external length','Residual > 500 mL or per order threshold — hold feeding, notify provider','Feeding backing up into tube or patient vomiting — aspiration risk','Site erythema spreading with fever — possible peritonitis','Significant abdominal pain or rigidity','Cannot pass medication or fluid through tube after warm water flush attempts']
+    )}
+    ${troubles([
+      ['Clogged tube','Medications, formula residue, inadequate flushing','Warm water flush with 30 mL — gentle pulsatile flush — pancreatic enzyme formula per order — do NOT use cola or wire','action'],
+      ['Leaking around tube site','Tube too loose, granulation tissue, infection, enlarged stoma track','Check bumper position — 0.5–1 cm from skin — notify provider — barrier paste/ring around site — do not overtighten bumper','action'],
+      ['Granulation tissue at site','Normal healing response — hypergranulation','Silver nitrate cauterization per order — barrier cream — notify provider','action'],
+      ['High residual','Delayed gastric emptying, positioning, constipation','Hold feeding per order threshold — position HOB 30° — assess for constipation — notify provider if persistent','escalate'],
+      ['Tube fell out (mature PEG)','Patient self-removal, trauma','Cover stoma with sterile dressing immediately — DO NOT insert anything — notify provider URGENTLY — stoma closes in hours','escalate'],
+      ['Formula backing up tubing','High residual, aspiration risk, incorrect position','STOP feeding — aspirate residual — elevate HOB — verify tube position — notify provider','escalate'],
+    ])}
+    ${complaints([
+      ['"My stomach hurts where the tube is"','Site infection, buried bumper, tube traction, constipation','Assess site — check bumper tightness — assess for constipation — notify RN if pain severe or site red/swollen'],
+      ['"I feel full all the time"','High gastric residual, slow motility, constipation','Assess residual — check bowel pattern — notify RN — may need feeding rate adjustment or motility agent'],
+      ['"Stuff leaks around my tube"','Bumper loose, overfull stomach, granulation tissue','Assess bumper and site — notify RN — barrier products for skin protection'],
+    ])}
+    ${scope(['Verify tube placement before each feeding','Assess residual and adjust per order','Manage high residuals — hold and notify provider','Assess for aspiration and buried bumper','Initial PEG placement and early post-procedure care','Troubleshoot dislodged tube — coordinate emergent reinsertion'],['Administer ordered feeding per established tube — after RN verifies placement','Flush tube per order schedule','Perform site care per protocol','Report tube length changes, site changes, patient complaints to RN immediately','Do NOT restart feeding after dislodgement without RN assessment'])}
+    ${legal('Document: tube placement verified (method used), residual volume and time, feeding rate and formula, site appearance, external tube length in cm, bumper position, medications administered (each listed separately), HOB elevation maintained, and any interruptions with reason.')}
+  `},
+
+  {id:'ng', ico:'👃', nm:'NG Tube', sub:'Nasogastric', col:'c-amb',
+   title:'Nasogastric Tube (NG)', sub2:'Placement Verification · Suctioning · Medication Administration',
+   html: () => `
+    ${infoCard('amb','📋 Purpose & Types',['Nasogastric tube: from nose through esophagus into stomach','Uses: decompression (remove gas/fluid), feeding, medication administration','Sump tube (Salem sump — blue pigtail): for suctioning — requires blue vent port to be kept open','Dobhoff/Corpak (weighted tip): soft tube for feeding — more comfortable, lower aspiration risk','ALL tubes require placement verification before ANY use — misplacement into lung is a never event'])}
+    ${shiftBlock(
+      ['External tube length at nose — mark with tape, document cm — report any change','Naris condition: irritation, pressure sore at nostril, tape securing tube without tension','Verify placement before EVERY feeding or medication — do NOT rely on auscultation alone (unreliable)','For sump tubes: blue vent port open to air — never clamp or submerge in fluid','HOB elevated 30–45° when feeding — maintain 30 minutes post-feeding','Suction drainage: color, amount, character — notify for bright red blood'],
+      ['Secure tube to nose and cheek — no pressure on naris — use foam tape and change securement daily','Keep blue vent port (sump tube) open to air — if clogged: inject air into blue port to unclog','Flush tube with 30 mL water before and after medications — each drug separately','Do NOT administer medications through tube used for suction without clamping suction first and verifying per policy','Irrigate sump tube with normal saline per order to maintain suction patency'],
+      ['Tube length changed at nose — tube may have migrated','Patient coughing, choking, or respiratory distress after tube use — possible pulmonary placement','Cannot aspirate fluid or get pH reading — do not proceed until placement confirmed','Vomiting around tube — possible obstruction or improper placement','Bright red blood in suction output','Patient reports extreme pain or resistance during insertion — STOP']
+    )}
+    ${troubles([
+      ['Tube will not flush','Kinked tube, clogged with medication residue','Check for external kink — warm water flush — if sump: inject air into blue vent port — notify provider if persistent','action'],
+      ['Tube migrated outward','Patient pulling, coughing, vomiting','Check external length against documented measurement — DO NOT advance tube — notify provider for re-verification','escalate'],
+      ['No suction drainage from sump','Vent port clogged, suction disconnected, tube migration','Check suction connection — inject 10 mL air into blue vent port to clear — check tube position','action'],
+      ['Patient coughing constantly','Tube in airway, esophageal irritation, pharyngeal irritation','STOP all tube use — assess respiratory status — notify provider immediately — do not assume it is esophageal','escalate'],
+      ['Naris breakdown at tube insertion point','Pressure from tube, tape reaction','Reposition tape — use foam nasal protector — consider opposite naris discussion with provider','action'],
+    ])}
+    ${complaints([
+      ['"My nose hurts where the tube is"','Pressure necrosis at naris, tape reaction','Reposition tape — apply foam protector — assess naris skin — notify RN'],
+      ['"I feel like I am going to gag"','Normal but distressing — pharyngeal irritation','Ice chips if permitted — reposition tube if possible — reassure — notify RN if persistent'],
+      ['"I feel sick to my stomach"','High residual, tube irritation, formula intolerance','Check residual — notify RN — assess HOB position'],
+    ])}
+    ${scope(['Verify NG placement by pH (acceptable) or x-ray (gold standard)','Remove NG tube per order','Assess for aspiration and airway complications','Manage suction drainage and adjust per order'],['Flush NG tube per order schedule','Administer ordered medications per protocol — after RN verifies placement','Perform naris care and tube securement','Report tube length changes, drainage changes, or patient complaints to RN immediately'])}
+    ${legal('Document: placement verification method and result (pH reading or x-ray confirmation), external tube length in cm at nose, naris condition, suction drainage amount and characteristics, each medication administered, HOB position during and after feeding, and any migration events with notification time.')}
+  `},
+
+  {id:'colostomy', ico:'🟤', nm:'Colostomy', sub:'Bowel Diversion', col:'c-org',
+   title:'Colostomy — Bowel Diversion', sub2:'Pouch Management · Output Monitoring · Stoma Health',
+   html: () => `
+    ${infoCard('amb','📋 Purpose & Output Characteristics',['Surgical opening of colon to abdominal wall — stool diverted into external pouch','Ascending colostomy: liquid output — similar to ileostomy — high water content','Transverse colostomy: semisolid output','Descending/sigmoid colostomy: formed stool — most common — lowest skin irritation risk','Output frequency varies by location — sigmoid colostomy may only drain once daily','Stoma: pink/red, moist, slightly protruding — dry or black = vascular emergency'])}
+    ${shiftBlock(
+      ['Stoma color and moisture — pink/red = healthy, dark/dusky = notify provider','Peristomal skin: erythema, denudation, undermining of wafer','Pouch seal — no lifting edges or leaking — ballooning (gas) is common and normal','Output characteristics: color, consistency, amount — compare to patient\'s baseline','Pouch fill level — empty when 1/3 to 1/2 full','No output for > 24–48 hours — assess for obstruction'],
+      ['Empty pouch when 1/3 to 1/2 full — overfilling breaks the seal','Change entire system every 3–5 days or when seal integrity compromised','Correct wafer opening: 1/8 inch larger than stoma base — too large = skin exposure, too small = stoma trauma','Barrier paste or rings for irregular peristomal surfaces','Encourage adequate hydration — prevents constipation and concentrated output','Assess bowel pattern — colostomy patients may still have constipation or obstruction'],
+      ['Stoma turns dark purple, blue, or black — vascular compromise, surgical emergency','No output for > 48 hours with abdominal distension','Stoma prolapse extending > 5–6 cm beyond skin','Stoma retraction below skin level — difficult seal, skin breakdown risk','Purulent peristomal drainage or spreading cellulitis','Bright red bleeding from stoma uncontrolled by light pressure']
+    )}
+    ${troubles([
+      ['Pouch leaking','Poor seal, incorrect fit, wrinkled wafer, skin breakdown, overfull','Empty pouch — change entire system — reassess wafer size — use barrier paste — notify RN if skin breakdown','action'],
+      ['Peristomal skin breakdown','Stool contact, incorrect fit, adhesive allergy','Barrier powder to denuded area — new correctly fitted system — notify RN — consider ostomy nurse referral','action'],
+      ['No output from colostomy','Constipation, obstruction, dietary changes, dehydration','Assess abdomen (distension, bowel sounds) — increase fluids — notify provider if no output > 48 hours or distension present','escalate'],
+      ['Excessive gas (ballooning)','Gas-forming foods, air swallowing — normal finding','Burp pouch (open filter) — normal finding — dietary counseling','action'],
+      ['Blood in stool output','Dietary (beets, etc.), anorectal issue, colonic pathology','Assess for true blood vs food — notify provider — test stool if available','escalate'],
+    ])}
+    ${complaints([
+      ['"My bag smells bad"','Normal output odor, diet-related, or infection','Assess for signs of infection — deodorizer drops in pouch — reassure — dietary review'],
+      ['"My skin is burning under the bag"','Peristomal skin breakdown — stool contact','Change system immediately — barrier powder — assess fit — notify RN'],
+      ['"My bag keeps coming off"','Poor seal, skin oiliness, sweating, incorrect size','Change system — assess fit — skin prep wipe before wafer — barrier ring — notify RN if persistent'],
+      ['"I have cramps but nothing is coming out"','Constipation, obstruction, food blockage','Assess abdomen — notify RN — provider notification for obstruction signs'],
+    ])}
+    ${scope(['Assess for stomal and systemic complications','Manage obstruction — provider notification','Order ostomy supplies and ostomy nurse referral','Educate patient on long-term management'],['Perform routine pouch empty and system change per protocol','Assess stoma color and peristomal skin each shift','Apply barrier products per established care plan','Report stoma color changes, no output, or skin breakdown to RN immediately'])}
+    ${legal('Document: stoma color, peristomal skin condition (specify location and type of breakdown), system change (date/time/products), output amount and characteristics, any no-output periods with abdominal assessment findings, and provider notifications.')}
+  `},
+
+  {id:'ileostomy', ico:'🟡', nm:'Ileostomy', sub:'High-Output Risk', col:'c-red',
+   title:'Ileostomy — HIGH OUTPUT RISK', sub2:'Volume Monitoring · Electrolyte Depletion · Dehydration Prevention',
+   html: () => `
+    ${infoCard('red','⚠️ HIGH-OUTPUT RISK — KNOW THIS',['Ileostomy output is LIQUID — bypasses entire colon where water reabsorption occurs','Normal output: 1,000–1,500 mL/day — MORE than a colostomy','High output ileostomy: > 1,500–2,000 mL/day — SERIOUS — risk of dehydration, electrolyte depletion (Na, K, Mg), acute kidney injury','High output triggers: infection, dietary changes, medications (antibiotics, PPIs, metformin), bowel obstruction proximal to stoma','This is why ileostomy patients frequently have electrolyte problems and readmissions — monitor output EVERY shift'])}
+    ${shiftBlock(
+      ['Output volume AND character EVERY shift — compare to patient\'s established baseline','Input vs. output — strict I&O for ileostomy patients','Signs of dehydration: dry mucous membranes, decreased urine output, tachycardia, orthostatic hypotension','Empty pouch every 2–4 hours during waking hours — high output = rapid filling','Electrolyte symptoms: muscle cramps (low Mg/K), confusion (low Na), weakness (low K)','Stoma color and peristomal skin — liquid output is extremely irritating to skin'],
+      ['Empty pouch every 2–4 hours — set schedule, do not wait until overfull','Change system every 2–3 days — liquid output degrades wafer faster than colostomy','Barrier ring or paste essential — liquid output tracks under wafer rapidly causing skin breakdown','Secure wafer completely — even small gaps lead to significant skin damage with liquid output','Encourage sodium-containing foods/fluids — colon is bypassed = salt wasting','Avoid high-fiber, high-sugar, high-fat foods in early post-op period — increase output'],
+      ['Output > 1,500–2,000 mL in 24 hours — HIGH OUTPUT ILEOSTOMY CRISIS','Urine output declining with high stoma output — dehydrating','Signs of electrolyte depletion: muscle cramps, palpitations, confusion, weakness','No output for > 4–6 hours — possible obstruction','Stoma turns dark or black','Peristomal skin completely denuded — unable to maintain seal']
+    )}
+    ${troubles([
+      ['High output (> 1,500 mL/day)','Infection, antibiotics, dietary, IBD flare, proximal obstruction','STRICT I&O — notify provider — may need IV fluid, electrolyte replacement, loperamide — assess for trigger','escalate'],
+      ['No output for > 4–6 hours','Food bolus obstruction (common), stricture, hernia','Assess abdomen — have patient change position and ambulate if safe — warm compress to abdomen — notify provider','escalate'],
+      ['Severe peristomal skin breakdown','Liquid stool contact due to leak or incorrect fit','Change system immediately — barrier powder + no-sting skin prep — consider convex wafer — notify ostomy nurse referral','action'],
+      ['Pouch leaking constantly','Liquid output volume exceeds seal capacity, incorrect fit','Increase change frequency — convex wafer if stoma is flat — barrier paste — notify RN and consider ostomy nurse','action'],
+    ])}
+    ${complaints([
+      ['"I feel dizzy when I stand up"','Dehydration from high output — orthostatic hypotension','Assess orthostatics — check output volume — increase oral fluids if able — notify RN — provider call if vitals change'],
+      ['"I have terrible leg cramps"','Electrolyte depletion — hypomagnesemia, hypokalemia — COMMON in ileostomy','Assess recent output volume — check labs if ordered — notify provider — magnesium and potassium may need replacement'],
+      ['"My skin is on fire under the bag"','Liquid stool contact — chemical burn from digestive enzymes','Change system immediately — barrier powder — notify RN'],
+      ['"Nothing is coming out"','Possible obstruction','Assess abdomen — notify RN immediately'],
+    ])}
+    ${scope(['Monitor and manage high output — IV fluid and electrolyte replacement per order','Assess for dehydration and AKI — obtain labs per order','Identify and address obstruction','Coordinate dietary consultation'],['Record output every 2–4 hours — report totals to RN each shift','Perform system changes per protocol','Identify and report patient complaints of dizziness, cramping, weakness — high output dehydration signs','Report any output > baseline or no output immediately to RN'])}
+    ${legal('Document: output volume at every emptying, 24-hour total, input vs. output balance, dehydration signs assessed (yes/no), electrolyte symptoms assessed, system change, peristomal skin condition, and any provider notifications for high output with exact volume and time.')}
+  `},
+];
+
+const drainsData = [
+  {id:'jp', ico:'🫙', nm:'Jackson-Pratt Drain', sub:'Closed Suction', col:'c-grn',
+   title:'Jackson-Pratt (JP) Drain — Closed Suction', sub2:'Bulb Suction · Output Monitoring · Site Care',
+   html: () => `
+    ${infoCard('grn','📋 Purpose & Mechanism',['Soft silicone round drain with perforated tubing — removes fluid from surgical wound or body cavity','Bulb creates gentle negative pressure (suction) when compressed — removes blood, seroma, lymphatic fluid','Prevents seroma and hematoma formation — promotes wound closure and healing','Typically placed intraoperatively — removed when output < 20–30 mL/24 hours (per provider order)'])}
+    ${shiftBlock(
+      ['Bulb compression status — should remain compressed (creating suction)','Drain output: volume, color, character — document each shift and emptying','Insertion site: erythema, induration, purulent drainage, tube security','Tube patency — no kinks, clots, or compression under patient','Suture or securement at insertion site intact','Number of drains (if multiple) — track each drain separately'],
+      ['Empty bulb every shift or per order — squeeze flat, clamp while squeezed, then release to restore suction','Record output each time drain is emptied — note color and character','Keep drain below wound level — prevents retrograde contamination','Secure drain tubing to patient clothing or gown — prevents accidental dislodgement','Do NOT uncap drain unnecessarily — closed system prevents infection','Milk drain tubing gently if fibrin clots are visible in tubing'],
+      ['Sudden increase in output (especially bright red) — possible arterial bleed','No output with bulb not maintaining compression — possible clot, kink, or tubing disconnection','Fever with purulent drain output — wound infection','Drain pulled out — cover site with sterile dressing immediately, notify provider','Crepitus around insertion site — gas-producing infection']
+    )}
+    ${troubles([
+      ['Bulb not holding compression (fills quickly)','Large volume output, suction leak, tubing disconnection','Check all connections — verify tubing not kinked — if output truly large, notify provider — reassess frequency','action'],
+      ['No output, bulb holds compression','Clot in drain, drain migrated, no fluid remaining','Check tubing for clot — gently milk tubing — if no output and wound has swelling, notify provider','action'],
+      ['Drain output becomes bright red','Active bleeding — postoperative hemorrhage','Apply pressure around — NOTIFY PROVIDER IMMEDIATELY — do not remove drain','escalate'],
+      ['Drain pulled out accidentally','Patient movement, traction on tubing','Apply sterile dressing to site — do not attempt reinsertion — notify provider','escalate'],
+      ['Purulent drain output with fever','Wound infection','Document character — notify provider — culture may be ordered','escalate'],
+    ])}
+    ${complaints([
+      ['"The drain is pulling on my skin"','Inadequate securement','Secure drain to gown or apply drain holder — no tension on insertion site'],
+      ['"It hurts at the drain site"','Normal surgical pain vs. infection developing','Assess site for redness, warmth, induration — notify RN — provider notification if infection signs present'],
+      ['"My drain looks blocked"','Fibrin clot in tubing','Gently milk tubing — notify RN if output does not resume'],
+    ])}
+    ${scope(['Assess drain site and wound status','Identify and manage complications — bleeding, infection','Remove JP drain per order when output criteria met','Order cultures from drain output if indicated'],['Empty and record JP drain output each shift','Reestablish bulb suction after emptying','Perform insertion site care per protocol','Report output changes, site changes, or drain dislodgement to RN immediately'])}
+    ${legal('Document: drain output each emptying (volume, color — sanguineous/serosanguineous/serous/purulent), cumulative 24-hour total, bulb suction maintained (yes/no), insertion site condition, tube securement intact, and any dislodgement or output changes with provider notification.')}
+  `},
+
+  {id:'penrose', ico:'🪱', nm:'Penrose Drain', sub:'Open Passive Drain', col:'c-amb',
+   title:'Penrose Drain — Open Passive Drainage', sub2:'Dressing Management · Output Assessment · Infection Prevention',
+   html: () => `
+    ${infoCard('amb','📋 Purpose & Key Difference from JP',['Soft flat rubber/latex tube — passive gravity drainage — NO suction (unlike JP)','Allows wound drainage through capillary action and gravity — promotes healing by preventing fluid accumulation','Typically used for abscess cavities, superficial wound drainage, perirectal areas','Exit site is OPEN — requires dressing management — more infection risk than closed system (JP)','Safety pin through external end prevents drain from migrating into wound cavity — ALWAYS maintain safety pin'])}
+    ${shiftBlock(
+      ['Safety pin present at external end — verify at every assessment','Drain position — how far it protrudes, has it advanced or retracted','Drainage amount and character on dressings — estimate by saturation','Insertion site: erythema, odor, tracking of drainage along tissue planes','Drain gradual withdrawal per order (provider gradually shortens drain daily)','Surrounding skin condition — maceration from continuous drainage contact'],
+      ['Change dressings around Penrose when saturated — never seal dressing (drainage must escape)','Use absorbent dressings around exit site — not occlusive','Protect periwound skin with barrier ointment — continuous drainage macerates skin','ALWAYS verify safety pin is present and through drain at dressing changes','Document external drain length — if provider is advancing/withdrawing gradually, measure each shift','Keep drain exit site clean — sterile technique for dressing changes'],
+      ['Safety pin missing — drain could retract into wound — notify provider IMMEDIATELY','Drain completely falls out — apply sterile dressing, notify provider','No drainage with wound swelling or increased pain — possible blocked drain or tract closed prematurely','Fever with increased wound drainage odor or purulence — infection','Significant increase in drainage volume — possible new fluid source']
+    )}
+    ${troubles([
+      ['Safety pin missing','Lost during dressing change or patient movement','Assess if drain has retracted — apply new safety pin if drain visible — notify provider immediately — never leave without safety pin','escalate'],
+      ['Drain fell out','Traction, patient removal','Sterile dressing to site — notify provider — do NOT reinsert','escalate'],
+      ['Skin maceration around site','Constant moisture from drainage','Barrier ointment (zinc oxide, petrolatum) to periwound — absorbent dressing — notify RN for wound care plan update','action'],
+      ['Increased odor from drainage','Wound infection, anaerobic bacteria','Assess wound — notify provider — wound culture may be ordered','escalate'],
+    ])}
+    ${complaints([
+      ['"My dressing is always wet"','High drain output — frequent dressing changes needed','Change dressing — skin barrier protection — assess output volume — notify RN for dressing order update'],
+      ['"The pin is poking me"','Safety pin placement causing pressure','Reposition pin orientation — pad with gauze — never remove safety pin'],
+    ])}
+    ${scope(['Assess for drain complications — retraction, infection','Order drain withdrawal schedule','Assess wound for premature closure or tracking','Culture wound drainage if indicated'],['Perform dressing changes around Penrose — never occlude exit site','Verify safety pin present at every assessment and dressing change — document explicitly','Measure and document external drain length','Report: safety pin missing, drain changes, increased drainage, odor, or surrounding skin breakdown to RN immediately'])}
+    ${legal('Document: safety pin present (yes/no — document explicitly every assessment), external drain length in cm, drainage estimated amount on dressing (minimal/moderate/heavy saturation), drainage characteristics, surrounding skin condition, dressing change performed, and any drain position changes with provider notification.')}
+  `},
+
+  {id:'chole', ico:'🟡', nm:'Chole / T-Tube Drain', sub:'Biliary Drainage', col:'c-amb',
+   title:'Cholecystectomy / T-Tube Biliary Drain', sub2:'Bile Output · Tube Patency · Jaundice Assessment',
+   html: () => `
+    ${infoCard('amb','📋 Purpose & What to Expect',['T-tube placed in common bile duct after cholecystectomy or biliary surgery — temporary external bile drainage','Allows bile to flow externally while common bile duct heals or until biliary obstruction resolves','Normal bile: golden yellow to dark green — clear, not cloudy, not bloody','Normal output: 300–500 mL/day — HIGH volumes early post-op are expected','Bile is caustic to skin — peritube skin protection is essential','T-tube is clamped per order to test if bile can flow internally before removal'])}
+    ${shiftBlock(
+      ['Bile output: volume, color, character — every shift','Tube position — length at skin — has tube migrated?','Insertion site: bile leakage, erythema, skin maceration from bile contact','Skin color — jaundice developing after tube is clamped = obstruction, unclamping needed','Patient: nausea, RUQ pain, fever — signs of biliary complications','Drainage bag below insertion site — gravity dependent drainage'],
+      ['Maintain drainage bag below level of insertion — gravity drainage only','Protect peritube skin — bile is caustic — barrier ointment essential','Change dressing when saturated — bile-soaked skin breaks down rapidly','Clamp tube per order schedule — monitor for jaundice, pain, fever when clamped','NEVER flush a T-tube without a specific provider order and flushing protocol','Keep tubing free of kinks — bile is thick and can clog'],
+      ['No bile output with tube unclamped — possible obstruction or tube migration','Bile output becomes bloody or purulent — bleeding, infection','Jaundice developing after clamping — bile not flowing internally — unclamp and notify provider','Fever with rigors and jaundice — cholangitis — URGENT','Tube falls out — cover site — notify provider immediately — do not reinsert','Severe RUQ pain — biliary complication']
+    )}
+    ${troubles([
+      ['No bile output (tube unclamped)','Tube kinked, clogged with bile sludge, migrated','Check tubing for kinks — reposition patient — do not flush without order — notify provider if no output','escalate'],
+      ['Jaundice after clamping','Bile not flowing internally — obstruction persists','Unclamp tube immediately — notify provider — clamp trial may have failed prematurely','escalate'],
+      ['Skin breakdown around tube site','Bile contact with skin — barrier insufficient','Barrier ointment — change dressings more frequently — absorptive dressing — notify RN for wound care update','action'],
+      ['Bile output > 1000 mL/day','Large biliary leak or normal early post-op finding','Document accurately — notify provider — assess for fever and pain — IV fluid support may be needed','escalate'],
+      ['Tube falls out','Traction, patient movement','Sterile dressing to site — notify provider immediately — DO NOT reinsert — biliary peritonitis risk','escalate'],
+    ])}
+    ${complaints([
+      ['"My skin burns where the tube is"','Bile contact causing chemical skin irritation','Change dressing — apply barrier ointment — assess extent of skin damage — notify RN'],
+      ['"I feel sick and my eyes look yellow"','Jaundice from bile backup — tube may need unclamping or obstruction','Assess sclerae — check tube clamp status — notify RN immediately'],
+      ['"I have pain on my right side"','Biliary complication, tube traction, infection','Assess pain level and character — notify RN — provider notification',''],
+    ])}
+    ${scope(['Assess for biliary complications — jaundice, cholangitis','Manage clamping trials and assess tolerance','Notify provider of tube dislodgement or output changes','Order cultures if purulent output'],['Record bile output each shift — color and volume','Perform dressing changes with barrier protection','Report: jaundice, pain, fever, no output, or tube position changes to RN immediately','Do NOT flush or clamp/unclamp tube without explicit provider order and RN guidance'])}
+    ${legal('Document: output volume and color each shift, tube position (length at skin), clamp status (open/clamped — time and per which order), skin condition around insertion site, jaundice assessment (sclerae color), and all provider notifications with time and response.')}
+  `},
+
+  {id:'nephrostomy', ico:'🫘', nm:'Nephrostomy', sub:'Renal Drainage', col:'c-pur',
+   title:'Nephrostomy Tube — Percutaneous Renal Drainage', sub2:'Urine Output · Tube Security · Infection Prevention',
+   html: () => `
+    ${infoCard('pur','📋 Purpose & Critical Points',['Tube placed through skin directly into renal pelvis to drain urine when ureter is obstructed — bypasses the ureter','Indications: ureteral obstruction (stone, tumor, stricture), pyonephrosis (infected kidney), post-surgical drainage','Output drains into external collection bag — not into bladder','Tube is sutured or held with retention disc to skin — DISPLACEMENT IS SERIOUS — kidney is directly accessible through tube tract','Output volume directly reflects function of THAT kidney only'])}
+    ${shiftBlock(
+      ['Urine output: volume, color, clarity — per this kidney only','Tube security — suture or retention device intact — tube not migrating','Insertion site: erythema, leakage, crusting around tube','Flank pain — increasing pain = obstruction, infection, or tube complication','Urine characteristics — nephrostomy urine should be clear yellow — cloudiness = infection','Fever — pyelonephritis/sepsis risk with nephrostomy'],
+      ['Keep drainage bag below kidney level at all times — gravity dependent','Secure tube to patient flank/back with securement device — NO traction on tube','Empty drainage bag when 2/3 full — record output','Keep connecting tubing free of kinks — coiling under patient causes obstruction','Do NOT irrigate nephrostomy tube without explicit provider order and protocol — high-pressure flush can cause pyelonephritis','Change dressing per protocol — site is a percutaneous wound'],
+      ['No output for 1–2 hours — possible tube obstruction or displacement','Output from nephrostomy drops significantly while patient\'s urine output unchanged — tube may be displaced into tissue','Bright red urine (not pink tinged — frank blood)','Fever ≥ 38.5°C — sepsis risk is HIGH with nephrostomy','Tube appears to have pulled out or migrated significantly — cover site','Severe flank pain — renal colic from tube migration or obstruction']
+    )}
+    ${troubles([
+      ['No urine output from nephrostomy','Tube kinked, clot, tube migrated out of renal pelvis','Check tubing — reposition patient — do NOT flush without order — notify provider immediately — tube may be out of kidney','escalate'],
+      ['Bright red urine output','Bleeding from kidney — manipulation, trauma, anticoagulation','Increase fluid input if able — do NOT clamp — notify provider immediately','escalate'],
+      ['Output suddenly decreased','Tube obstruction, migration, improving obstruction','Check tubing — assess patient for pain — notify provider — do not flush without order','escalate'],
+      ['Tube falls out','Traction, patient movement','Apply sterile dressing to site — notify provider IMMEDIATELY — tract may close in hours','escalate'],
+      ['Cloudy foul urine with fever','Pyelonephritis, nephrostomy-associated UTI','Notify provider immediately — blood cultures may be needed — sepsis risk is HIGH','escalate'],
+    ])}
+    ${complaints([
+      ['"My side hurts where the tube is"','Normal vs. obstruction, tube migration, infection','Assess flank pain character and severity — notify RN — provider call if fever or significant pain increase'],
+      ['"Nothing is draining into my bag"','Tube obstruction or displacement','Check tubing — notify RN immediately'],
+      ['"There is blood in my bag"','Bleeding from kidney — normal in small amounts post-procedure, concerning if frank blood','Assess output color — pink tinged vs. bright red — notify RN — bright red = urgent provider call'],
+    ])}
+    ${scope(['Assess for nephrostomy complications — obstruction, bleeding, infection, sepsis','Irrigate nephrostomy per explicit order and protocol only','Assess for tube displacement and coordinate emergent reinsertion','Obtain urine culture from nephrostomy drainage port'],['Record output each shift — volume and characteristics','Perform dressing change per protocol','Maintain tube security and bag position below kidney','Report any output changes, tube position changes, flank pain, fever to RN IMMEDIATELY'])}
+    ${legal('Document: output volume (per nephrostomy), color (pale yellow/yellow/amber/pink/bloody), clarity, tube security (suture/retention device intact — yes/no), insertion site condition, flank pain assessment, fever assessment, and all provider notifications — nephrostomy complications can progress to sepsis rapidly.')}
+  `},
+];
+
+const pleuralData = [
+  {id:'plurx', ico:'🫁', nm:'PleurX Catheter', sub:'Tunneled Pleural Drain', col:'c-blu',
+   title:'PleurX Tunneled Pleural Catheter', sub2:'Drainage Procedure · Fluid Monitoring · Infection Prevention',
+   html: () => `
+    ${infoCard('blu','📋 Purpose & What It Is',['Tunneled soft silicone catheter placed permanently in pleural space for management of recurrent malignant pleural effusions','Allows periodic drainage at home or facility using vacuum bottles — 1,000 mL maximum per drainage session','Cuffed and tunneled: reduces infection risk and prevents dislodgement','One-way valve at external end — NOTHING enters pleural space when not draining','Drainage frequency: typically every 1–2 days or as needed for symptom relief — shortness of breath is the guide','This is a palliative device — patients on comfort care or managing cancer-related effusions'])}
+    ${shiftBlock(
+      ['Respiratory status: dyspnea, O2 saturation — dyspnea with full lungs = drainage may be needed','Catheter exit site: erythema, induration, drainage, swelling along tunnel tract','External catheter length — measure and document — compare to baseline','Valve cap intact and secure at catheter end','Post-drainage: dyspnea improvement, pain, any new respiratory symptoms','Drainage fluid: volume, color, character from prior session if documented'],
+      ['Drainage per order or per symptom protocol — 1,000 mL maximum per session','Do NOT drain > 1,000 mL per session — re-expansion pulmonary edema risk','If drainage slows or stops before 1,000 mL — do not force — end session and document volume obtained','Keep valve cap on catheter at all times when not draining — prevents air entry','Catheter exit site dressing change per protocol — sterile technique — PleurX-specific dressings recommended','Monitor during drainage for cough, chest tightness, pain — stop if any develop'],
+      ['Drainage > 1,000 mL (do not exceed) — re-expansion edema risk','Patient develops chest pain or new respiratory distress during or after drainage','Fever with site induration or purulent drainage — pleural infection (empyema)','Drainage becomes frank blood — significant bleeding','Catheter appears to have migrated or valve is damaged','O2 saturation drops during drainage — stop, apply O2, notify provider']
+    )}
+    ${troubles([
+      ['Drainage slows or stops during session','Fibrin in tubing, catheter position, fibrous loculation, lung expanded','Reposition patient — try gravity — do not force vacuum — end session and document volume — notify provider','action'],
+      ['No fluid draining from apparently full effusion','Fibrous loculation trapping fluid around catheter, catheter migration','Notify provider — imaging may be needed — do NOT attempt to force drainage','escalate'],
+      ['Drainage is turbid or cloudy','Pleural infection (empyema) — SERIOUS','Stop drainage — send specimen for culture per order — notify provider immediately','escalate'],
+      ['Catheter exit site red and warm with tunnel tenderness','Tract infection — can progress to empyema','Notify provider — assess systemically for fever — antibiotics may be needed','escalate'],
+    ])}
+    ${complaints([
+      ['"I can\'t breathe"','Pleural effusion re-accumulated — needs drainage, or pneumothorax (rare)','Assess O2 sat, respiratory effort — notify RN immediately — drainage may be needed vs. emergency'],
+      ['"My chest hurts when you drain it"','Re-expansion too rapid, visceral pleural irritation','Slow drainage — stop if pain significant — maximum 1,000 mL — notify RN'],
+      ['"My catheter site is sore and red"','Site or tunnel infection','Assess site — notify RN — provider notification for antibiotics'],
+    ])}
+    ${scope(['Perform PleurX drainage procedure per order','Assess for re-expansion pulmonary edema during drainage','Manage drainage complications — infection, bleeding','Send fluid specimens for culture/cytology'],['Assess respiratory status and report dyspnea','Monitor exit site condition each shift','Apply dressing per protocol','Report: fever, site changes, respiratory deterioration, or drainage characteristics to RN immediately'])}
+    ${legal('Document: drainage volume obtained, drainage fluid characteristics (color/clarity), patient tolerance during procedure, O2 saturation before/during/after, site condition, dyspnea assessment pre and post-drainage, and all provider notifications.')}
+  `},
+
+  {id:'aspira', ico:'🫧', nm:'Aspira Drain', sub:'Peritoneal / Pleural', col:'c-blu',
+   title:'Aspira Drainage System', sub2:'Abdominal or Pleural Drainage · Patient-Activated',
+   html: () => `
+    ${infoCard('blu','📋 Purpose & Difference from PleurX',['Aspira is similar to PleurX but often used for both pleural AND peritoneal (ascites) drainage','Design: tunneled catheter with vacuum bottle drainage — patient or nurse activated','Peritoneal use: malignant ascites — typically larger volumes than pleural — 2,000 mL limit per session','Pleural use: same principles as PleurX — 1,000 mL limit','One-way valve — same as PleurX — nothing enters when not draining','Common in palliative and oncology patients — allows drainage without repeated paracentesis'])}
+    ${shiftBlock(
+      ['Abdominal girth (peritoneal use) — measure at same point each shift','Respiratory status (pleural use) — dyspnea level','Catheter exit site condition — erythema, induration, drainage','External catheter security and valve cap','Patient reports of discomfort from distension — guides drainage timing','Signs of infection: fever, site changes, fluid change in character'],
+      ['Peritoneal drainage limit: 2,000 mL maximum per session — rapid removal causes hypotension','Pleural drainage limit: 1,000 mL per session','Monitor blood pressure and heart rate during drainage — hypotension from rapid fluid shifts','Albumin replacement may be ordered for large-volume paracentesis — per provider order','Sterile technique for dressing changes','Same valve and catheter care as PleurX'],
+      ['Hypotension during or after drainage — fluid shift','Bloody drainage (not expected in ascites)','Fever with abdominal pain and cloudy peritoneal fluid — spontaneous bacterial peritonitis (SBP)','Catheter dislodgement — covers with sterile dressing, notify provider','Dramatic change in drainage appearance — assess immediately']
+    )}
+    ${troubles([
+      ['Drainage slows','Fibrin, loculation, catheter tip against tissue','Reposition patient — end session at current volume — notify provider','action'],
+      ['Hypotension during drainage','Rapid fluid shift — especially with large-volume ascites','Stop drainage — position supine — assess vitals — oxygen if needed — notify provider — albumin may be ordered','escalate'],
+      ['Cloudy peritoneal fluid with abdominal pain','SBP — SERIOUS — especially in liver disease patients','Stop drainage — culture specimen — notify provider immediately — IV antibiotics likely needed','escalate'],
+    ])}
+    ${complaints([
+      ['"I feel dizzy when you drain my belly"','Hypotension from fluid shift','Stop drainage — position supine — assess vitals — notify RN'],
+      ['"My stomach is so big I can\'t breathe"','Large ascites — needs drainage','Notify RN — drainage may be indicated — assess respiratory status and O2'],
+    ])}
+    ${scope(['Perform drainage procedure per order','Monitor and manage hemodynamic response','Send fluid specimens per order','Assess for SBP or empyema'],['Monitor site condition and vital signs during drainage','Report drainage characteristics and patient tolerance to RN','Apply dressings per protocol','Report fever, site changes, or hemodynamic changes immediately to RN'])}
+    ${legal('Document: drainage volume, fluid characteristics, vital signs before/during/after, patient tolerance, abdominal girth (peritoneal use), O2 saturation (pleural use), dressing change, and all provider notifications.')}
+  `},
+];
+
+const vascularData = [
+  {id:'picc', ico:'💉', nm:'PICC Line', sub:'Peripherally Inserted Central', col:'c-teal',
+   title:'PICC Line — Peripherally Inserted Central Catheter', sub2:'Patency · Dressing Care · Complication Monitoring',
+   html: () => `
+    ${infoCard('teal','📋 Purpose & Key Points',['Long thin catheter inserted via arm vein (basilic, cephalic) — tip positioned in superior vena cava','Used for: long-term IV antibiotics, TPN, chemotherapy, frequent labs, vesicant medications','Single, double, or triple lumen — each lumen flushed separately','External length must be documented and verified at every assessment — change = migration','Tip confirmation by x-ray required before any infusion — never use PICC without confirmed tip position'])}
+    ${shiftBlock(
+      ['External catheter length at insertion site — document in cm — compare to baseline','Insertion site: erythema, tenderness, swelling, drainage at exit site','Upper arm: swelling, pain, warmth — signs of DVT or thrombophlebitis','Dressing: intact, occlusive, no lifting edges, clear dressing dry and adherent','All lumens patent — flushed per protocol','Infusion running as ordered — no infiltration or extravasation'],
+      ['Flush all lumens per protocol — PICC flush: 10 mL normal saline push-pause technique, then heparin lock per order','Push-pause (pulsatile) flush — creates turbulence to clean catheter — not a slow continuous push','Heparinized lumens: flush with NS first, then heparin per order — NEVER flush heparin into unused lumen without NS first','Dressing change every 7 days (transparent) or when wet, soiled, or loose — sterile technique','Blood draw technique: discard 5–10 mL first, draw sample, flush vigorously after','Never use PICC for blood pressure — never place restraint over PICC arm'],
+      ['External length shorter than baseline — possible tip migration — do NOT use until repositioned','Arm swelling with cord-like vein — DVT — do not use PICC — urgent provider notification','Fever with no other source — CLABSI suspected — blood cultures from PICC and peripheral vein','Resistance when flushing — possible clot — do NOT force — notify provider','Broken or cracked catheter — clamp above break, cover, notify provider immediately','Infusing medication with patient reporting pain or burning — extravasation risk']
+    )}
+    ${troubles([
+      ['Cannot flush — resistance','Catheter clot, fibrin sheath, tip against vessel wall','Try changing patient position — arm repositioning — do NOT force — notify provider — TPA per order may be needed','escalate'],
+      ['Catheter length changed','Migration — tip position uncertain','Do not use for any infusion — notify provider — x-ray needed to verify tip position','escalate'],
+      ['Arm swelling with PICC in place','DVT — most common PICC complication','Do not use PICC — notify provider — ultrasound likely needed','escalate'],
+      ['Dressing lifting or wet','Moisture, diaphoresis, poor adherence','Perform dressing change with sterile technique — use skin prep wipe under dressing edges','action'],
+      ['Catheter cracked or broken','Trauma, age of catheter','Clamp catheter immediately above break — cover with sterile dressing — notify provider — do not use','escalate'],
+    ])}
+    ${complaints([
+      ['"My arm hurts where the tube is"','Thrombophlebitis, DVT, infiltration','Assess arm — check external length — notify RN — urgent if arm swelling or cord-like vein palpable'],
+      ['"The IV hurts when it runs"','Extravasation, phlebitis, vesicant medication','STOP infusion immediately — assess site — notify RN — vesicant extravasation is a serious injury'],
+      ['"I can feel my heartbeat in my neck"','Possible PICC migration — tip in internal jugular','Stop infusion — notify RN and provider immediately — x-ray needed'],
+    ])}
+    ${scope(['Assess PICC complications — DVT, CLABSI, extravasation','Perform PICC dressing changes using sterile technique','Administer vesicant medications through confirmed PICC','Obtain blood cultures and manage CLABSI protocol','Troubleshoot occlusion — TPA per order'],['Flush all lumens per protocol — push-pause technique','Monitor infusions for patient comfort and site integrity','Assess external length each shift and report changes to RN','Report arm swelling, resistance, site changes, or infusion issues to RN immediately'])}
+    ${legal('Document: external catheter length in cm, site condition, dressing intact (yes/no), all lumens flushed (each lumen documented), infusions administered through PICC, arm assessment (swelling/tenderness), and any changes with provider notification time.')}
+  `},
+
+  {id:'portacath', ico:'🔴', nm:'Port-a-Cath', sub:'Implanted Vascular', col:'c-red',
+   title:'Port-a-Cath — Implanted Venous Access Device', sub2:'Needle Access · Flushing · Complication Monitoring',
+   html: () => `
+    ${infoCard('red','📋 Purpose & Critical Points',['Implanted device under skin — port chamber + catheter — tip in superior vena cava','Accessed with a HUBER (non-coring) needle only — regular needles damage port septum — limited punctures per port','Common in oncology patients — used for chemotherapy, blood draws, long-term IV access','Port is PALPABLE under skin — locate by palpation before accessing','When deaccessed (needle removed): port is "closed" — still needs monthly flushing to maintain patency','A deaccessed port has no dressing — just the skin over the implanted device'])}
+    ${shiftBlock(
+      ['If port is currently accessed: assess needle securement, dressing, port site skin','If accessed: check needle for correct placement — blood return confirms placement before use','Port site: erythema, swelling, warmth — especially over port chamber','Patient reports: chest pain, arm swelling, shortness of breath — tip migration or DVT','If infusing: patient tolerance — pain, burning — check for extravasation','Deaccessed port: inspect skin over port for signs of infection or skin breakdown from prior access'],
+      ['Accessed port: flush per protocol between uses — 10 mL NS push-pause, then heparin lock per order','Accessed dressing: change every 7 days or when soiled — sterile technique around Huber needle','Deaccessed port: flush monthly with heparin per order to maintain patency — requires RN trained in port access','Never use a standard IV needle — Huber (non-coring) needle only — document gauge and length of Huber needle used','If port does not flush or no blood return: do not use for chemo — notify provider','Deaccessed site: no dressing required — inspect skin each shift'],
+      ['No blood return from accessed port — do not use for chemotherapy without blood return confirmation','Extravasation — medication leaking around port into subcutaneous tissue — pain, swelling over port area','Fever with chills during or after port use — port-related bacteremia','Port "flips" — device rotates under skin — unable to access — notify provider','Burning or pain during infusion — possible extravasation — STOP immediately','Air embolism risk: always clamp tubing when changing IV tubing to accessed port']
+    )}
+    ${troubles([
+      ['No blood return','Fibrin sheath, catheter clot, tip against vessel wall, patient position','Try Valsalva maneuver — reposition arm/turn head — do NOT use for chemotherapy without blood return — TPA per order','escalate'],
+      ['Pain during infusion (especially chemo)','Extravasation — chemo leaking into tissue — SERIOUS','STOP infusion immediately — do not remove needle — notify provider immediately — extravasation protocol','escalate'],
+      ['Fever during infusion','Port-related bacteremia — CLABSI','Hold infusion — blood cultures from port and peripheral site — notify provider','escalate'],
+      ['Cannot palpate port or port feels different','Port has flipped or migrated','Do NOT attempt to access — notify provider — imaging may be needed','escalate'],
+      ['Redness and warmth over port with swelling','Pocket infection or extravasation','Do NOT access — notify provider — imaging and assessment needed','escalate'],
+    ])}
+    ${complaints([
+      ['"It hurts when you push the medicine"','Extravasation — STOP IMMEDIATELY','STOP infusion — do not remove needle — notify RN immediately — extravasation protocol'],
+      ['"I can feel my heart racing"','Air embolism, arrhythmia from catheter tip irritation','Position left lateral Trendelenburg — apply O2 — notify RN and provider immediately'],
+      ['"My neck hurts on the same side as my port"','Possible DVT or tip migration','Notify RN — provider notification — do not use port until assessed'],
+    ])}
+    ${scope(['Access and deaccess port using Huber needle — trained RN only','Administer chemotherapy through port — confirmed blood return required','Manage extravasation protocol','Obtain blood cultures from port — manage CLABSI protocol','Monthly heparin flush of deaccessed port'],['Monitor accessed port: site, dressing, patient comfort during infusion','Report signs of extravasation, infection, or patient complaints to RN immediately','Never attempt to access a port — RN-only procedure','Assess skin over port each shift — report redness, swelling, or warmth'])}
+    ${legal('Document: Huber needle gauge and length, blood return confirmed (yes/no — MUST be documented before chemotherapy), infusions administered, patient tolerance, site appearance, dressing change, and needle deaccess with flush documented. Chemotherapy administered without documented blood return confirmation is a serious safety event.')}
+  `},
+
+  {id:'cvl', ico:'🔵', nm:'Central Line / CVC', sub:'Multi-Lumen Central', col:'c-blu',
+   title:'Central Venous Catheter (CVC / Central Line)', sub2:'CLABSI Prevention · Dressing · Lumen Management',
+   html: () => `
+    ${infoCard('blu','📋 Purpose & CLABSI Prevention',['Short-term multi-lumen central catheter inserted at subclavian, internal jugular, or femoral vein — tip in SVC','Used for: hemodynamic monitoring, multiple simultaneous infusions, vesicants, large-bore access','CLABSI bundle: hand hygiene, maximal barrier precautions during insertion, CHG skin prep, optimal site selection, daily review of necessity','Femoral CVCs: highest infection risk — should be replaced at first opportunity','Unlike PICC: shorter intended duration — reassess necessity daily'])}
+    ${shiftBlock(
+      ['Insertion site: erythema, purulent drainage, suture integrity','External catheter length — document daily — compare to baseline','All lumens: patency, infusions as ordered, appropriate medications per lumen','Dressing: clean, dry, intact, transparent dressing without lifting edges','Daily necessity review — document that CVC is still required','Patient: fever, chills, hypotension — CLABSI signs'],
+      ['Dressing change every 7 days or immediately if wet, soiled, or non-occlusive — sterile technique + CHG-impregnated disc','Flush all unused lumens every shift per protocol — push-pause technique, then heparin lock per order','Designate lumens by function when possible — dedicated TPN lumen, blood draw lumen — document each use','CHG bath daily for central line patients — reduces CLABSI risk','Change IV tubing per protocol — administration sets every 96 hours, lipid sets every 24 hours','Remove CVC as soon as clinically no longer needed — every day of central line = CLABSI risk'],
+      ['Fever ≥ 38.3°C with no other source — CLABSI suspected','Resistance when flushing any lumen','External length shorter — possible migration','Subcutaneous air or crepitus near insertion site — pneumothorax (post-insertion) or infection','Respiratory distress or decreased O2 — pneumothorax','Arm or neck swelling ipsilateral to CVC — DVT or SVC syndrome']
+    )}
+    ${troubles([
+      ['Cannot flush lumen','Clot, kinked catheter, pinch-off syndrome','Try repositioning patient — check for external kink — do NOT force — notify provider — TPA per order','escalate'],
+      ['Fever with no source','CLABSI — most serious complication','Blood cultures from CVC (each lumen) and peripheral — hold non-essential infusions — notify provider — antibiotics likely','escalate'],
+      ['Dressing non-adherent or wet','Diaphoresis, moisture, poor technique','Change dressing immediately with sterile technique — CHG disc — document reason for early change','action'],
+      ['Catheter migrated (shorter external length)','Patient movement, traction','Do not use for infusion — notify provider — x-ray needed for tip verification before any use','escalate'],
+    ])}
+    ${complaints([
+      ['"I have chills and feel terrible"','CLABSI — take seriously regardless of current temperature','Assess vitals — notify RN immediately — blood cultures before antibiotics'],
+      ['"It hurts at my neck/chest where the line is"','Local infection, thrombosis, tip migration','Assess site — notify RN — provider call'],
+    ])}
+    ${scope(['Daily necessity review — document and advocate for removal when appropriate','Perform CVC dressing changes with sterile technique','Obtain blood cultures from CVC — manage CLABSI protocol','Administer vesicant medications through confirmed CVC','Assess for and manage pneumothorax post-insertion'],['Flush all lumens per protocol each shift — push-pause technique','Monitor infusions and patient tolerance','Assess insertion site and report changes immediately to RN','Never administer incompatible medications through same lumen simultaneously — check compatibility'])}
+    ${legal('Document: daily necessity review completed (yes/no), all lumens flushed (each lumen noted), dressing intact (yes/no), insertion site condition, external length, infusions per lumen, CHG bath administered, and all complication assessments with provider notifications.')}
+  `},
+];
+
+// ── RENDER ENGINE ────────────────────────────────────────────────────
+const allData = {urine:urineData, gi:giData, drains:drainsData, pleural:pleuralData, vascular:vascularData};
+const activeItem = {};
+const viewed = new Set();
+
+function buildGrids() {
+  Object.entries(allData).forEach(([tab, items]) => {
+    document.getElementById('g-'+tab).innerHTML = items.map(d => `
+      <button class="dbtn ${d.col}" id="btn-${tab}-${d.id}" onclick="show('${tab}','${d.id}')">
+        <span class="dico">${d.ico}</span>
+        <div class="dnm">${d.nm}</div>
+        <div class="dsub">${d.sub}</div>
+      </button>`).join('');
+  });
+}
+
+function show(tab, id) {
+  const items = allData[tab];
+  const d = items.find(x => x.id === id);
+  if (!d) return;
+
+  if (activeItem[tab] === id) {
+    activeItem[tab] = null;
+    document.getElementById('d-'+tab).classList.remove('on');
+    document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b => b.classList.remove('on'));
+    return;
+  }
+
+  activeItem[tab] = id;
+  viewed.add(tab+id);
+  updateProg();
+
+  document.querySelectorAll(`#g-${tab} .dbtn`).forEach(b => b.classList.remove('on'));
+  document.getElementById(`btn-${tab}-${id}`).classList.add('on');
+
+  document.getElementById('ico-'+tab).textContent = d.ico;
+  document.getElementById('title-'+tab).textContent = d.nm + ' — ' + d.title;
+  document.getElementById('sub-'+tab).textContent = d.sub2;
+  document.getElementById('body-'+tab).innerHTML = d.html();
+
+  const dp = document.getElementById('d-'+tab);
+  dp.classList.add('on');
+  setTimeout(() => dp.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+function sw(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  viewed.add('tab-'+tab);
+  updateProg();
+}
+
+function updateProg() {
+  const total = Object.values(allData).reduce((a, v) => a + v.length, 0) + 5;
+  document.getElementById('pf').style.width = Math.min(Math.round(viewed.size / total * 100), 100) + '%';
+}
+
+buildGrids();
+</script>
+</body>
+</html>

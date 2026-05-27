@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-03 Skin & Wound Reference — PIVOT Foundations Bootcamp</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#05202A;--tdk:#014F5C;--teal:#028090;--mint:#02C39A;
+  --fog:#E8F5F7;--muted:#5A7A82;--red:#C0392B;--amber:#E67E22;
+  --green:#1E8449;--purple:#6C3483;--white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--fog);color:var(--ink);min-height:100vh;}
+.hdr{background:var(--ink);padding:16px 22px 14px;display:flex;align-items:flex-start;justify-content:space-between;}
+.mtag{font-family:'DM Mono',monospace;font-size:10px;color:var(--mint);letter-spacing:.14em;text-transform:uppercase;}
+.htitle{font-size:16px;font-weight:600;color:var(--fog);margin-top:3px;}
+.hsub{font-size:11px;color:var(--muted);margin-top:2px;}
+.badge{background:var(--teal);color:#fff;font-size:10px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.tabs{display:flex;background:var(--tdk);border-bottom:2px solid var(--teal);}
+.tab{flex:1;padding:9px 4px;text-align:center;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;}
+.tab.active{color:var(--mint);border-bottom:2px solid var(--mint);margin-bottom:-2px;}
+.instr{background:var(--tdk);padding:7px 18px;font-size:11px;color:var(--fog);}
+.instr span{color:var(--mint);font-weight:500;}
+.sec{display:none;padding:12px 12px 90px;}
+.sec.active{display:block;}
+.prog{height:2px;background:rgba(2,128,144,.15);}
+.pfill{height:100%;background:var(--mint);transition:width .3s;}
+
+/* item grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:10px;}
+.ibtn{background:var(--white);border:1.5px solid rgba(2,128,144,.15);border-radius:9px;padding:11px 7px 9px;cursor:pointer;text-align:center;transition:all .18s;position:relative;overflow:hidden;}
+.ibtn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .18s;transform-origin:left;}
+.ibtn:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 14px rgba(2,128,144,.12);}
+.ibtn:hover::before,.ibtn.on::before{transform:scaleX(1);}
+.ibtn.on{border-color:var(--teal);background:var(--fog);}
+.ibtn.red::before,.ibtn.red.on{border-color:var(--red);} .ibtn.red::before{background:var(--red);}
+.ibtn.amber::before,.ibtn.amber.on{border-color:var(--amber);} .ibtn.amber::before{background:var(--amber);}
+.ibtn.teal::before{background:var(--teal);}
+.ibtn.green::before,.ibtn.green.on{border-color:var(--green);} .ibtn.green::before{background:var(--green);}
+.ibtn.purple::before,.ibtn.purple.on{border-color:var(--purple);} .ibtn.purple::before{background:var(--purple);}
+.iico{font-size:20px;margin-bottom:5px;display:block;}
+.inm{font-size:10px;font-weight:600;color:var(--ink);line-height:1.3;}
+.isub{font-size:8.5px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.05em;text-transform:uppercase;}
+
+/* detail panel */
+.dp{background:var(--white);border-radius:11px;border:1.5px solid rgba(2,128,144,.15);overflow:hidden;display:none;animation:sli .2s ease;}
+.dp.on{display:block;}
+@keyframes sli{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.dh{background:var(--tdk);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.dico{font-size:20px;}
+.dtitle{font-size:13px;font-weight:600;color:var(--fog);}
+.dsub{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
+.dbody{padding:14px 16px;display:flex;flex-direction:column;gap:11px;}
+
+/* visual panel */
+.vis-panel{background:var(--fog);border-radius:8px;overflow:hidden;border:1px solid rgba(2,128,144,.15);}
+.vis-head{background:rgba(2,128,144,.08);padding:6px 12px;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);border-bottom:1px solid rgba(2,128,144,.1);}
+.vis-body{padding:10px 12px;}
+.vis-body svg{display:block;width:100%;height:auto;}
+/* photo gallery */
+.photo-panel{background:var(--white);border-radius:8px;overflow:hidden;border:1px solid rgba(2,128,144,.15);}
+.photo-head{background:rgba(2,128,144,.06);padding:6px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(2,128,144,.1);}
+.photo-head-label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);}
+.photo-attr{font-size:8px;color:var(--muted);font-style:italic;}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:10px 12px;}
+.photo-item{border-radius:6px;overflow:hidden;border:1px solid rgba(2,128,144,.1);background:var(--fog);}
+.photo-item img{width:100%;height:105px;object-fit:cover;display:block;}
+.photo-cap{font-size:8px;color:var(--muted);padding:4px 6px;line-height:1.3;}
+
+/* cards */
+.dc{border-radius:7px;overflow:hidden;border:1px solid transparent;}
+.dc.red{background:#FEF0EE;border-color:rgba(192,57,43,.15);}
+.dc.amber{background:#FEF6EE;border-color:rgba(230,126,34,.15);}
+.dc.grn{background:#EAF5EE;border-color:rgba(30,132,73,.12);}
+.dc.teal{background:var(--fog);border-color:rgba(2,128,144,.18);}
+.dc.purp{background:#F5EEF8;border-color:rgba(108,52,131,.15);}
+.dc.dark{background:var(--ink);border-color:var(--ink);}
+.dch{padding:6px 11px;display:flex;align-items:center;gap:6px;border-bottom:1px solid transparent;}
+.dc.red .dch{background:rgba(192,57,43,.07);border-color:rgba(192,57,43,.1);}
+.dc.amber .dch{background:rgba(230,126,34,.07);border-color:rgba(230,126,34,.1);}
+.dc.grn .dch{background:rgba(30,132,73,.07);border-color:rgba(30,132,73,.08);}
+.dc.teal .dch{background:rgba(2,128,144,.06);border-color:rgba(2,128,144,.12);}
+.dc.purp .dch{background:rgba(108,52,131,.07);border-color:rgba(108,52,131,.1);}
+.dd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dc.red .dd{background:var(--red);}.dc.amber .dd{background:var(--amber);}
+.dc.grn .dd{background:var(--green);}.dc.teal .dd{background:var(--teal);}.dc.purp .dd{background:var(--purple);}
+.dlbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.dc.red .dlbl{color:var(--red);}.dc.amber .dlbl{color:var(--amber);}
+.dc.grn .dlbl{color:var(--green);}.dc.teal .dlbl{color:var(--teal);}.dc.purp .dlbl{color:var(--purple);}
+.dcb{padding:8px 11px 10px;}
+.fl{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.fl li{font-size:11px;color:var(--ink);padding-left:12px;position:relative;line-height:1.5;}
+.fl li::before{content:'›';position:absolute;left:0;font-weight:600;font-size:12px;line-height:1.35;}
+.dc.red .fl li::before{color:var(--red);}.dc.amber .fl li::before{color:var(--amber);}
+.dc.grn .fl li::before{color:var(--green);}.dc.teal .fl li::before{color:var(--teal);}.dc.purp .fl li::before{color:var(--purple);}
+
+/* tx */
+.txi{padding:7px 0;border-bottom:1px solid rgba(2,128,144,.08);}
+.txi:last-child{border-bottom:none;padding-bottom:0;}
+.txn{font-size:11px;font-weight:600;color:var(--tdk);margin-bottom:2px;}
+.txw{font-size:10px;color:var(--muted);line-height:1.55;}
+.txw strong{color:var(--teal);font-weight:500;}
+
+/* scope */
+.scw{border-radius:7px;overflow:hidden;border:1.5px solid rgba(2,128,144,.22);}
+.sch{background:var(--teal);padding:6px 11px;}
+.sch span{font-size:9px;font-weight:600;color:#fff;letter-spacing:.1em;text-transform:uppercase;}
+.scc{display:grid;grid-template-columns:1fr 1fr;}
+.scol{padding:8px 11px;}
+.scol:first-child{border-right:1px solid rgba(2,128,144,.1);background:var(--fog);}
+.scol:last-child{background:var(--white);}
+.srole{font-size:8.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tdk);margin-bottom:3px;}
+.sitem{font-size:10px;color:var(--ink);padding-left:13px;position:relative;line-height:1.45;margin-bottom:2px;}
+.sitem::before{content:'✓';position:absolute;left:0;font-size:9.5px;color:var(--teal);font-weight:600;}
+
+/* legal */
+.leg{background:var(--ink);border-radius:7px;padding:10px 12px;display:flex;gap:8px;}
+.legi{font-size:12px;flex-shrink:0;margin-top:1px;}
+.legt{font-size:10px;color:var(--fog);line-height:1.6;}
+.legt strong{color:var(--mint);font-weight:500;}
+
+/* vac steps */
+.vs{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid rgba(2,128,144,.07);}
+.vs:last-child{border-bottom:none;}
+.vsn{width:22px;height:22px;border-radius:5px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.vst{font-size:10.5px;color:var(--ink);line-height:1.5;padding-top:2px;}
+
+/* footer */
+.ftr{background:var(--ink);padding:8px 18px;display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0;}
+.fbr{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.fn{font-size:8px;color:var(--muted);}
+
+/* alert box */
+.alert{background:#FEF3E2;border:1.5px solid rgba(230,126,34,.3);border-radius:7px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start;}
+.alert-icon{font-size:14px;flex-shrink:0;}
+.alert-text{font-size:10.5px;color:var(--ink);line-height:1.55;}
+.alert-text strong{color:#8B4513;font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="mtag">F-03a & F-03b · Foundations Bootcamp · PIVOT Clinical Series</div>
+    <div class="htitle">Skin & Wound Visual Reference Guide</div>
+    <div class="hsub">Tap any condition — visual illustrations, signs, treatment, scope, and documentation</div>
+  </div>
+  <div class="badge">PIVOT</div>
+</div>
+<div class="prog"><div class="pfill" id="pf" style="width:0%"></div></div>
+<div class="tabs">
+  <div class="tab active" onclick="sw('skin',this)">Skin Conditions</div>
+  <div class="tab" onclick="sw('wounds',this)">Wound Types</div>
+  <div class="tab" onclick="sw('vac',this)">Wound VAC</div>
+  <div class="tab" onclick="sw('staging',this)">Staging & T.I.M.E.</div>
+</div>
+<div class="instr">Tap a card — <span>visual illustrations</span>, red flags, treatment rationale, scope, and legal documentation appear below.</div>
+
+<!-- ══ SKIN ══ -->
+<div class="sec active" id="tab-skin">
+  <div class="grid" id="sg"></div>
+  <div class="dp" id="sd">
+    <div class="dh"><div class="dico" id="sdi"></div><div><div class="dtitle" id="sdt"></div><div class="dsub" id="sds"></div></div></div>
+    <div class="dbody" id="sdb"></div>
+  </div>
+</div>
+
+<!-- ══ WOUNDS ══ -->
+<div class="sec" id="tab-wounds">
+  <div class="grid" id="wg"></div>
+  <div class="dp" id="wd">
+    <div class="dh"><div class="dico" id="wdi"></div><div><div class="dtitle" id="wdt"></div><div class="dsub" id="wds"></div></div></div>
+    <div class="dbody" id="wdb"></div>
+  </div>
+</div>
+
+<!-- ══ VAC ══ -->
+<div class="sec" id="tab-vac">
+  <div class="dp on" style="margin-bottom:12px;">
+    <div class="dh"><div class="dico">🔧</div><div><div class="dtitle">Negative Pressure Wound Therapy (NPWT / Wound VAC)</div><div class="dsub">Mechanism · Setup · Maintenance · Troubleshooting · Interim Dressing</div></div></div>
+    <div class="dbody" id="vacb"></div>
+  </div>
+</div>
+
+<!-- ══ STAGING ══ -->
+<div class="sec" id="tab-staging">
+  <div class="dp on">
+    <div class="dh"><div class="dico">📐</div><div><div class="dtitle">Pressure Injury Staging + T.I.M.E. Framework</div><div class="dsub">NPUAP / NPIAP Staging · Wound Bed Assessment Visual Guide</div></div></div>
+    <div class="dbody" id="stagb"></div>
+  </div>
+</div>
+
+<div class="ftr">
+  <div class="fbr">Innovative Care Concepts · F-03a / F-03b · pivotclinicalseries.com</div>
+  <div class="fn">Educational use only · Not a substitute for facility policy</div>
+</div>
+
+<script>
+// ── SVG ILLUSTRATIONS ───────────────────────────────────────────
+
+const svgCVI = `<svg viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- leg cross section outline -->
+  <ellipse cx="170" cy="90" rx="110" ry="78" fill="#FDEBD0" stroke="#C0A080" stroke-width="1.5"/>
+  <!-- skin layer -->
+  <ellipse cx="170" cy="90" rx="110" ry="78" fill="none" stroke="#D4956A" stroke-width="6" stroke-dasharray="0"/>
+  <!-- subcutaneous fat -->
+  <ellipse cx="170" cy="90" rx="92" ry="62" fill="#FAEBD7" stroke="#C8A882" stroke-width="1"/>
+  <!-- muscle -->
+  <ellipse cx="170" cy="90" rx="68" ry="44" fill="#E8A090" stroke="#C07060" stroke-width="1"/>
+  <!-- bone -->
+  <ellipse cx="170" cy="90" rx="28" ry="20" fill="#F5F0E8" stroke="#B0A090" stroke-width="1"/>
+  <!-- veins - dilated/incompetent -->
+  <ellipse cx="115" cy="110" rx="14" ry="10" fill="#6B8CBE" stroke="#4A6A9C" stroke-width="1.5" opacity="0.85"/>
+  <ellipse cx="225" cy="108" rx="12" ry="9" fill="#6B8CBE" stroke="#4A6A9C" stroke-width="1.5" opacity="0.85"/>
+  <ellipse cx="138" cy="75" rx="8" ry="6" fill="#6B8CBE" stroke="#4A6A9C" stroke-width="1" opacity="0.7"/>
+  <!-- arrows showing backflow -->
+  <line x1="115" y1="98" x2="115" y2="70" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="225" y1="96" x2="225" y2="70" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- edema fluid dots in subcutaneous layer -->
+  <circle cx="145" cy="130" r="4" fill="#87CEEB" opacity="0.6"/>
+  <circle cx="160" cy="138" r="3" fill="#87CEEB" opacity="0.5"/>
+  <circle cx="178" cy="135" r="4" fill="#87CEEB" opacity="0.6"/>
+  <circle cx="196" cy="130" r="3" fill="#87CEEB" opacity="0.5"/>
+  <circle cx="132" cy="120" r="3" fill="#87CEEB" opacity="0.4"/>
+  <!-- hemosiderin staining dots on skin surface -->
+  <circle cx="125" cy="83" r="3.5" fill="#8B6914" opacity="0.7"/>
+  <circle cx="135" cy="78" r="2.5" fill="#8B6914" opacity="0.6"/>
+  <circle cx="148" cy="76" r="3" fill="#8B6914" opacity="0.5"/>
+  <!-- labels -->
+  <text x="170" y="91" text-anchor="middle" font-size="9" fill="#7A6050" font-family="sans-serif">Bone</text>
+  <text x="170" y="72" text-anchor="middle" font-size="9" fill="#A06060" font-family="sans-serif">Muscle</text>
+  <text x="108" y="112" text-anchor="middle" font-size="8" fill="#3A5A8C" font-family="sans-serif">Dilated vein</text>
+  <text x="138" y="148" text-anchor="middle" font-size="8.5" fill="#2060A0" font-family="sans-serif">Edema fluid</text>
+  <text x="136" y="68" text-anchor="middle" font-size="8" fill="#8B6914" font-family="sans-serif">Hemosiderin</text>
+  <text x="206" y="62" text-anchor="middle" font-size="8" fill="#C0392B" font-family="sans-serif">Backflow ↑</text>
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+</svg>`;
+
+const svgCellulitis = `<svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg">
+  <!-- skin layers cross section -->
+  <rect x="10" y="10" width="320" height="25" rx="3" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+  <text x="170" y="27" text-anchor="middle" font-size="9" fill="#8B5010" font-family="sans-serif">Epidermis</text>
+  <rect x="10" y="35" width="320" height="35" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+  <text x="170" y="56" text-anchor="middle" font-size="9" fill="#8B5010" font-family="sans-serif">Dermis (infection spreads here)</text>
+  <rect x="10" y="70" width="320" height="40" fill="#FAEBD7" stroke="#C8A882" stroke-width="1"/>
+  <text x="170" y="93" text-anchor="middle" font-size="9" fill="#8B6040" font-family="sans-serif">Subcutaneous fat</text>
+  <rect x="10" y="110" width="320" height="35" rx="3" fill="#E8A090" stroke="#C07060" stroke-width="1"/>
+  <text x="170" y="131" text-anchor="middle" font-size="9" fill="#703030" font-family="sans-serif">Muscle</text>
+  <!-- infected area in dermis - red shading -->
+  <rect x="80" y="35" width="180" height="35" fill="rgba(192,57,43,0.25)" rx="2"/>
+  <!-- bacteria dots -->
+  <circle cx="110" cy="51" r="3" fill="#C0392B" opacity="0.8"/>
+  <circle cx="130" cy="45" r="2.5" fill="#C0392B" opacity="0.7"/>
+  <circle cx="155" cy="54" r="3" fill="#C0392B" opacity="0.8"/>
+  <circle cx="178" cy="47" r="2.5" fill="#C0392B" opacity="0.7"/>
+  <circle cx="200" cy="53" r="3" fill="#C0392B" opacity="0.8"/>
+  <circle cx="222" cy="46" r="2.5" fill="#C0392B" opacity="0.7"/>
+  <circle cx="242" cy="52" r="3" fill="#C0392B" opacity="0.8"/>
+  <!-- advancing border arrows -->
+  <line x1="80" y1="53" x2="45" y2="53" stroke="#C0392B" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#aarr)"/>
+  <line x1="260" y1="53" x2="295" y2="53" stroke="#C0392B" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#aarr)"/>
+  <!-- border mark line -->
+  <line x1="80" y1="30" x2="80" y2="100" stroke="#2C3E50" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <line x1="260" y1="30" x2="260" y2="100" stroke="#2C3E50" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <text x="80" y="148" text-anchor="middle" font-size="8.5" fill="#2C3E50" font-family="sans-serif">Mark border</text>
+  <text x="260" y="148" text-anchor="middle" font-size="8.5" fill="#2C3E50" font-family="sans-serif">here</text>
+  <text x="170" y="148" text-anchor="middle" font-size="8.5" fill="#C0392B" font-family="sans-serif">← Bacteria spreading →</text>
+  <defs><marker id="aarr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+</svg>`;
+
+const svgLymphedema = `<svg viewBox="0 0 340 170" xmlns="http://www.w3.org/2000/svg">
+  <!-- two legs side by side - CVI left, Lymphedema right -->
+  <text x="85" y="16" text-anchor="middle" font-size="10" fill="#028090" font-weight="bold" font-family="sans-serif">CVI (Venous)</text>
+  <text x="255" y="16" text-anchor="middle" font-size="10" fill="#6C3483" font-weight="bold" font-family="sans-serif">Lymphedema</text>
+  <!-- CVI leg - pitting edema, spares foot dorsum -->
+  <rect x="55" y="22" width="60" height="110" rx="28" fill="#FDDCBC" stroke="#C0A080" stroke-width="1.5"/>
+  <rect x="62" y="95" width="46" height="40" rx="4" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <!-- pitting dent -->
+  <ellipse cx="85" cy="100" rx="12" ry="5" fill="#E8B090" stroke="#C08060" stroke-width="1"/>
+  <text x="85" y="99" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">pit</text>
+  <!-- ankle staining -->
+  <ellipse cx="85" cy="120" rx="18" ry="6" fill="#8B6914" opacity="0.4"/>
+  <!-- foot outline - not swollen -->
+  <ellipse cx="85" cy="145" rx="20" ry="8" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <text x="85" y="160" text-anchor="middle" font-size="8" fill="#2C7A50" font-family="sans-serif">Foot spared ✓</text>
+  <!-- arrows down for pitting -->
+  <text x="42" y="100" text-anchor="middle" font-size="8.5" fill="#028090" font-family="sans-serif">Pitting↓</text>
+  <text x="42" y="112" text-anchor="middle" font-size="8.5" fill="#028090" font-family="sans-serif">resolves</text>
+
+  <!-- Lymphedema leg - non-pitting, foot involved, boxy toes -->
+  <rect x="225" y="22" width="60" height="110" rx="18" fill="#E8D8F0" stroke="#9B72C0" stroke-width="1.5"/>
+  <!-- thickened/fibrotic skin appearance -->
+  <rect x="225" y="22" width="60" height="110" rx="18" fill="none" stroke="#9B72C0" stroke-width="3" stroke-dasharray="0"/>
+  <!-- foot - boxy, swollen toes -->
+  <rect x="220" y="128" width="70" height="28" rx="5" fill="#E0C8EC" stroke="#9B72C0" stroke-width="1.5"/>
+  <!-- boxy toe boxes -->
+  <rect x="222" y="148" width="10" height="14" rx="2" fill="#D0B8E0" stroke="#9B72C0" stroke-width="1"/>
+  <rect x="235" y="148" width="10" height="14" rx="2" fill="#D0B8E0" stroke="#9B72C0" stroke-width="1"/>
+  <rect x="248" y="148" width="10" height="14" rx="2" fill="#D0B8E0" stroke="#9B72C0" stroke-width="1"/>
+  <rect x="261" y="148" width="10" height="14" rx="2" fill="#D0B8E0" stroke="#9B72C0" stroke-width="1"/>
+  <text x="255" y="158" text-anchor="middle" font-size="7.5" fill="#6C3483" font-family="sans-serif">Foot involved</text>
+  <!-- Stemmer sign indicator -->
+  <line x1="248" y1="148" x2="248" y2="138" stroke="#C0392B" stroke-width="1.5"/>
+  <text x="295" y="145" text-anchor="start" font-size="8" fill="#C0392B" font-family="sans-serif">Stemmer +</text>
+  <!-- non-pitting indicator -->
+  <text x="298" y="80" text-anchor="start" font-size="8" fill="#6C3483" font-family="sans-serif">Non-pitting</text>
+  <text x="298" y="90" text-anchor="start" font-size="8" fill="#6C3483" font-family="sans-serif">persists</text>
+  <!-- divider -->
+  <line x1="170" y1="15" x2="170" y2="165" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="4,3"/>
+</svg>`;
+
+const svgWoundBed = `<svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- wound bed top view - 4 tissue types -->
+  <text x="170" y="13" text-anchor="middle" font-size="10" fill="#05202A" font-weight="bold" font-family="sans-serif">Wound Bed Tissue Types — T.I.M.E. Visual</text>
+  <!-- granulation -->
+  <rect x="10" y="20" width="70" height="50" rx="5" fill="#E8604C"/>
+  <circle cx="25" cy="35" r="4" fill="#C04030" opacity="0.5"/>
+  <circle cx="38" cy="42" r="3" fill="#C04030" opacity="0.5"/>
+  <circle cx="50" cy="33" r="4" fill="#C04030" opacity="0.5"/>
+  <circle cx="62" cy="44" r="3" fill="#C04030" opacity="0.5"/>
+  <circle cx="30" cy="56" r="3" fill="#C04030" opacity="0.5"/>
+  <circle cx="55" cy="58" r="4" fill="#C04030" opacity="0.5"/>
+  <text x="45" y="82" text-anchor="middle" font-size="9" fill="#C04030" font-weight="bold" font-family="sans-serif">Granulation</text>
+  <text x="45" y="92" text-anchor="middle" font-size="8" fill="#028090" font-family="sans-serif">✓ Healthy — protect</text>
+  <!-- slough -->
+  <rect x="92" y="20" width="70" height="50" rx="5" fill="#E8D870"/>
+  <path d="M100 30 Q110 25 120 32 Q130 28 140 34 Q150 30 158 36" fill="none" stroke="#C8B840" stroke-width="2"/>
+  <path d="M98 42 Q112 38 125 45 Q138 40 155 46" fill="none" stroke="#C8B840" stroke-width="2"/>
+  <path d="M102 55 Q118 52 132 58 Q145 53 157 60" fill="none" stroke="#C8B840" stroke-width="2"/>
+  <text x="127" y="82" text-anchor="middle" font-size="9" fill="#A09020" font-weight="bold" font-family="sans-serif">Slough</text>
+  <text x="127" y="92" text-anchor="middle" font-size="8" fill="#E67E22" font-family="sans-serif">⚠ Devitalized — remove</text>
+  <!-- eschar -->
+  <rect x="174" y="20" width="70" height="50" rx="5" fill="#4A3828"/>
+  <path d="M182 25 L238 25 L240 68 L180 70 Z" fill="#3A2818" opacity="0.6"/>
+  <line x1="185" y1="32" x2="238" y2="40" stroke="#2A1808" stroke-width="1.5"/>
+  <line x1="182" y1="45" x2="237" y2="50" stroke="#2A1808" stroke-width="1.5"/>
+  <line x1="185" y1="58" x2="235" y2="62" stroke="#2A1808" stroke-width="1.5"/>
+  <text x="209" y="82" text-anchor="middle" font-size="9" fill="#4A3828" font-weight="bold" font-family="sans-serif">Eschar</text>
+  <text x="209" y="92" text-anchor="middle" font-size="8" fill="#C0392B" font-family="sans-serif">✗ Necrotic — debride</text>
+  <!-- epithelium -->
+  <rect x="256" y="20" width="74" height="50" rx="5" fill="#FFC0C8"/>
+  <path d="M260 50 Q275 30 293 45 Q310 30 328 48" fill="none" stroke="#E08090" stroke-width="2"/>
+  <ellipse cx="270" cy="48" rx="6" ry="4" fill="#FFD0D8" stroke="#E08090" stroke-width="1"/>
+  <ellipse cx="293" cy="44" rx="6" ry="4" fill="#FFD0D8" stroke="#E08090" stroke-width="1"/>
+  <ellipse cx="316" cy="46" rx="6" ry="4" fill="#FFD0D8" stroke="#E08090" stroke-width="1"/>
+  <text x="293" y="82" text-anchor="middle" font-size="9" fill="#C06070" font-weight="bold" font-family="sans-serif">Epithelium</text>
+  <text x="293" y="92" text-anchor="middle" font-size="8" fill="#2C7A50" font-family="sans-serif">✓ New skin — protect</text>
+  <!-- arrows between types -->
+  <text x="82" y="48" text-anchor="middle" font-size="14" fill="#555" font-family="sans-serif">→</text>
+  <text x="164" y="48" text-anchor="middle" font-size="14" fill="#555" font-family="sans-serif">→</text>
+  <text x="246" y="48" text-anchor="middle" font-size="14" fill="#555" font-family="sans-serif">→</text>
+  <text x="170" y="112" text-anchor="middle" font-size="8.5" fill="#5A7A82" font-family="sans-serif" font-style="italic">Healing progression: granulation fills the wound → epithelium migrates across → wound closes</text>
+</svg>`;
+
+const svgPressureStaging = `<svg viewBox="0 0 340 200" xmlns="http://www.w3.org/2000/svg">
+  <text x="170" y="13" text-anchor="middle" font-size="10" fill="#05202A" font-weight="bold" font-family="sans-serif">Pressure Injury Staging — Cross Section View</text>
+  <!-- shared skin layer labels on right -->
+  <text x="316" y="48" font-size="7.5" fill="#8B5010" font-family="sans-serif">Epidermis</text>
+  <text x="316" y="63" font-size="7.5" fill="#8B5010" font-family="sans-serif">Dermis</text>
+  <text x="316" y="82" font-size="7.5" fill="#8B6040" font-family="sans-serif">Subcut.</text>
+  <text x="316" y="100" font-size="7.5" fill="#703030" font-family="sans-serif">Muscle</text>
+  <text x="316" y="116" font-size="7.5" fill="#7A6050" font-family="sans-serif">Bone</text>
+
+  <!-- Stage 1 -->
+  <g transform="translate(10,20)">
+    <rect x="0" y="15" width="42" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="42" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="42" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="42" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="42" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- red area on top skin -->
+    <rect x="8" y="15" width="26" height="8" rx="1" fill="rgba(192,57,43,0.4)"/>
+    <text x="21" y="10" text-anchor="middle" font-size="9" fill="#E67E22" font-weight="bold" font-family="sans-serif">Stage 1</text>
+    <text x="21" y="86" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">Non-blanchable</text>
+    <text x="21" y="95" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">erythema only</text>
+  </g>
+
+  <!-- Stage 2 -->
+  <g transform="translate(62,20)">
+    <rect x="0" y="15" width="42" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="42" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="42" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="42" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="42" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- partial thickness wound -->
+    <path d="M10 15 Q21 28 32 15" fill="#C0392B" opacity="0.7"/>
+    <text x="21" y="10" text-anchor="middle" font-size="9" fill="#E67E22" font-weight="bold" font-family="sans-serif">Stage 2</text>
+    <text x="21" y="86" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">Partial thickness</text>
+    <text x="21" y="95" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">skin loss</text>
+  </g>
+
+  <!-- Stage 3 -->
+  <g transform="translate(114,20)">
+    <rect x="0" y="15" width="42" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="42" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="42" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="42" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="42" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- full thickness to fat -->
+    <path d="M8 15 L8 42 Q21 50 34 42 L34 15" fill="#C0392B" opacity="0.7"/>
+    <text x="21" y="10" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="bold" font-family="sans-serif">Stage 3</text>
+    <text x="21" y="86" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">Full thickness,</text>
+    <text x="21" y="95" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">fat visible</text>
+  </g>
+
+  <!-- Stage 4 -->
+  <g transform="translate(166,20)">
+    <rect x="0" y="15" width="42" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="42" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="42" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="42" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="42" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- full thickness to bone -->
+    <path d="M8 15 L8 68 Q21 76 34 68 L34 15" fill="#C0392B" opacity="0.7"/>
+    <text x="21" y="10" text-anchor="middle" font-size="9" fill="#C0392B" font-weight="bold" font-family="sans-serif">Stage 4</text>
+    <text x="21" y="86" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">Bone/tendon/</text>
+    <text x="21" y="95" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">muscle exposed</text>
+  </g>
+
+  <!-- Unstageable -->
+  <g transform="translate(218,20)">
+    <rect x="0" y="15" width="42" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="42" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="42" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="42" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="42" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- covered by eschar -->
+    <path d="M8 15 L8 60 Q21 68 34 60 L34 15" fill="#4A3828" opacity="0.85"/>
+    <text x="21" y="10" text-anchor="middle" font-size="8.5" fill="#555555" font-weight="bold" font-family="sans-serif">Unstageable</text>
+    <text x="21" y="86" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">Covered by</text>
+    <text x="21" y="95" text-anchor="middle" font-size="7.5" fill="#8B4010" font-family="sans-serif">slough/eschar</text>
+  </g>
+
+  <!-- Deep Tissue -->
+  <g transform="translate(270,20)">
+    <rect x="0" y="15" width="40" height="8" rx="1" fill="#FDDCBC" stroke="#D4956A" stroke-width="1"/>
+    <rect x="0" y="23" width="40" height="12" rx="1" fill="#F5C09A" stroke="#C8906A" stroke-width="1"/>
+    <rect x="0" y="35" width="40" height="14" rx="1" fill="#FAEBD7"/>
+    <rect x="0" y="49" width="40" height="14" rx="1" fill="#E8A090"/>
+    <rect x="0" y="63" width="40" height="10" rx="1" fill="#F5F0E8"/>
+    <!-- deep purple discoloration on intact skin -->
+    <ellipse cx="20" cy="19" rx="15" ry="5" fill="#6C3483" opacity="0.6"/>
+    <!-- internal damage indicator -->
+    <ellipse cx="20" cy="38" rx="12" ry="8" fill="#9B72C0" opacity="0.4"/>
+    <text x="20" y="10" text-anchor="middle" font-size="8" fill="#6C3483" font-weight="bold" font-family="sans-serif">Deep Tissue</text>
+    <text x="20" y="86" text-anchor="middle" font-size="7.5" fill="#6C3483" font-family="sans-serif">Purple intact</text>
+    <text x="20" y="95" text-anchor="middle" font-size="7.5" fill="#6C3483" font-family="sans-serif">skin — urgent</text>
+  </g>
+
+  <!-- layer labels left side -->
+  <line x1="8" y1="35" x2="2" y2="35" stroke="#D4956A" stroke-width="1"/>
+  <line x1="8" y1="43" x2="2" y2="43" stroke="#C8906A" stroke-width="1"/>
+  <line x1="8" y1="55" x2="2" y2="55" stroke="#C8A882" stroke-width="1"/>
+  <line x1="8" y1="69" x2="2" y2="69" stroke="#C07060" stroke-width="1"/>
+  <line x1="8" y1="83" x2="2" y2="83" stroke="#B0A090" stroke-width="1"/>
+</svg>`;
+
+const svgVACDiagram = `<svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg">
+  <text x="170" y="13" text-anchor="middle" font-size="10" fill="#05202A" font-weight="bold" font-family="sans-serif">NPWT — How It Works</text>
+  <!-- wound cavity cross section -->
+  <rect x="20" y="25" width="300" height="30" rx="3" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <text x="170" y="44" text-anchor="middle" font-size="8.5" fill="#8B5010" font-family="sans-serif">Skin</text>
+  <!-- wound cavity -->
+  <path d="M90 55 Q120 90 170 95 Q220 90 250 55" fill="#FFE8E0" stroke="#C07060" stroke-width="1.5"/>
+  <text x="170" y="80" text-anchor="middle" font-size="8.5" fill="#A04030" font-family="sans-serif">Wound cavity</text>
+  <!-- foam in wound -->
+  <path d="M98 55 Q120 82 170 87 Q220 82 242 55" fill="#90C0D0" stroke="#60A0B0" stroke-width="1" opacity="0.8"/>
+  <text x="170" y="72" text-anchor="middle" font-size="8" fill="#204050" font-family="sans-serif">Foam dressing</text>
+  <!-- drape seal -->
+  <rect x="20" y="52" width="300" height="6" rx="2" fill="#B0D0E0" stroke="#80B0C8" stroke-width="1" opacity="0.7"/>
+  <text x="170" y="58" text-anchor="middle" font-size="7.5" fill="#204050" font-family="sans-serif">Drape seal</text>
+  <!-- tube and canister -->
+  <line x1="170" y1="52" x2="170" y2="20" stroke="#607080" stroke-width="3"/>
+  <rect x="148" y="5" width="44" height="18" rx="3" fill="#E0E8F0" stroke="#607080" stroke-width="1.5"/>
+  <text x="170" y="17" text-anchor="middle" font-size="8" fill="#304050" font-family="sans-serif">VAC device</text>
+  <!-- arrows showing negative pressure pulling exudate -->
+  <line x1="135" y1="82" x2="155" y2="58" stroke="#C0392B" stroke-width="1.5" marker-end="url(#va)"/>
+  <line x1="205" y1="82" x2="185" y2="58" stroke="#C0392B" stroke-width="1.5" marker-end="url(#va)"/>
+  <!-- wound edge arrows coming together -->
+  <line x1="98" y1="72" x2="115" y2="72" stroke="#1E8449" stroke-width="2" marker-end="url(#va2)"/>
+  <line x1="242" y1="72" x2="225" y2="72" stroke="#1E8449" stroke-width="2" marker-end="url(#va2)"/>
+  <!-- labels below -->
+  <text x="62" y="112" text-anchor="middle" font-size="8.5" fill="#C0392B" font-family="sans-serif">Removes</text>
+  <text x="62" y="122" text-anchor="middle" font-size="8.5" fill="#C0392B" font-family="sans-serif">exudate/bacteria</text>
+  <text x="170" y="112" text-anchor="middle" font-size="8.5" fill="#1E8449" font-family="sans-serif">Pulls edges</text>
+  <text x="170" y="122" text-anchor="middle" font-size="8.5" fill="#1E8449" font-family="sans-serif">together</text>
+  <text x="278" y="112" text-anchor="middle" font-size="8.5" fill="#028090" font-family="sans-serif">Stimulates</text>
+  <text x="278" y="122" text-anchor="middle" font-size="8.5" fill="#028090" font-family="sans-serif">granulation</text>
+  <!-- bottom annotation -->
+  <text x="170" y="145" text-anchor="middle" font-size="8" fill="#5A7A82" font-family="sans-serif" font-style="italic">−75 to −125 mmHg sub-atmospheric pressure · continuous or intermittent mode</text>
+  <text x="170" y="156" text-anchor="middle" font-size="8" fill="#C0392B" font-weight="bold" font-family="sans-serif">If device off &gt;2h: moist non-adherent dressing — NOT wet-to-dry</text>
+  <defs>
+    <marker id="va" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/></marker>
+    <marker id="va2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1E8449" stroke-width="1.5" stroke-linecap="round"/></marker>
+  </defs>
+</svg>`;
+
+const svgWoundLocations = `<svg viewBox="0 0 340 170" xmlns="http://www.w3.org/2000/svg">
+  <text x="170" y="13" text-anchor="middle" font-size="10" fill="#05202A" font-weight="bold" font-family="sans-serif">Wound Location by Type — Lower Extremity</text>
+  <!-- simplified leg and foot outline -->
+  <rect x="148" y="18" width="44" height="100" rx="20" fill="#FDDCBC" stroke="#C0A080" stroke-width="1.5"/>
+  <!-- foot -->
+  <ellipse cx="158" cy="128" rx="22" ry="10" fill="#FDDCBC" stroke="#C0A080" stroke-width="1.5"/>
+  <rect x="148" y="115" width="44" height="20" rx="6" fill="#FDDCBC" stroke="#C0A080" stroke-width="1.5"/>
+  <!-- toe boxes -->
+  <ellipse cx="148" cy="138" rx="6" ry="4" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <ellipse cx="160" cy="140" rx="6" ry="4" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <ellipse cx="172" cy="140" rx="6" ry="4" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <ellipse cx="184" cy="138" rx="6" ry="4" fill="#FDDCBC" stroke="#C0A080" stroke-width="1"/>
+  <!-- heel -->
+  <ellipse cx="170" cy="148" rx="14" ry="8" fill="#FDDCBC" stroke="#C0A080" stroke-width="1.5"/>
+
+  <!-- Pressure injury spots - bony prominences -->
+  <circle cx="160" cy="36" r="7" fill="#C0392B" opacity="0.75"/>
+  <circle cx="170" cy="148" r="8" fill="#C0392B" opacity="0.75"/>
+  <circle cx="185" cy="110" r="6" fill="#C0392B" opacity="0.65"/>
+
+  <!-- Venous stasis ulcer - medial ankle -->
+  <ellipse cx="140" cy="112" rx="9" ry="6" fill="#028090" opacity="0.8"/>
+
+  <!-- DFU - plantar/metatarsal -->
+  <ellipse cx="162" cy="133" rx="7" ry="4" fill="#E67E22" opacity="0.85"/>
+  <ellipse cx="172" cy="135" rx="5" ry="3" fill="#E67E22" opacity="0.75"/>
+
+  <!-- Legend -->
+  <circle cx="20" cy="45" r="6" fill="#C0392B" opacity="0.75"/>
+  <text x="30" y="49" font-size="9" fill="#C0392B" font-family="sans-serif">Pressure injury (bony prominences)</text>
+  <circle cx="20" cy="65" r="6" fill="#028090" opacity="0.8"/>
+  <text x="30" y="69" font-size="9" fill="#028090" font-family="sans-serif">Venous ulcer (medial ankle)</text>
+  <ellipse cx="20" cy="85" rx="6" ry="4" fill="#E67E22" opacity="0.85"/>
+  <text x="30" y="89" font-size="9" fill="#E67E22" font-family="sans-serif">Diabetic foot ulcer (plantar/metatarsals)</text>
+
+  <!-- Annotation lines -->
+  <line x1="160" y1="36" x2="100" y2="36" stroke="#C0392B" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="140" y1="112" x2="100" y2="112" stroke="#028090" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="162" y1="133" x2="100" y2="133" stroke="#E67E22" stroke-width="1" stroke-dasharray="3,2"/>
+
+  <text x="170" y="165" text-anchor="middle" font-size="8" fill="#5A7A82" font-family="sans-serif" font-style="italic">Location + appearance = wound type diagnosis</text>
+</svg>`;
+
+// ── DERMNET PHOTOS ────────────────────────────────────────────────
+const BASE = "https://dermnetnz.org";
+const photos = {
+  cvi: [
+    {src:"/assets/Uploads/venous-disease-04.jpg", cap:"Venous dermatitis and ulceration"},
+    {src:"/assets/Uploads/venous-disease-05-v2.jpg", cap:"Lipodermatosclerosis — fibrotic skin"},
+    {src:"/assets/Uploads/venous-disease-06.jpg", cap:"Venous eczema — scaling and weeping"},
+  ],
+  cellulitis: [
+    {src:"/assets/Uploads/cellulitis-012.jpg", cap:"Cellulitis of the lower leg"},
+    {src:"/assets/Uploads/bacterial/s/cellulitis2.jpg", cap:"Cellulitis — erythema and swelling"},
+    {src:"/assets/Uploads/bacterial/cellulitis4.jpg", cap:"Cellulitis — advancing border"},
+  ],
+  lymphedema: [
+    {src:"/assets/Uploads/venous-disease-05-v2.jpg", cap:"Lipodermatosclerosis (CVI vs lymphedema comparison)"},
+  ],
+  candida: [
+    {src:"/assets/Uploads/fungal/canin.jpg", cap:"Axillary candidal intertrigo — satellite lesions"},
+    {src:"/assets/Uploads/fungal/cfsmam.jpg", cap:"Submammary candidal intertrigo"},
+    {src:"/assets/Uploads/fungal/can-web.jpg", cap:"Interdigital candidal infection"},
+  ],
+  tinea: [
+    {src:"/assets/Uploads/fungal/tpsev.jpg", cap:"Tinea pedis — interdigital maceration"},
+    {src:"/assets/Uploads/fungal/tpto.jpg", cap:"Tinea pedis — toe web scaling"},
+    {src:"/assets/Uploads/fungal/s/tinped1.jpg", cap:"Moccasin-type tinea pedis"},
+  ],
+  contact: [
+    {src:"/assets/Uploads/reactions/acd2.jpg", cap:"Allergic contact dermatitis — rubber"},
+    {src:"/assets/Uploads/reactions/acd4.jpg", cap:"Contact dermatitis — shape follows allergen"},
+    {src:"/assets/Uploads/reactions/dermal-dermatitis1.jpg", cap:"Irritant contact dermatitis"},
+  ],
+  shingles: [
+    {src:"/assets/Uploads/viral/hz-thor.jpg", cap:"Thoracic herpes zoster — dermatomal distribution"},
+    {src:"/assets/Uploads/viral/hz2.jpg", cap:"Grouped vesicles on erythematous base"},
+    {src:"/assets/Uploads/viral/hz-face.jpg", cap:"Ophthalmic zoster — forehead and eyelid involvement"},
+  ],
+  skintear: [
+    {src:"/assets/Uploads/trauma/skin-tear1.jpg", cap:"Skin tear — partial flap, Type 2"},
+    {src:"/assets/Uploads/trauma/skin-tear2.jpg", cap:"Skin tear with surrounding ecchymosis"},
+  ],
+  laceration: [],
+  abscess: [
+    {src:"/assets/Uploads/bacterial/abscess1.jpg", cap:"Pointing abscess — fluctuant center"},
+    {src:"/assets/Uploads/bacterial/abscess-drain.jpg", cap:"Abscess with central drainage"},
+  ],
+  vsu: [
+    {src:"/assets/Uploads/venous-ulcer-01.jpg", cap:"Venous stasis ulcer — medial ankle"},
+    {src:"/assets/Uploads/venous-ulcer-03.jpg", cap:"Venous ulcer with hemosiderin staining"},
+    {src:"/assets/Uploads/venous-ulcer-02.jpg", cap:"Venous ulcer — irregular border and exudate"},
+    {src:"/assets/Uploads/infected-venous-disease-07.jpg", cap:"Infected venous ulcer"},
+  ],
+  pi: [],   // staging covered by SVG
+  dfu: [],  // location covered by SVG
+  surgical: [],
+};
+
+function photoGallery(id) {
+  const imgs = photos[id];
+  if (!imgs || imgs.length === 0) return '';
+  return `
+    <div class="photo-panel">
+      <div class="photo-head">
+        <div class="photo-head-label">📷 Clinical photographs</div>
+        <div class="photo-attr">Image sourced from DermNet — dermnetnz.org</div>
+      </div>
+      <div class="photo-grid">
+        ${imgs.map(p=>`
+          <div class="photo-item">
+            <img src="${BASE}${p.src}" alt="${p.cap}" loading="lazy" onerror="this.parentElement.style.display='none'">
+            <div class="photo-cap">${p.cap}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+const skinData = [
+  {id:"cvi",ico:"🦵",nm:"Chronic Venous Insufficiency",sub:"Vascular",col:"teal",
+   title:"CVI — Venous Valve Failure",svg:svgCVI,
+   signs:["Bilateral pitting edema — worse by end of day","Hemosiderin staining — brown/rusty discoloration at ankles","Lipodermatosclerosis — hardened, fibrotic lower leg","Varicosities and dilated surface veins","Venous stasis dermatitis — weeping, scaling, pruritus","Atrophie blanche — pale scarred patches = ulcer risk zone"],
+   tx:[{n:"Compression (20–40 mmHg)",w:"Directly counteracts venous hypertension — forces fluid back via capillary pressure reduction. <strong>Compression is the treatment</strong>, not an adjunct. Verify ABI > 0.8 before applying."},{n:"Leg elevation above heart",w:"Uses gravity to reduce hydrostatic pressure — adjunctive only. Does not fix valve incompetence."},{n:"Topical corticosteroids (stasis dermatitis)",w:"Low-potency (hydrocortisone 1%) reduces inflammatory cytokine activity — decreases pruritus and scaling."},{n:"Emollients / barrier creams",w:"Restore stratum corneum lipid barrier — prevent transepidermal water loss and skin fragility."}],
+   rn:["Assess for venous ulcer formation","Apply/adjust compression per order","Notify provider of wounds or skin breakdown"],lpn:["Apply compression per order","Document limb circumference and edema","Report skin changes or new wounds to RN immediately"],
+   legal:"Document: edema grade (1+ to 4+), limb circumference in cm at marked landmark, skin integrity at stasis sites, compression applied (type, mmHg, time), and any areas of new skin breakdown."},
+  {id:"cellulitis",ico:"🔴",nm:"Cellulitis",sub:"Infection",col:"red",
+   title:"Cellulitis — Bacterial Dermis Infection",svg:svgCellulitis,
+   signs:["Unilateral erythema — well or poorly demarcated","Warmth, tenderness, swelling at site","Taut or shiny skin — possible peau d'orange texture","Lymphadenopathy in draining nodes","Portal of entry: wound, ulcer, tinea, insect bite"],
+   redFlags:["Rapidly advancing border — mark with pen, reassess q4h","Fever ≥ 38.5°C or rigors — systemic spread","Crepitus — gas-producing organism, surgical emergency","Bullae or necrosis — possible necrotizing fasciitis","HR > 100 or BP dropping — initiate sepsis protocol"],
+   tx:[{n:"Oral antibiotics (cephalexin, dicloxacillin)",w:"Target gram-positive organisms (Staph, Strep) — inhibit bacterial cell wall synthesis. First-line for non-systemic cellulitis."},{n:"IV antibiotics (cefazolin, vancomycin)",w:"Used when oral therapy fails or systemic signs present. Vancomycin for MRSA risk or PCN allergy."},{n:"Border marking",w:"Clinical monitoring tool — documents rate of spread. Essential evidence for treatment response or failure."},{n:"Leg elevation",w:"Reduces inflammatory fluid accumulation — adjunctive, does not treat infection."}],
+   rn:["Assess border dimensions and document","Notify provider of advancing border or systemic signs","Obtain wound culture per order"],lpn:["Document border measurements per timeframe","Monitor vital signs, report changes to RN","Administer antibiotics per order"],
+   legal:"Document: erythema dimensions in cm, border marking time, skin description (color/warmth/texture), systemic signs (temp/HR/BP), provider notification time and orders received."},
+  {id:"lymphedema",ico:"🫧",nm:"Lymphedema",sub:"Lymphatic",col:"purple",
+   title:"Lymphedema — Protein-Rich Edema",svg:svgLymphedema,
+   signs:["Non-pitting edema — does not resolve overnight","Positive Stemmer sign — cannot pinch skin at base of 2nd toe","Foot and toe involvement — 'boxed toe' appearance","Skin fibrosis and thickening with chronicity","Lymphorrhea — high-protein fluid weeping through skin","Recurrent cellulitis — protein-rich tissue = bacterial medium"],
+   tx:[{n:"Complete Decongestive Therapy (CDT)",w:"Multi-layer compression bandaging + manual lymphatic drainage — moves protein-rich fluid into functional lymph channels. Requires trained PT/OT. Not equivalent to standard compression."},{n:"Skin hygiene and emollients",w:"High-protein lymphatic fluid creates bacterial culture medium. Intact skin is the primary infection prevention — moisturize every shift."},{n:"Active exercise and movement",w:"Muscle contraction activates lymphatic pumping — the lymphatic system has no heart. Movement IS treatment."},{n:"Compression garments (maintenance)",w:"Maintain volume reduction from CDT. Must be properly fitted — ill-fitting garments cause pressure injuries."}],
+   rn:["Assess Stemmer sign on admission","Identify lymphorrhea, apply appropriate dressings","Coordinate PT/OT referral for CDT"],lpn:["Apply compression garments per order","Document limb measurements per protocol","Report infection signs (warmth/erythema/fever) to RN immediately"],
+   legal:"Document: Stemmer sign result, limb circumference at anatomical landmark, skin integrity, lymphorrhea presence and volume, CDT session attendance, and any cellulitis signs."},
+  {id:"candida",ico:"🍄",nm:"Candidal Intertrigo",sub:"Fungal",col:"amber",
+   title:"Candidal Intertrigo — Skin Fold Fungal Infection",svg:null,
+   signs:["Satellite lesions — pustules BEYOND the main border (hallmark finding)","Red, moist, macerated skin in body folds","Locations: groin, axillae, under breasts, perineum","Burning or itching at site","Worsened by moisture, heat, antibiotics, immunosuppression"],
+   tx:[{n:"Topical antifungals (clotrimazole, miconazole)",w:"Inhibit fungal ergosterol synthesis — disrupt cell membrane integrity. Apply twice daily per order."},{n:"Moisture control — dry skin folds",w:"Candida requires moisture to survive. Antifungal without dryness is inadequate — moisture-wicking liners, repositioning folds, antifungal powder between doses."},{n:"Nystatin powder (high-moisture areas)",w:"Polyene antifungal — binds ergosterol directly, forming pores in fungal cell membrane. Effective where cream washes off."}],
+   rn:["Assess extent, notify provider if systemic signs","Identify predisposing factors (antibiotics, immunosuppression)","Implement infection control precautions"],lpn:["Apply topical antifungal per order","Implement skin fold hygiene and moisture management","Report no improvement within 48–72h to RN"],
+   legal:"Document: rash location (specific folds), satellite lesions present/absent, skin integrity, moisture management interventions, antifungal applied with time, and response to treatment."},
+  {id:"contact",ico:"⚡",nm:"Contact Dermatitis",sub:"Inflammatory",col:"teal",
+   title:"Contact Dermatitis — Irritant or Allergic Reaction",svg:null,
+   signs:["Erythema matching shape and location of irritant/allergen","Common culprits: diapers/briefs, adhesives, wound dressings, latex","Irritant: appears within hours, burning sensation","Allergic: delayed 24–72h, severe pruritus","Vesicles or bullae in severe allergic reactions"],
+   tx:[{n:"Remove the irritant or allergen — first priority",w:"No topical treatment is effective while exposure continues. Identify and eliminate the cause — switch dressing materials, change incontinence products, remove adhesive."},{n:"Topical hydrocortisone 1%",w:"Low-potency corticosteroid — suppresses T-cell mediated inflammatory response. Reduces cytokine release, pruritus, and erythema. Short-term use only."},{n:"Barrier cream (zinc oxide or petrolatum)",w:"Physical occlusion — protects skin from continued chemical exposure while healing occurs."}],
+   rn:["Identify and document suspected irritant/allergen","Notify provider if widespread or blistering","Assess for secondary infection at excoriated sites"],lpn:["Remove identified irritant, implement alternative","Apply barrier cream and topical agents per order","Report worsening or secondary infection signs to RN"],
+   legal:"Document: rash location (shape and pattern), suspected irritant/allergen identified, date and time of exposure removal, topical treatment applied, and assessment findings at each subsequent visit."},
+  {id:"shingles",ico:"⚡",nm:"Shingles (Herpes Zoster)",sub:"Viral — VZV Reactivation",col:"red",
+   title:"Herpes Zoster — VZV Reactivation",svg:null,
+   signs:["Prodrome: burning, tingling, or pain BEFORE rash appears — often 2–3 days (nurses miss this)","Dermatomal distribution — follows one nerve root, stops at midline — never crosses","Unilateral vesicular rash: grouped fluid-filled blisters on erythematous base","Common locations in SNF: thoracic, lumbar, facial (ophthalmic branch — eye involvement risk)","Postherpetic neuralgia: severe persistent pain after rash resolves — most common complication in elderly","Disseminated zoster: rash crosses midline or involves 3+ dermatomes — immunocompromised patients"],
+   redFlags:["Ophthalmic zoster — involvement of forehead, nose tip, or eye — notify provider immediately, ophthalmology referral","Disseminated zoster — vesicles beyond dermatomal pattern — airborne AND contact isolation","Immunocompromised patient — HIV, long-term steroids, chemotherapy — higher dissemination risk","Facial nerve involvement — Ramsay Hunt syndrome risk — facial palsy, ear pain, hearing loss","Fever + confusion in elderly shingles patient — assess for encephalitis"],
+   tx:[
+     {n:"Antivirals — acyclovir, valacyclovir, famciclovir (within 72 hours of rash onset)",w:"Inhibit VZV DNA polymerase — block viral replication. <strong>The 72-hour window is critical.</strong> Antivirals after 72 hours have limited benefit for the acute rash but may still reduce postherpetic neuralgia risk. Notify provider immediately when shingles is suspected — do not wait for the rash to fully develop."},
+     {n:"Contact and airborne isolation (until lesions crusted)",w:"VZV transmits by direct contact with vesicular fluid AND by airborne droplets in disseminated disease. Standard shingles = contact precautions. Disseminated or immunocompromised = airborne + contact. Lesions are contagious until fully crusted and dry — not just until the rash appears to fade."},
+     {n:"Pain management — gabapentin, pregabalin, TCAs (postherpetic neuralgia)",w:"Neuropathic pain does not respond well to standard analgesics. Gabapentin and pregabalin modulate calcium channel-mediated neurotransmitter release — reduce central sensitization. TCAs (amitriptyline, nortriptyline) inhibit norepinephrine reuptake — alter pain signal processing. Use caution in elderly — fall risk, anticholinergic effects."},
+     {n:"Wound care — non-adherent dressings, keep lesions clean and dry",w:"Vesicles should not be ruptured. Apply non-adherent dressings to protect lesions and absorb drainage without adherence. Crusted lesions do not require dressings. Do NOT apply occlusive dressings — trapping moisture promotes secondary bacterial infection."},
+     {n:"Shingrix vaccination — prevention in unvaccinated or previously vaccinated residents",w:"Recombinant zoster vaccine — two-dose series, 50–90% reduction in HZ incidence and postherpetic neuralgia. Recommended for all adults 50+. Facility should audit vaccination status on admission. Active shingles is not a contraindication to vaccinating other residents."},
+   ],
+   rn:["Recognize prodromal pain and report to provider before rash develops if suspected","Initiate isolation precautions and notify infection control","Assess for ophthalmic involvement — inspect forehead, eyelid, nose tip","Coordinate ophthalmology referral if ophthalmic branch involved","Assess immunocompromised residents for dissemination"],
+   lpn:["Apply ordered dressings — non-adherent, do not rupture vesicles","Maintain contact precautions — gown and gloves for all direct care","Document rash location (exact dermatomal distribution), vesicle status (intact/ruptured/crusted), and pain level","Report any spread beyond dermatomal pattern or new symptoms to RN immediately","Do not care for shingles patient if you have never had chickenpox or the varicella vaccine"],
+   legal:"Document: dermatomal location (specific nerve root if known), rash stage (vesicular/pustular/crusting), isolation precautions initiated with date and time, provider notification time, antiviral ordered within 72 hours (yes/no with time of rash onset), and any ophthalmic or dissemination signs. Note any susceptible residents or staff exposed before isolation was initiated."},
+];
+
+const woundData = [
+  {id:"pi",ico:"🔴",nm:"Pressure Injury",sub:"Facility Risk",col:"red",
+   title:"Pressure Injury — Staging & Treatment",svg:svgWoundLocations,
+   signs:["Stage 1: Non-blanchable erythema, intact skin","Stage 2: Partial thickness — shallow wound or blister","Stage 3: Full thickness, subcutaneous fat visible","Stage 4: Exposed bone, tendon, or muscle","Unstageable: Full thickness covered by slough or eschar","Deep Tissue: Purple/maroon intact skin — may evolve rapidly"],
+   tx:[{n:"Hydrocolloid (Stage 2, minimal exudate)",w:"Creates moist wound environment — enables autolytic debridement while protecting fragile epithelium. Bacterial barrier."},{n:"Foam dressing (moderate exudate)",w:"Absorbs exudate while maintaining moisture balance — prevents maceration of periwound skin."},{n:"Alginate (high exudate or bleeding risk)",w:"Calcium-sodium ion exchange forms a gel — maintains moisture, promotes hemostasis, conforms to wound shape."},{n:"Collagen dressing (stalled wounds)",w:"Provides exogenous collagen scaffold — stimulates fibroblast migration and neovascularization."},{n:"Debridement (slough/eschar)",w:"Removes devitalized tissue blocking epithelial migration. Types: autolytic (moisture dressings), enzymatic (collagenase), sharp (RN certification required)."}],
+   rn:["Complete Braden Scale on admission","Stage using NPUAP criteria","Perform/supervise debridement","Notify provider of any new or worsening injury"],lpn:["Implement repositioning schedule","Apply ordered dressings and barrier creams","Document wound at each change","Report new skin breakdown to RN immediately"],
+   legal:"Document: NPUAP stage, anatomical location, dimensions (L×W×D in cm), wound bed (% granulation/slough/eschar), exudate, periwound skin, and 'present on admission' status — legally critical for CMS."},
+  {id:"vsu",ico:"🦵",nm:"Venous Stasis Ulcer",sub:"Lower Extremity",col:"teal",
+   title:"Venous Stasis Ulcer — Medial Ankle",svg:svgWoundLocations,
+   signs:["Medial malleolus or lower leg — rarely above knee","Shallow, irregular borders — often weeping heavily","Surrounding hemosiderin staining and lipodermatosclerosis","Moderate to heavy serous or serosanguineous exudate","Bilateral lower extremity edema present"],
+   tx:[{n:"Compression 30–40 mmHg — cornerstone",w:"<strong>Without compression, dressings only manage the surface.</strong> Compression treats the venous hypertension causing the wound. Verify ABI before applying > 20 mmHg."},{n:"Moisture-retentive dressings",w:"Venous ulcers have impaired growth factor delivery — moist environment preserves endogenous growth factors and supports granulation."},{n:"Zinc oxide paste / Unna boot",w:"Sustained compression + wound protection. Zinc has mild antibacterial and epithelialization-promoting properties. Changed weekly."},{n:"Pentoxifylline (oral, per order)",w:"Hemorrheologic agent — improves RBC deformability and reduces fibrinogen. Improves microvascular flow in high venous pressure environments."}],
+   rn:["Assess ABI before initiating high compression","Select dressing type based on wound bed","Notify provider if not progressing in 2–4 weeks"],lpn:["Apply compression per order after RN assessment","Change dressings per order","Monitor for arterial compromise (pain, tingling, pallor) with compression"],
+   legal:"Document: wound location, dimensions, wound bed description, exudate type and amount, compression applied (type and mmHg), ABI on file or not assessed, patient tolerance of compression."},
+  {id:"dfu",ico:"👣",nm:"Diabetic Foot Ulcer",sub:"Neuropathic / Ischemic",col:"amber",
+   title:"Diabetic Foot Ulcer — Plantar Surface",svg:svgWoundLocations,
+   signs:["Plantar surface — metatarsal heads, heel, great toe","Punched-out appearance with callused edges","Patient may report NO pain — neuropathy removes warning signal","Surrounding callus or hyperkeratosis","May have signs of ischemia — pale, cool foot"],
+   tx:[{n:"Offloading — total contact cast or boot",w:"Plantar DFUs are caused by repetitive pressure on insensate tissue. Cannot heal without removing mechanical trauma. Offloading reduces plantar pressure up to 90%."},{n:"Moist wound healing dressings",w:"Diabetic wounds have impaired growth factor activity — moisture-retentive dressings preserve endogenous growth factors and support autolysis."},{n:"Antimicrobial dressings (silver, PHMB)",w:"Impaired immune response in diabetics. Silver ions disrupt bacterial cell membrane and DNA — broad-spectrum, low resistance risk."},{n:"Glycemic control (target 140–180 mg/dL)",w:"Hyperglycemia impairs neutrophil function, collagen synthesis, and angiogenesis. Document and report glucose excursions."},{n:"Aggressive debridement (frequent)",w:"DFUs rapidly accumulate biofilm — bacterial matrix blocks healing. Debridement frequency is higher than for other wound types."}],
+   rn:["Assess vascular status and ABI","Notify provider of glucose excursions affecting wound","Coordinate podiatry, vascular, wound care referrals"],lpn:["Apply dressings and offloading devices per order","Document glucose values and wound appearance","Report infection signs immediately — increased exudate, odor, erythema"],
+   legal:"Document: wound location (exact plantar site), dimensions, wound bed, periwound callus, offloading device in place (yes/no), glucose at time of assessment, and any new infection signs."},
+  {id:"surgical",ico:"🔪",nm:"Surgical Wound",sub:"Post-Operative",col:"green",
+   title:"Surgical Wound — Primary & Secondary Intention",svg:null,
+   signs:["Primary: edges approximated with staples, sutures, or closure strips","Secondary: open wound healing from base upward","Early serous to serosanguineous drainage — normal","Dehiscence: separation of wound edges — notify immediately","SSI: purulent exudate, erythema, fever, increasing pain"],
+   tx:[{n:"Primary closure — strips/staples",w:"Mechanical approximation eliminates dead space, reduces infection risk, allows rapid epithelialization."},{n:"Moist dressings (secondary intention)",w:"Wound heals from base upward by granulation. Moisture gradient drives granulation tissue — dry wounds heal up to 40% slower."},{n:"Antiseptic irrigation (contaminated wounds, per order)",w:"Chlorhexidine or dilute Dakin's solution — reduce bacterial bioburden. <strong>Cytotoxic to fibroblasts — never use on clean healing wounds.</strong>"},{n:"NPWT/VAC (dehiscence or complex wounds)",w:"First-line for surgical dehiscence — accelerates granulation, removes infectious exudate, reduces dead space. See VAC tab."},{n:"Antibiotics (per order, culture-directed)",w:"Most common SSI organism: S. aureus. Mupirocin (topical): disrupts bacterial RNA synthesis. Systemic agents selected by culture."}],
+   rn:["Assess wound edge approximation each shift","Notify provider of dehiscence, SSI, or seroma","Obtain wound culture per order"],lpn:["Apply dressings and document wound appearance","Document staple/suture count intact","Report any separation, purulent drainage, or increasing pain to RN immediately"],
+   legal:"Document: edge approximation (intact/partially separated/dehisced), staple/suture count intact, drainage type and amount, periwound skin, and any SSI signs with provider notification time."},
+  {id:"skintear",ico:"🩹",nm:"Skin Tear",sub:"Acute Injury — Fragile Skin",col:"amber",
+   title:"Skin Tear — Approximate, Protect, Do NOT Macerate",svg:null,
+   signs:["Partial or full separation of skin layers from friction or shear — NOT pressure","Common locations: forearms, hands, lower legs — areas with thin, fragile skin","STAR Classification: Type 1 (no tissue loss), Type 2 (partial flap), Type 3 (complete tissue loss)","Surrounding skin: ecchymosis, fragility, tissue paper texture — senile purpura common","Common causes: transfers, repositioning, tape removal, wheelchair armrests, bed rails","Patient often does not feel significant pain — skin fragility increases with age and corticosteroids"],
+   redFlags:["Complete tissue loss (Type 3) — notify provider, wound care consult may be needed","Skin tear in anticoagulated patient — monitor for expanding hematoma","Signs of infection at tear site — increasing erythema, warmth, exudate, odor","Multiple skin tears in same visit — assess for abuse or care technique issues"],
+   tx:[
+     {n:"Approximate the skin flap — gently reposition tissue back over the wound",w:"The flap is viable tissue — it is your natural dressing. Use a gloved finger or damp cotton swab to gently slide the flap back into position over the wound bed. Do not force it. Even partial coverage is better than none. This is the single most important first step."},
+     {n:"NON-ADHERENT dressing — silicone foam or contact layer (NOT wet-to-dry, NOT adhesive gauze)",w:"<strong>The most common nursing error: covering a skin tear with a moist wet gauze dressing.</strong> Wet gauze maceration destroys the fragile flap and delays healing. The goal is to protect the approximated flap and maintain a moist wound environment WITHOUT adherence. Silicone foam or non-adherent contact layers lift off cleanly at dressing changes without disturbing the flap. Never use tape directly on fragile periwound skin."},
+     {n:"Skin closure strips (Steri-Strips) — if flap is stable and skin will tolerate",w:"Can help hold the flap in position while healing occurs. Apply in the direction of the flap closure — never against it. Document that strips were applied and count them. Do not apply over friable or moist skin. Do not use aggressive adhesives on parchment skin."},
+     {n:"Mark flap direction with arrow on dressing",w:"Write an arrow on the dressing indicating the direction the flap lies — this tells the next nurse which way to lift the dressing and how to lay the flap back down. A skin tear flap removed in the wrong direction tears the tissue. Simple documentation that prevents re-injury at every dressing change."},
+     {n:"Prevention — skin protectants, sleeve guards, padding of armrests and side rails",w:"Thin skin cannot be restored but injury can be prevented. Long sleeves, tubular bandages, or foam protectors on armrests and rails eliminate the shear force that causes skin tears. Avoid tape directly on fragile skin — use tubular netting or wrap instead."},
+   ],
+   rn:["Classify tear using STAR system — document Type 1, 2, or 3","Assess for underlying hematoma, especially in anticoagulated patients","Notify provider of Type 3 (full tissue loss) or signs of infection","Implement prevention protocol — document contributing factors"],
+   lpn:["Approximate flap using gloved finger or damp swab — gentle, do not force","Apply non-adherent dressing per order — never wet gauze, never adhesive directly on fragile skin","Mark dressing with arrow indicating flap direction","Document wound location, flap status (present/partial/absent), dressing applied, and contributing cause","Report worsening, increasing exudate, or odor to RN immediately"],
+   legal:"Document: STAR classification (Type 1/2/3), anatomical location, flap status (present/approximated/absent), dressing applied (specific product — never 'wet dressing'), arrow marked on dressing (yes/no), contributing factors identified, and any prevention measures implemented. If skin tear occurs during care: document immediately with exact time and circumstances."},
+  {id:"laceration",ico:"✂️",nm:"Laceration",sub:"Acute Wound — Full Thickness",col:"red",
+   title:"Laceration — Assess Depth, Control Bleeding, Escalate Appropriately",svg:null,
+   signs:["Full-thickness skin cut from blunt or sharp trauma — edges may be jagged or clean","Assess depth: superficial (skin only), moderate (subcutaneous fat visible), deep (fascia, muscle, tendon visible)","Bleeding: may be brisk initially — direct pressure almost always effective for SNF lacerations","Common locations: scalp (falls), forearms, hands, shins","Contamination status: clean vs. contaminated (fall on floor, contact with bodily fluids, foreign body)","Tetanus risk: assess vaccination status for any contaminated wound"],
+   redFlags:["Visible tendon, bone, or joint — do NOT irrigate, cover with moist dressing, notify provider and prepare for transfer","Arterial bleeding — bright red, pulsatile — apply firm sustained pressure, call 911 if uncontrolled in 5 minutes","Laceration on anticoagulated patient — escalate faster, bleeding may not respond to standard pressure","Scalp laceration — always bleeds heavily due to vascular scalp — this is normal but assess for underlying skull injury after fall","Foreign body in wound — do NOT remove, stabilize object, notify provider"],
+   tx:[
+     {n:"Direct pressure — 10–15 minutes uninterrupted, do not lift to check",w:"Lifting the dressing before clotting is complete disrupts the platelet plug and restarts the bleeding cycle. Apply firm, continuous, direct pressure for a minimum of 10–15 minutes by the clock — not by feel. Elevate the extremity above heart level simultaneously."},
+     {n:"Wound irrigation (clean lacerations, per order or protocol) — normal saline",w:"Normal saline irrigation reduces bacterial bioburden in contaminated wounds and removes debris. Use a syringe with a splash guard — irrigate with pressure. Do NOT irrigate wounds with visible deep structures. Do NOT use hydrogen peroxide — it is cytotoxic to fibroblasts and delays healing."},
+     {n:"Wound closure — Steri-Strips (superficial), tissue adhesive (Dermabond), or provider-placed sutures",w:"Closure method depends on depth, location, contamination, and patient factors (anticoagulation, immunosuppression). Nurses apply Steri-Strips for superficial lacerations with well-approximated edges and clean wounds. Tissue adhesive is provider-dependent by facility policy. Deep lacerations, gaping wounds, or wounds on high-tension areas require provider assessment for sutures."},
+     {n:"Non-adherent dressing post-closure",w:"Protects the closure site from contamination and moisture. Change daily or when soiled. Never apply tape directly over a sutured or Steri-Stripped wound — the tape removal tears the closure."},
+     {n:"Tetanus prophylaxis — notify provider to assess",w:"Any wound from a contaminated object requires tetanus assessment. Document last tetanus vaccination date. If unknown or > 5 years for contaminated wounds, provider must be notified for Td or TdaP order."},
+   ],
+   rn:["Assess wound depth — identify if provider escalation needed before any wound care","Control bleeding with direct pressure before full assessment","Notify provider for deep lacerations, visible deep structures, uncontrolled bleeding, or foreign body","Assess tetanus vaccination status and notify provider if prophylaxis needed"],
+   lpn:["Apply firm direct pressure — minimum 10–15 minutes, do not lift to check","Elevate extremity while pressure is maintained","Apply Steri-Strips per facility protocol for superficial clean wounds with approximated edges","Document wound location, dimensions (L×W), depth estimate, edges (clean/jagged), bleeding controlled (yes/no with time), dressing applied, and provider notification","Do not irrigate or close wounds with visible deep structures — cover with moist non-adherent dressing and notify RN immediately"],
+   legal:"Document: wound location, estimated dimensions, depth (superficial/subcutaneous/deep), edges (clean/jagged/contaminated), bleeding status and control measures with times, wound care performed, closure method applied, provider notification time and response, tetanus status documented, and for falls — exact circumstance of injury with time and witnesses."},
+  {id:"abscess",ico:"🔵",nm:"Abscess",sub:"Localized Infection — Purulent Collection",col:"green",
+   title:"Abscess — Warm Compresses First, Recognize When It's Ready",svg:null,
+   signs:["Localized fluctuant (soft, fluid-filled, compressible) swelling — the hallmark of a collection","Overlying skin: erythema, warmth, tenderness — often intense","Central point of fluctuance — the 'pointing' area where drainage is most likely to occur","Common locations: buttocks, perianal area, axillae, groin, skin folds, areas of repeated trauma","May have a central pustule or opening — early spontaneous drainage","Surrounding cellulitis is common — distinguish the indurated fluctuant center from the surrounding erythema"],
+   redFlags:["Fever ≥ 38.5°C — systemic involvement, may need IV antibiotics","Rapidly expanding cellulitis beyond abscess border — possible necrotizing fasciitis","Abscess on the face — central triangle (nose, upper lip) — serious infection risk, no manual expression","Abscess in immunocompromised patient — escalate faster, may need hospital management","No pointing after 5–7 days of warm compresses — provider reassessment needed","Deep-tissue fluctuance near joints or spine — do not manipulate, notify provider"],
+   tx:[
+     {n:"Warm compresses — the correct first intervention",w:"Warm moist heat (warm washcloth or warm compress, 10–15 minutes, 3–4 times daily) promotes local vasodilation, increases blood flow to the area, and helps the abscess 'point' — localizing the collection to a single area near the skin surface where spontaneous or incision-and-drainage can occur. <strong>This is the appropriate nursing intervention for an abscess that has not yet pointed or spontaneously opened.</strong> Do not squeeze or manually express — you risk spreading the infection into surrounding tissue."},
+     {n:"Incision and drainage (I&D) — provider procedure",w:"Definitive treatment for a mature, pointing abscess. The provider makes an incision over the point of maximum fluctuance, drains the purulent collection, and may pack the cavity with gauze to prevent premature closure. I&D is NOT a nursing procedure. Nursing role: prepare the sterile field, administer analgesia per order, assist with lighting and positioning, manage wound packing during subsequent dressing changes."},
+     {n:"Wound packing — iodoform or plain gauze per order",w:"After I&D, the cavity is packed to keep the wound open and allow healing from the base outward. Nurses change packing per ordered frequency. Document: depth of packing, amount of packing material inserted and removed, wound base appearance, exudate, and odor. Never pack tighter than the last documented packing."},
+     {n:"Antibiotics (per order) — adjunct, not primary treatment",w:"Antibiotics alone do not drain an abscess. They treat surrounding cellulitis and reduce systemic spread. For simple SNF abscesses: TMP-SMX or doxycycline for MRSA coverage. Antibiotics are NOT a substitute for drainage. If a resident is on antibiotics without drainage of a fluctuant abscess, the abscess will not resolve — notify provider."},
+     {n:"Monitor for systemic signs — escalation criteria",w:"An abscess is a local process. Systemic involvement (fever, tachycardia, hypotension, altered mental status) means the infection is no longer contained. These findings require immediate provider notification and possible transfer. Document vital signs at every dressing change on an abscess patient."},
+   ],
+   rn:["Assess for fluctuance — document size, location, degree of pointing","Notify provider for fluctuant abscess — I&D order needed, antibiotics for surrounding cellulitis","Assess for systemic signs — fever, tachycardia","Coordinate I&D procedure — prepare sterile field, analgesia"],
+   lpn:["Apply warm compresses per order or facility protocol — 10–15 minutes 3–4 times daily","Do NOT squeeze, lance, or manually express — spread risk","Change wound packing per order — document amount in and out","Document: fluctuance size, pointing status, erythema border, exudate, odor, vital signs at each assessment","Report fever, rapidly expanding redness, or worsening pain to RN immediately"],
+   legal:"Document: abscess location, estimated size (cm), fluctuance present (yes/no), pointing (yes/no), surrounding cellulitis extent (in cm from abscess border), warm compress applied with time and duration, vital signs, provider notification time, I&D performed (date, provider, packing material and amount), and wound appearance at each subsequent dressing change."},
+];
+
+// ── RENDER ─────────────────────────────────────────────────────────
+let viewed = new Set();
+let active = {skin:null, wound:null};
+
+function buildGrid(items, gid, prefix) {
+  document.getElementById(gid).innerHTML = items.map(d => `
+    <button class="ibtn ${d.col}" id="${prefix}-${d.id}" onclick="show('${prefix}','${d.id}')">
+      <span class="iico">${d.ico}</span>
+      <div class="inm">${d.nm}</div>
+      <div class="isub">${d.sub}</div>
+    </button>`).join('');
+}
+
+function makeHTML(d) {
+  const hasRF = d.redFlags;
+  return `
+    ${d.svg ? `<div class="vis-panel"><div class="vis-head">📐 Anatomy & mechanism diagram</div><div class="vis-body">${d.svg}</div></div>` : ''}
+    ${photoGallery(d.id)}
+    ${hasRF ? `<div class="dc red"><div class="dch"><div class="dd"></div><div class="dlbl">🚨 Red Flags — Report Immediately</div></div><div class="dcb"><ul class="fl">${d.redFlags.map(f=>`<li>${f}</li>`).join('')}</ul></div></div>` : ''}
+    <div class="dc teal"><div class="dch"><div class="dd"></div><div class="dlbl">Signs & Assessment</div></div><div class="dcb"><ul class="fl">${d.signs.map(f=>`<li>${f}</li>`).join('')}</ul></div></div>
+    <div class="dc grn"><div class="dch"><div class="dd"></div><div class="dlbl">💊 Treatment + Purpose (Mechanism)</div></div><div class="dcb">${d.tx.map(t=>`<div class="txi"><div class="txn">${t.n}</div><div class="txw">${t.w}</div></div>`).join('')}</div></div>
+    <div class="scw"><div class="sch"><span>⚖️ Scope of Practice — RN vs LPN</span></div><div class="scc"><div class="scol"><div class="srole">RN Scope</div>${d.rn.map(r=>`<div class="sitem">${r}</div>`).join('')}</div><div class="scol"><div class="srole">LPN Scope</div>${d.lpn.map(r=>`<div class="sitem">${r}</div>`).join('')}</div></div></div>
+    <div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Legal Shield:</strong> ${d.legal}</div></div>`;
+}
+
+function show(prefix, id) {
+  const items = prefix === 'skin' ? skinData : woundData;
+  const d = items.find(x => x.id === id);
+  if (!d) return;
+  if (active[prefix] === id) {
+    active[prefix] = null;
+    document.getElementById(`${prefix==='skin'?'s':'w'}d`).classList.remove('on');
+    document.querySelectorAll(`#${prefix==='skin'?'s':'w'}g .ibtn`).forEach(b=>b.classList.remove('on'));
+    return;
+  }
+  active[prefix] = id;
+  viewed.add(prefix+id);
+  updateProg();
+  const g = prefix==='skin'?'sg':'wg', p = prefix==='skin'?'s':'w';
+  document.querySelectorAll(`#${g} .ibtn`).forEach(b=>b.classList.remove('on'));
+  document.getElementById(`${prefix}-${id}`).classList.add('on');
+  document.getElementById(`${p}di`).textContent = d.ico;
+  document.getElementById(`${p}dt`).textContent = d.nm;
+  document.getElementById(`${p}ds`).textContent = d.title;
+  document.getElementById(`${p}db`).innerHTML = makeHTML(d);
+  const dp = document.getElementById(`${p}d`);
+  dp.classList.add('on');
+  setTimeout(()=>dp.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function sw(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  viewed.add('tab-'+tab);
+  updateProg();
+}
+
+function updateProg() {
+  const total = skinData.length + woundData.length + 2;
+  document.getElementById('pf').style.width = Math.min(Math.round(viewed.size/total*100),100)+'%';
+}
+
+// ── VAC CONTENT ────────────────────────────────────────────────────
+document.getElementById('vacb').innerHTML = `
+  <div class="vis-panel"><div class="vis-head">📷 NPWT Mechanism Diagram</div><div class="vis-body">${svgVACDiagram}</div></div>
+  <div class="alert">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text"><strong>Interim dressing when VAC is down:</strong> If NPWT cannot be maintained (alarm unresolved, device failure, off &gt; 2 hours without provider order) — apply a <strong>moist non-adherent dressing</strong> (saline-moistened non-adherent gauze or foam). <strong>Do NOT use wet-to-dry saline gauze</strong> — wet-to-dry is a debridement technique that mechanically damages the granulation tissue you have been building. Document device off-time, all troubleshooting steps, interim dressing applied, and all provider contact attempts with times.</div>
+  </div>
+  <div class="dc grn"><div class="dch"><div class="dd"></div><div class="dlbl">Dressing Change — Step by Step</div></div><div class="dcb">
+    ${[["1","Pause the device and clamp tubing before removing dressing"],["2","Remove dressing gently — instill saline if adherent. Count pieces removed against last documented count"],["3","Assess wound: measure L×W×D cm, note tissue type, exudate, odor, periwound skin"],["4","Cut foam to fit wound cavity — document number of pieces inserted"],["5","Apply drape seal — 3–5 cm beyond wound edges onto intact skin. No wrinkles or gaps"],["6","Insert pad connector. Resume therapy. Confirm seal — canister fills within 1–2 min"]].map(([n,t])=>`<div class="vs"><div class="vsn">${n}</div><div class="vst">${t}</div></div>`).join('')}
+  </div></div>
+  <div class="dc red"><div class="dch"><div class="dd"></div><div class="dlbl">🚨 Troubleshooting — Alarms & Night Shift Protocol</div></div><div class="dcb">
+    ${[
+      {a:"LEAK ALARM",c:"Drape lifted at edge, skin fold, pad connector not seated",f:"Run finger along entire drape border. Apply skin prep + additional drape strips. Reseat connector. Restart — confirm canister fills. Document alarm, cause, and resolution."},
+      {a:"CANISTER FULL — EARLY",c:"Wound output increased — possible infection or wound enlargement",f:"Replace canister. Document exact volume. Notify provider if output significantly increased from prior cycle."},
+      {a:"BLOCKAGE / LOW FLOW",c:"Tubing kinked under patient, foam saturated, foam overpacked",f:"Reposition tubing. If foam saturated early — notify RN. If unresolved — notify provider."},
+      {a:"DEVICE CANNOT BE RESTARTED (Night Shift)",c:"Unresolved alarm, device failure, technical malfunction",f:"Apply MOIST NON-ADHERENT dressing (not wet-to-dry). Continue provider contact attempts. Document: off-time, all troubleshooting steps, interim dressing type applied, all notifications with times."},
+    ].map(i=>`<div style="padding:7px 0;border-bottom:1px solid rgba(192,57,43,.1);">
+      <div style="font-size:10.5px;font-weight:600;color:var(--red);margin-bottom:2px;">${i.a}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:3px;"><strong style="color:var(--ink);">Cause:</strong> ${i.c}</div>
+      <div style="font-size:10px;color:var(--tdk);"><strong>Action:</strong> ${i.f}</div>
+    </div>`).join('')}
+  </div></div>
+  <div class="scw"><div class="sch"><span>⚖️ Scope of Practice — NPWT</span></div><div class="scc">
+    <div class="scol"><div class="srole">RN Scope</div><div class="sitem">Initiate NPWT per provider order</div><div class="sitem">Perform dressing changes and wound assessment</div><div class="sitem">Troubleshoot device alarms</div><div class="sitem">Apply interim dressing if device down</div><div class="sitem">Notify provider of wound changes or unresolved alarms</div></div>
+    <div class="scol"><div class="srole">LPN Scope</div><div class="sitem">Monitor device function between changes</div><div class="sitem">Document canister output and alarms</div><div class="sitem">Notify RN of any alarm or output change immediately</div><div class="sitem">Do not independently change VAC dressing</div><div class="sitem">If device down and RN unavailable — follow interim dressing protocol per facility policy, notify RN and document</div></div>
+  </div></div>
+  <div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Document every dressing change:</strong> Foam pieces IN and OUT (counts must match — retained foam is a never event), wound dimensions, wound bed %, exudate type and amount, device settings, seal confirmed, canister fill confirmed, any alarms with cause, action taken, and resolution. If interim dressing applied: document device off-time, reason, dressing type, and provider notification.</div></div>`;
+
+// ── STAGING CONTENT ─────────────────────────────────────────────
+document.getElementById('stagb').innerHTML = `
+  <div class="vis-panel"><div class="vis-head">📷 Pressure Injury Staging — Cross Section</div><div class="vis-body">${svgPressureStaging}</div></div>
+  <div class="vis-panel"><div class="vis-head">📷 Wound Bed Tissue Types — T.I.M.E. Visual</div><div class="vis-body">${svgWoundBed}</div></div>
+  <div class="dc teal"><div class="dch"><div class="dd"></div><div class="dlbl">T.I.M.E. Framework — Wound Bed Assessment</div></div><div class="dcb">
+    ${[
+      {l:"T",w:"Tissue",c:"var(--red)",points:["Black/brown eschar: necrotic — blocks healing, must be debrided","Yellow slough: devitalized fibrin — impairs granulation, requires removal","Red granulation: healthy healing — protect and support","Pink epithelium: new skin forming — do not disturb"]},
+      {l:"I",w:"Infection",c:"var(--amber)",points:["Critical colonization: wound not progressing despite optimal care","Signs: increasing pain, friable tissue, new odor, wound enlarging","Biofilm: invisible bacterial matrix — requires mechanical disruption","Culture wound if any new sign of infection"]},
+      {l:"M",w:"Moisture",c:"var(--teal)",points:["Too dry: epithelial cells cannot migrate — healing halted","Too wet: maceration of periwound skin — wound edges break down","Goal: moist wound surface, dry periwound skin","Match dressing absorbency to exudate level — reassess each change"]},
+      {l:"E",w:"Edge",c:"var(--green)",points:["Non-advancing edges after 2–4 weeks = stalled wound — notify provider","Rolled edges (epibole): epithelium curls inward — requires debridement","Macerated edges: excess moisture — switch to absorptive dressing","Document edge advancement or regression in cm at each assessment"]},
+    ].map(t=>`<div style="padding:7px 0;border-bottom:1px solid rgba(2,128,144,.08);">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+        <div style="background:${t.c};border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0;">${t.l}</div>
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink);">${t.w}</div>
+      </div>
+      <ul class="fl">${t.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>`).join('')}
+  </div></div>
+  <div class="leg"><div class="legi">🛡️</div><div class="legt"><strong>Legal Documentation Standard:</strong> Every wound assessment must document T.I.M.E. elements: tissue type (% composition), infection signs (present/absent with specifics), moisture balance (dressing selected and rationale), and edge status (advancing/stable/regressing in cm). If wound is regressing after 2 weeks — document provider notification.</div></div>`;
+
+buildGrid(skinData,'sg','skin');
+buildGrid(woundData,'wg','wound');
+</script>
+</body>
+</html>
